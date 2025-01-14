@@ -483,7 +483,6 @@ function createMessageHTML(message, index) {
     const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
     const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
     
-    // 원래대로 줄바꿈 유지
     const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
 
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
@@ -496,8 +495,17 @@ function toggleDarkMode() {
     localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', isDarkMode);
     
-    // DOM에서 직접 메시지 스타일 업데이트
-    updateMessageStyles(isDarkMode);
+    // 현재 스크롤 위치 저장
+    const chatContainer = document.getElementById('chat-container');
+    const scrollPosition = chatContainer.scrollTop;
+    
+    // 메시지 다시 렌더링
+    renderMessages();
+    
+    // 스크롤 위치 복원
+    requestAnimationFrame(() => {
+        chatContainer.scrollTop = scrollPosition;
+    });
     
     showStatusMessage();
 }
@@ -549,17 +557,16 @@ elements.copyBtn.addEventListener('click', () => {
     }
 
     // 라이트 모드로 강제 설정하여 메시지 생성
+    localStorage.setItem('theme-preference', 'light');
+    
     const exportMessages = state.messages
-        .map((msg, idx) => {
-            const tempState = { ...state };
-            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
-            localStorage.setItem('theme-preference', 'light');
-            const messageHTML = createMessageHTML(msg, idx);
-            return messageHTML;
-        })
+        .map((msg, idx) => createMessageHTML(msg, idx))
         .join('\n');
 
     const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
+
+    // 원래 테마로 복원
+    localStorage.setItem('theme-preference', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
 
     const exportContainer = document.createElement('textarea');
     exportContainer.value = fullHtml;
