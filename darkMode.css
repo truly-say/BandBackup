@@ -1,0 +1,217 @@
+/* Dark Mode Styles */
+#statusMessage {
+    position: fixed;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 41, 59, 0.9); /* Dark mode background */
+    color: #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    z-index: 9999;
+}
+
+body.dark #title,
+body.dark #contact-info {
+    color: black !important;
+}
+
+body.dark #statusMessage {
+    background-color: rgba(30, 41, 59, 0.9);
+}
+
+body:not(.dark) #statusMessage {
+    background-color: #ffffff;
+    color: #e2e8f0;
+}
+
+body.dark {
+    background: linear-gradient(180deg, #000000 200px, #1a1a1a 200px, #2d2d2d 100%);
+    color: #e2e8f0;
+}
+
+body.dark .main-container {
+    background: rgba(30, 30, 30, 0.98);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark #title {
+    color: #f1f5f9;
+}
+
+
+
+body.dark .chat-container::-webkit-scrollbar-thumb {
+    background: #666;
+}
+
+body.dark .chat-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+body.dark #statusMessage {
+    background: rgba(30, 41, 59, 0.9);
+}
+
+body.dark #footer {
+    background-color: #1a1a1a;
+    color: #a0aec0;
+    border-top: 1px solid #333;
+}
+
+body.dark textarea {
+    background: #2d2d2d;
+    border-color: #404040;
+    color: #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .edit-textarea {
+    background: #2d2d2d;
+    border-color: #3498db;
+    color: #e2e8f0;
+}
+
+body.dark button {
+    background-color: #2d2d2d;
+    color: #e2e8f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark button:hover {
+    background-color: #404040;
+}
+
+body.dark .chat-message .username {
+    background-color: transparent; 
+    color: #ffffff; !important;
+    border-radius: 12px; 
+    padding: 2px 6px; 
+    font-weight: bold; 
+    display: inline-block; 
+}
+
+
+body.dark .chat-message.mine .message-content {
+    background-color: #2d5a2d; !important;
+    color: #e2e8f0; !important;
+}
+
+body.dark .chat-message.other .message-content {
+    background-color: #333; !important;
+    color: #e2e8f0; !important;
+}
+
+body.dark .message-content:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .chat-time {
+    color: #a0aec0;
+}
+
+body.dark .user-profiles {
+    background: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .user-profile {
+    background: #2d2d2d;
+}
+
+/* 다크 모드에서 내 메시지로 표시할 사용자 */
+body.dark .user-select {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+body.dark .user-select label {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: block;
+}
+
+body.dark .user-select select {
+    background-color: #3a3a3a;
+    color: #e2e8f0;
+    border: 1px solid #404040;
+    border-radius: 6px;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+}
+
+body.dark .user-select select option {
+    background-color: #3a3a3a;
+    color: #e2e8f0;
+}
+
+body.dark .user-select select option {
+    background-color: #3a3a3a;
+    color: #e2e8f0;
+    padding: 8px;
+}
+
+
+body.dark #update-log {
+    background: #2d2d2d;
+    border-color: #404040;
+    color: #e2e8f0;
+}
+
+body.dark #update-log .header {
+    background: #000;
+}
+
+body.dark #update-log .header strong {
+    color: #e2e8f0;
+}
+
+body.dark #update-log ul {
+    color: #e2e8f0;
+}
+
+body.dark #clear-btn {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #60a5fa;
+}
+
+body.dark #clear-btn:hover {
+    background-color: #404040;
+    color: #93c5fd;
+}
+
+body.dark #clear-btn:active {
+    background-color: #1a1a1a;
+}
+
+body.dark .file-input-label {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e2e8f0;
+}
+
+body.dark .file-input-label:hover {
+    background-color: #404040;
+}
+
+body.dark .display-name-input {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e2e8f0;
+}
+
+body.dark .original-name {
+    color: #a0aec0;
+}

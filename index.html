@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[범용]채팅 HTML 변환기</title>
+    <link rel="icon" href="data:image/svg+xml;utf8,&#x1F602;" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>밴드 채팅 백업 도구</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="darkMode.css">
+</head>
+
+<body>
+    <div id="header-container">
+        <div id="title">밴드 채팅 백업 도구</div>
+        <div id="contact-info">
+            네이버 밴드 채팅 백업을 위한 웹사이트입니다.<br>
+            각종 문제는 트위터로 문의해주시길 바랍니다.
+        </div>
+    </div>
+
+    <div class="main-container">
+        <textarea id="input-text" placeholder="①밴드에서 내보낸 채팅을 붙여넣은 뒤 분석을 누르면 프로필 사진 설정을 할 수 있습니다.
+②반드시 변환하기를 눌러야 html 복사가 가능합니다.
+            
+대화하는 인원수가 25명을 넘길 시 작동하지 않습니다.
+이름에 콜론(:)이 들어있을 시 내용이 깨집니다."></textarea>
+        <div class="button-container">
+            <button id="analyze-btn">① 채팅 분석</button>
+            <button id="convert-btn">② 변환하기</button>
+            <button id="copy-btn">③ HTML 복사</button>
+            <button id="clear-btn">초기화</button>
+        </div>
+        <!-- 업데이트 내역 -->
+        <div id="update-log">
+            <ul>
+                <li><strong>프로그램 점검중!!!</strong></li>
+                <li>채팅 내에서 줄바꿈 시 내용이 누락되는 현상 해결</li>
+                <li>채팅 미리보기에서 편집이 되지 않는 문제 해결</li>
+                <li>다크 모드에서 채팅 색상이 그대로인 문제 수정 중</li>
+            </ul>
+        </div>
+        <div id="user-select" class="user-select" style="display: none;">
+            <h3>내 메시지로 표시할 사용자:</h3>
+            <select id="chat-user">
+                <option value="">선택 안함 (모든 메시지를 왼쪽에 표시)</option>
+            </select>
+        </div>
+        <div id="user-profiles" class="user-profiles" style="display: none;">
+            <h3>채팅 참여자 프로필 설정</h3>
+        </div>
+        <div class="chat-container" id="chat-container"></div>
+    </div>
+
+    <!-- Theme Toggle & Status Message -->
+    <button id="themeToggle" class="theme-toggle">다크 모드로 전환</button>
+    <div id="statusMessage" class="status-message" style="display: none;">다크 모드로 전환되었습니다</div>
+
+    <footer id="footer">
+        <p>본 웹사이트는 '선청고등학교' 커뮤의 채팅 백업을 위해 만들어졌습니다.</p>
+        <p>해당 사이트는 @C2H5OH_snow이 제작했습니다.</p>
+    </footer>
+    <!-- Scripts -->
+    <script type="module" src="config.js"></script>
+    <script type="module" src="darkMode.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
+
+</html>

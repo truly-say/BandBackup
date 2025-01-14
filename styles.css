@@ -1,0 +1,558 @@
+/* Base Styles */
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+} 
+ body {
+     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+     background: linear-gradient(180deg, #000000 200px, #ffffff 200px, #f5f7fa 100%);
+     color: #2d3748;
+     line-height: 1.6;
+     min-height: 100vh;
+     overflow-y: auto;
+}
+/* Main Container */
+ .main-container {
+     width: 100%;
+     max-width: 900px;
+     margin: 0 auto;
+     padding: 2rem;
+     background: rgba(255, 255, 255, 0.98);
+     border-radius: 24px;
+     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.05);
+     overflow: hidden;
+}
+ #header-container {
+     background: linear-gradient(180deg, #72F033 0%, #06A31C 100%);
+     width: 100%;
+}
+ #title, #contact-info {
+     color: #d1d5db;
+     letter-spacing: 0.05em;
+     text-align: center;
+     margin: 0;
+     padding: 1rem 0;
+}
+ #title {
+     font-size: 2.5rem;
+     font-weight: 800;
+     letter-spacing: -0.02em;
+     color: #f1f5f9;
+    /* title 텍스트 색상 */
+     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+ #contact-info {
+     color: #f1f5f9;
+    /* 텍스트 색상 */
+     font-size: 1.1rem;
+     line-height: 1.8;
+     padding-bottom: 1.5rem;
+     margin-bottom: 2rem;
+}
+ #separator{
+     border: none; /* border-top: none으로 설정 */
+     margin: 0;
+     background: transparent;
+}
+ .stats-container {
+     margin-top: 10px;
+     padding: 10px;
+     border: 1px solid #ccc;
+     background-color: #f9f9f9;
+     border-radius: 5px;
+}
+ .user-stat {
+     margin: 5px 0;
+     font-size: 14px;
+     color: #333;
+}
+ .chat-container {
+     width: 100%;
+     max-width: 800px;
+     margin: 0 auto;
+     padding: 20px;
+     max-height: 700px;
+    /* 높이를 고정 (필요시 변경 가능) */
+     overflow-y: auto;
+     position: relative;
+}
+ .chat-container.expanded {
+     max-height: none;
+    /* 펼쳐졌을 때 모든 채팅 표시 */
+     overflow: visible;
+}
+ .chat-container::-webkit-scrollbar {
+     width: 8px;
+    /* 스크롤바 너비 */
+}
+ .chat-container::-webkit-scrollbar-thumb {
+     background: #aaa;
+    /* 스크롤바 색상 */
+     border-radius: 4px;
+    /* 스크롤바 모서리 */
+}
+ .chat-container::-webkit-scrollbar-thumb:hover {
+     background: #888;
+    /* 호버 시 색상 */
+}
+ #statusMessage {
+     background: rgba(15, 23, 42, 0.9);
+     backdrop-filter: blur(8px);
+     border-radius: 12px;
+     padding: 10px 20px;
+     font-weight: 500;
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+ #statusMessage.show-up {
+     bottom: 10px;
+    /* 위로 올라와 화면에 보이기 */
+     opacity: 1;
+    /* 보이게 설정 */
+}
+ #statusMessage.hide-down {
+     bottom: -50px;
+    /* 아래로 내려가면서 사라짐 */
+     opacity: 0;
+    /* 사라지게 설정 */
+}
+ #footer {
+     background-color: #f9f9f9;
+    /* 연한 회색 배경 */
+     color: #555;
+    /* 텍스트 색 */
+     text-align: center;
+    /* 텍스트 중앙 정렬 */
+     padding: 20px 0;
+    /* 위아래 간격 */
+     font-size: 16px;
+    /* 폰트 크기 */
+     border-top: 1px solid #ddd;
+    /* 푸터 위에 얇은 구분선 */
+     margin-top: 30px;
+    /* 콘텐츠와 푸터 간 간격 */
+}
+/* Input Elements */
+ textarea {
+     width: 100%;
+     height: 200px;
+     padding: 1rem;
+     border: 1px solid #e2e8f0;
+     border-radius: 12px;
+     font-family: 'Courier New', monospace;
+     font-size: 0.95rem;
+     resize: vertical;
+     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+     transition: all 0.2s ease;
+     margin-bottom: 1.5rem;
+     background: #ffffff;
+}
+ .edit-textarea {
+     width: 100%;
+     min-height: 50px;
+     padding: 8px;
+     border: 2px solid #3498db;
+     border-radius: 15px;
+     resize: vertical;
+     font: inherit;
+}
+ .edit-buttons {
+     display: flex;
+     justify-content: space-between;
+     margin-top: 10px;
+}
+ .edit-buttons button {
+     padding: 6px 12px;
+     margin: 0 5px;
+     border: none;
+     border-radius: 5px;
+     background-color: #4CAF50;
+     color: white;
+     cursor: pointer;
+}
+ .edit-buttons button.delete-button {
+     background-color: #f44336;
+}
+ .edit-buttons button:hover {
+     opacity: 0.8;
+}
+/* Buttons */
+ button {
+     padding: 0.75rem 1.5rem;
+     border: none;
+     border-radius: 8px;
+     font-weight: 600;
+     font-size: 0.95rem;
+     cursor: pointer;
+     color: inherit;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+     transition: box-shadow 0.3s ease-in-out;
+     margin: 0 0.5rem 1rem 0;
+}
+ button[style*="background-color: #333"], button[style*="background: black"], .header button {
+     color: white !important;
+}
+ button:hover {
+     background-color: #2980b9;
+     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+/* Chat Messages */
+ .chat-message {
+     display: flex;
+     flex-direction: column;
+     margin-bottom: 12px;
+     align-items: flex-start;
+     overflow: hidden;
+    /* 각 채팅 메시지 내부에 오버플로우 설정하지 않음 */
+}
+ .chat-message.mine {
+     flex-direction: row-reverse;
+     justify-content: flex-start;
+     width: 100%;
+}
+ .chat-message.other {
+     flex-direction: row;
+     justify-content: flex-start;
+}
+/* Profile */
+ .profile-container {
+     width: 40px;
+     height: 40px;
+     margin-right: 10px;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+}
+ .profile-picture {
+     width: 100%;
+     height: 100%;
+     border-radius: 50%;
+     background-color: #ccc;
+     overflow: hidden;
+}
+ .profile-picture img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+/* Message Content */
+ .message-wrapper {
+     display: flex;
+     flex-direction: column;
+     max-width: calc(60% - 50px);
+     justify-content: flex-end;
+     position: relative;
+}
+ .message-content {
+     padding: 10px 16px;
+     border-radius: 20px;
+     max-width: 100%;
+     word-wrap: break-word;
+     margin-bottom: 5px;
+     cursor: pointer;
+}
+ .message-content:hover {
+     background-color: rgba(0, 0, 0, 0.05);
+}
+ .chat-message.mine .message-content {
+     background-color: #b3e6b3;
+     color: #333;
+}
+ .chat-message.other .message-content {
+     background-color: #f1f1f1;
+     color: #333;
+}
+/* Message Details */
+ .username {
+     font-weight: bold;
+     margin: 0 10px 5px 0;
+}
+ .chat-message.mine .username {
+     text-align: right;
+}
+ .chat-time {
+     font-size: 12px;
+     color: #888;
+     margin: 3px 0 0 10px;
+}
+ .chat-message.mine .chat-time {
+     text-align: right;
+}
+ .user-profiles {
+     margin-bottom: 20px;
+     padding: 15px;
+     background: white;
+     border-radius: 8px;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+ .user-profile {
+     display: grid;
+     grid-template-columns: auto 1fr auto auto;
+     align-items: center;
+     gap: 20px;
+     padding: 15px;
+     background: white;
+     border-radius: 8px;
+     margin-bottom: 10px;
+     position: relative;
+}
+ .profile-preview {
+     width: 40px;
+     height: 40px;
+     border-radius: 50%;
+     background-color: #ccc;
+     overflow: hidden;
+     grid-column: 1;
+}
+ .profile-preview img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+ .user-select {
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
+     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+     transition: all 0.2s ease;
+}
+ .user-select select {
+     border-color: #e2e8f0;
+     transition: all 0.2s ease;
+}
+ .user-select select:focus {
+     border-color: #3b82f6;
+     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+ #themeToggle {
+     position: fixed;
+     bottom: 20px;
+     right: 40px;
+     padding: 10px 20px;
+     background-color: #333;
+     border-radius: 8px;
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+     z-index: 1000;
+}
+ #themeToggle {
+     color: white;
+     font-weight: 500;
+}
+ #themeToggle:hover {
+     background-color: #334155;
+     transform: translateY(-2px);
+}
+ #update-log {
+     margin: 2rem 0;
+     padding: 1.5rem;
+     border-radius: 12px;
+     background: #f7fafc;
+    /* 기본 배경색 */
+     border: 1px solid #e2e8f0;
+     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+     color: #4a5568;
+    /* 기본 글자색 */
+}
+ #update-log .header {
+     background: black;
+    /* 상단 영역 검은 배경 */
+     padding: 1rem;
+    /* 상단 영역에 패딩 추가 */
+}
+ #update-log .header strong {
+     color: #d1d5db;
+    /* '업데이트 내역:' 글자색 */
+     display: block;
+}
+ #update-log ul {
+     margin-left: 1.5rem;
+     color: #4a5568;
+    /* 기본 글자색 */
+}
+ #update-log li {
+     margin: 0.5rem 0;
+}
+/* Clear Button */
+ #clear-btn {
+     padding: 10px 15px;
+     border: 1px solid #ccc;
+     background-color: #f9f9f9;
+     color: blue;
+     font-size: 14px;
+     font-weight: bold;
+}
+ #clear-btn:hover {
+     background-color: #ffffff;
+     color: #0056b3;
+}
+ #clear-btn:active {
+     background-color: #e6e6e6;
+}
+/* Profile Delete Button */
+ .profile-delete-btn {
+     position: absolute;
+     top: 10px;
+     right: 10px;
+     border: none;
+     background: none;
+     color: #ff4444;
+     font-size: 18px;
+     opacity: 0;
+     transition: opacity 0.2s;
+}
+ .user-profile:hover .profile-delete-btn {
+     opacity: 1;
+}
+/* Name Container */
+ .name-container {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     grid-column: 2;
+}
+ .display-name-input {
+     padding: 5px;
+     border: 1px solid #ddd;
+     border-radius: 4px;
+     font-size: 14px;
+}
+ .original-name {
+     color: #666;
+     font-size: 12px;
+}
+ .file-input-wrapper {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+}
+ .file-input-label {
+     padding: 8px 16px;
+     background-color: #f1f5f9;
+     border: 1px solid #e2e8f0;
+     border-radius: 6px;
+     cursor: pointer;
+     font-size: 0.9rem;
+     transition: all 0.2s ease;
+     white-space: nowrap;
+}
+ .file-input-label:hover {
+     background-color: #e2e8f0;
+}
+ input[type="file"] {
+     display: none;
+}
+/* 기존 미디어 쿼리에 추가할 내용 */
+ @media (max-width: 768px) {
+    /* 컨테이너 조정 */
+     .main-container {
+         padding: 1rem;
+         margin: 0.5rem;
+    }
+    /* 채팅 메시지 레이아웃 최적화 */
+     .message-wrapper {
+         max-width: calc(80% - 30px);
+        /* 모바일에서는 더 넓게 */
+    }
+    /* 버튼 그룹 최적화 */
+     button {
+         padding: 0.5rem 1rem;
+         font-size: 0.9rem;
+         margin: 0 0.25rem 0.5rem 0;
+         width: calc(50% - 0.5rem);
+        /* 버튼 2개씩 배치 */
+    }
+      .profile-delete-btn {
+        width: 32px; /* 원하는 정사각형 크기 */
+        height: 32px; /* 버튼의 높이를 동일하게 */
+        font-size: 1rem; /* 글씨 크기 조정 */
+        padding: 0; /* 버튼 안쪽 여백 제거 */
+        display: flex; /* 중앙 정렬을 위한 플렉스 */
+        align-items: center; /* 세로 중앙 정렬 */
+        justify-content: center; /* 가로 중앙 정렬 */
+        border-radius: 50%; /* 필요 시 버튼을 원형으로 */
+    }
+    /* 프로필 섹션 최적화 */
+     .user-profile {
+         grid-template-columns: auto 1fr;
+         gap: 10px;
+         padding: 10px;
+    }
+     .name-container {
+         flex-wrap: wrap;
+    }
+     .display-name-input {
+         width: 100%;
+         margin-bottom: 5px;
+    }
+    /* 색상 선택기와 파일 업로드 최적화 */
+     .color-picker {
+         width: 24px;
+         height: 24px;
+    }
+     .file-input-label {
+         padding: 6px 12px;
+         font-size: 0.8rem;
+    }
+    /* 텍스트 영역 최적화 */
+     textarea {
+         height: 150px;
+         font-size: 0.9rem;
+         padding: 0.75rem;
+    }
+    /* 편집 버튼 최적화 */
+     .edit-buttons {
+         flex-wrap: wrap;
+         gap: 5px;
+    }
+     .edit-buttons button {
+         width: auto;
+         flex: 1;
+         min-width: 60px;
+         padding: 4px 8px;
+    }
+    /* 테마 토글 버튼 위치 조정 */
+     #themeToggle {
+         bottom: 10px;
+         right: 10px;
+         padding: 8px 16px;
+         font-size: 0.9rem;
+    }
+    /* 스크롤바 최적화 */
+     .chat-container::-webkit-scrollbar {
+         width: 4px;
+    }
+    /* 업데이트 로그 최적화 */
+     #update-log {
+         padding: 1rem;
+         font-size: 0.9rem;
+    }
+    /* 상태 메시지 최적화 */
+     #statusMessage {
+         padding: 8px 16px;
+         font-size: 0.9rem;
+         max-width: 90%;
+         left: 50%;
+         transform: translateX(-50%);
+    }
+}
+/* 더 작은 모바일 화면을 위한 추가 최적화 */
+ @media (max-width: 480px) {
+     .message-wrapper {
+         max-width: calc(85% - 20px);
+    }
+     .profile-container {
+         width: 32px;
+         height: 32px;
+    }
+     button {
+         width: 100%;
+        /* 버튼을 한 줄에 하나씩 */
+         margin: 0 0 0.5rem 0;
+    }
+     .username {
+         font-size: 0.9rem;
+    }
+     .chat-time {
+         font-size: 0.8rem;
+    }
+}
+ 
