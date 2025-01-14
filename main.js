@@ -466,7 +466,6 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
-// createMessageHTML 함수는 원래대로 유지
 function createMessageHTML(message, index) {
     const { time, username, chatMessage } = message;
     const displayName = state.displayNames[username] || username;
@@ -492,14 +491,15 @@ function createMessageHTML(message, index) {
 function toggleDarkMode() {
     let isDarkMode = localStorage.getItem('theme-preference') === 'dark';
     isDarkMode = !isDarkMode;
-    
-    localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
-    document.body.classList.toggle('dark-mode', isDarkMode);
+
+    // 강제로 라이트 모드로 설정하여 내보낼 때 라이트 모드로 고정
+    localStorage.setItem('theme-preference', 'light');
+    document.body.classList.toggle('dark-mode', false); // 다크 모드를 해제함
     
     // 채팅 컨테이너와 현재 스크롤 위치 가져오기
     const chatContainer = document.getElementById('chat-container');
     const currentScroll = chatContainer ? chatContainer.scrollTop : 0;
-    
+
     // 즉시 메시지 다시 렌더링
     if (state.messages && state.messages.length > 0) {
         const formattedMessages = state.messages.map((message, index) => 
@@ -509,10 +509,10 @@ function toggleDarkMode() {
         state.transformedHtml = `<div>${formattedMessages}</div>`;
         if (chatContainer) {
             chatContainer.innerHTML = state.transformedHtml;
-            chatContainer.scrollTop = currentScroll;
+            chatContainer.scrollTop = currentScroll; // 스크롤 위치 유지
         }
     }
-    
+
     // 상태 메시지 표시
     const statusMessage = document.getElementById('statusMessage');
     if (statusMessage) {
@@ -531,6 +531,7 @@ function toggleDarkMode() {
         }, 2000);
     }
 }
+
 
 elements.copyBtn.addEventListener('click', () => {
     if (!state.transformedHtml) {
