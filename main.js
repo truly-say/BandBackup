@@ -488,6 +488,7 @@ function createMessageHTML(message, index) {
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
 }
 
+// 모드 전환 시 즉시 채팅 미리보기도 업데이트되도록 수정
 function toggleDarkMode() {
     let isDarkMode = localStorage.getItem('theme-preference') === 'dark';
     isDarkMode = !isDarkMode;
@@ -495,12 +496,41 @@ function toggleDarkMode() {
     localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', isDarkMode);
     
-    // 채팅 컨테이너 즉시 업데이트
+    // 채팅 컨테이너와 미리보기 모두 즉시 업데이트
     if (state.messages && state.messages.length > 0) {
         renderMessages();
+        updateChatPreview(); // 미리보기 업데이트 함수 추가
     }
     
     showStatusMessage();
+}
+
+// 미리보기 업데이트를 위한 새로운 함수
+function updateChatPreview() {
+    const previewContainer = document.querySelector('.chat-preview-container'); // 실제 미리보기 컨테이너의 클래스명으로 수정 필요
+    if (!previewContainer) return;
+
+    const isDarkMode = localStorage.getItem('theme-preference') === 'dark';
+    
+    // 미리보기의 스타일 업데이트
+    const messages = previewContainer.querySelectorAll('.message-content');
+    messages.forEach(message => {
+        const isMyMessage = message.closest('[data-is-my-message="true"]'); // 본인 메시지 여부 확인을 위한 데이터 속성 추가 필요
+
+        if (isMyMessage) {
+            message.style.backgroundColor = isDarkMode ? '#2d6a4f' : '#b3e6b3';
+            message.style.color = isDarkMode ? '#e2e8f0' : '#333';
+        } else {
+            message.style.backgroundColor = isDarkMode ? '#4c4f56' : '#f1f1f1';
+            message.style.color = isDarkMode ? '#e2e8f0' : '#333';
+        }
+    });
+
+    // 사용자 이름 색상 업데이트
+    const usernames = previewContainer.querySelectorAll('.username');
+    usernames.forEach(username => {
+        username.style.color = isDarkMode ? '#e2e8f0' : (state.userColors[username.dataset.username] || '#000');
+    });
 }
 
 elements.copyBtn.addEventListener('click', () => {
