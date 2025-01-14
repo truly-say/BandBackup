@@ -515,11 +515,17 @@ elements.copyBtn.addEventListener('click', () => {
         return;
     }
 
+    // 라이트 모드로 강제 설정하여 메시지 생성
     const exportMessages = state.messages
-        .map((msg, idx) => createMessageHTML(msg, idx, false))
+        .map((msg, idx) => {
+            const tempState = { ...state };
+            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
+            localStorage.setItem('theme-preference', 'light');
+            const messageHTML = createMessageHTML(msg, idx);
+            return messageHTML;
+        })
         .join('\n');
 
-    // 최소한의 컨테이너만 추가
     const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
 
     const exportContainer = document.createElement('textarea');
@@ -530,7 +536,7 @@ elements.copyBtn.addEventListener('click', () => {
     document.body.removeChild(exportContainer);
     alert('채팅이 복사되었습니다!');
 });
-
+    
     // Add this to your existing JavaScript code
     function initializeMultiSelect() {
         const state = {
