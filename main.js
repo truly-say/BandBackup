@@ -466,7 +466,6 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
-// createMessageHTML 함수는 원래대로 유지
 function createMessageHTML(message, index) {
     const { time, username, chatMessage } = message;
     const displayName = state.displayNames[username] || username;
@@ -483,6 +482,8 @@ function createMessageHTML(message, index) {
     const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor}`;
     const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
     const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
+    
+    // 원래대로 줄바꿈 유지
     const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
 
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
@@ -495,12 +496,44 @@ function toggleDarkMode() {
     localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', isDarkMode);
     
-    // 채팅 컨테이너 즉시 업데이트
-    if (state.messages && state.messages.length > 0) {
-        renderMessages();
-    }
+    // DOM에서 직접 메시지 스타일 업데이트
+    updateMessageStyles(isDarkMode);
     
     showStatusMessage();
+}
+
+    function updateMessageStyles(isDarkMode) {
+    const messageElements = document.querySelectorAll('.message-content');
+    const usernameElements = document.querySelectorAll('[style*="font-weight:bold"]');
+    
+    messageElements.forEach(element => {
+        const isMyMessage = element.closest('[style*="row-reverse"]') !== null;
+        
+        if (isMyMessage) {
+            if (isDarkMode) {
+                element.style.backgroundColor = '#2d6a4f';
+                element.style.color = '#e2e8f0';
+            } else {
+                element.style.backgroundColor = '#b3e6b3';
+                element.style.color = '#333';
+            }
+        } else {
+            if (isDarkMode) {
+                element.style.backgroundColor = '#4c4f56';
+                element.style.color = '#e2e8f0';
+            } else {
+                element.style.backgroundColor = '#f1f1f1';
+                element.style.color = '#333';
+            }
+        }
+    });
+
+    // 사용자 이름 색상 업데이트
+    usernameElements.forEach(element => {
+        const username = element.textContent;
+        const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
+        element.style.color = userColor;
+    });
 }
 
 elements.copyBtn.addEventListener('click', () => {
