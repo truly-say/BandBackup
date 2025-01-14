@@ -488,7 +488,6 @@ function createMessageHTML(message, index) {
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
 }
 
-// toggleDarkMode 함수 수정
 function toggleDarkMode() {
     let isDarkMode = localStorage.getItem('theme-preference') === 'dark';
     isDarkMode = !isDarkMode;
@@ -496,40 +495,12 @@ function toggleDarkMode() {
     localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', isDarkMode);
     
-    // 채팅 컨테이너와 현재 스크롤 위치 가져오기
-    const chatContainer = document.getElementById('chat-container');
-    const currentScroll = chatContainer ? chatContainer.scrollTop : 0;
-    
-    // 즉시 메시지 다시 렌더링
+    // 채팅 컨테이너 즉시 업데이트
     if (state.messages && state.messages.length > 0) {
-        const formattedMessages = state.messages.map((message, index) => 
-            createMessageHTML(message, index)
-        ).join('\n');
-        
-        state.transformedHtml = `<div>${formattedMessages}</div>`;
-        if (chatContainer) {
-            chatContainer.innerHTML = state.transformedHtml;
-            chatContainer.scrollTop = currentScroll;
-        }
+        renderMessages();
     }
     
-    // 상태 메시지 표시
-    const statusMessage = document.getElementById('statusMessage');
-    if (statusMessage) {
-        statusMessage.style.display = 'block';
-        setTimeout(() => {
-            statusMessage.style.opacity = '1';
-            statusMessage.style.bottom = '10px';
-        }, 10);
-
-        setTimeout(() => {
-            statusMessage.style.opacity = '0';
-            statusMessage.style.bottom = '-50px';
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 500);
-        }, 2000);
-    }
+    showStatusMessage();
 }
 
 elements.copyBtn.addEventListener('click', () => {
