@@ -466,14 +466,12 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
-function createMessageHTML(message, index) {
+function createMessageHTML(message, index, isExporting = false) {
     const { time, username, chatMessage } = message;
     const displayName = state.displayNames[username] || username;
     const profileImage = state.userProfileImages[username];
     const isMyMessage = state.selectedUsers.has(username);
-    // isDarkMode를 window.themeState에서 가져오도록 수정
-    const isDarkMode = window.themeState.isDark;
-
+    const isDarkMode = isExporting ? false : window.themeState.isDark;
     const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
     const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
     const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
@@ -484,7 +482,7 @@ function createMessageHTML(message, index) {
     const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
     const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
     const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
-
+    
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
 }
 
@@ -515,17 +513,7 @@ elements.copyBtn.addEventListener('click', () => {
         return;
     }
 
-    // 라이트 모드로 강제 설정하여 메시지 생성
-    const exportMessages = state.messages
-        .map((msg, idx) => {
-            const tempState = { ...state };
-            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
-            localStorage.setItem('theme-preference', 'light');
-            const messageHTML = createMessageHTML(msg, idx);
-            return messageHTML;
-        })
-        .join('\n');
-
+    const exportMessages = state.messages.map((msg, idx) => createMessageHTML(msg, idx, true)).join('\n');
     const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
 
     const exportContainer = document.createElement('textarea');
@@ -616,21 +604,13 @@ elements.copyBtn.addEventListener('click', () => {
     const chatContainer = elements.chatContainer;
     const previousScrollTop = chatContainer.scrollTop;
     const previousScrollHeight = chatContainer.scrollHeight;
-
-    const formattedMessages = state.messages.map((message, index) =>
-        createMessageHTML(message, index, selectedUser)
-    ).join('\n');
-
+    const formattedMessages = state.messages.map((message, index) => createMessageHTML(message, index, false)).join('\n');
     state.transformedHtml = `<div>${formattedMessages}</div>`;
     chatContainer.innerHTML = state.transformedHtml;
-
-    // 채팅 컨테이너 스크롤 위치 복원
-    if (state.isFirstLoad) {
-        chatContainer.scrollTop = 0;
-        state.isFirstLoad = false;
-    } else {
-        chatContainer.scrollTop = previousScrollTop + (chatContainer.scrollHeight - previousScrollHeight);
-    }
+    if (state.isFirstLoad) 
+        { chatContainer.scrollTop = 0; state.isFirstLoad = false; } 
+    else 
+        { chatContainer.scrollTop = previousScrollTop + (chatContainer.scrollHeight - previousScrollHeight); }
 }
 
     
