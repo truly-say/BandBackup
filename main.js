@@ -490,12 +490,16 @@ function createMessageHTML(message, index) {
 // toggleDarkMode 함수 수정
 function toggleDarkMode() {
     let isDarkMode = localStorage.getItem('theme-preference') === 'dark';
-    isDarkMode = !isDarkMode;
 
-    // 강제로 라이트 모드로 설정하여 내보낼 때 라이트 모드로 고정
-    localStorage.setItem('theme-preference', 'light');
-    document.body.classList.toggle('dark-mode', false); // 다크 모드를 해제함
+    // 테마 변경: 반대 상태로 전환
+    isDarkMode = !isDarkMode;
     
+    // 저장된 테마 값을 'dark' 또는 'light'로 설정
+    localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
+
+    // 'dark-mode' 클래스를 body에 추가하거나 제거
+    document.body.classList.toggle('dark-mode', isDarkMode);
+
     // 채팅 컨테이너와 현재 스크롤 위치 가져오기
     const chatContainer = document.getElementById('chat-container');
     const currentScroll = chatContainer ? chatContainer.scrollTop : 0;
