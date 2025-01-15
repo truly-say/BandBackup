@@ -482,21 +482,10 @@ function createMessageHTML(message, index) {
     const displayName = state.displayNames[username] || username;
     const profileImage = state.userProfileImages[username];
     const isMyMessage = state.selectedUsers.has(username);
-    // isDarkMode를 window.themeState에서 가져오도록 수정
-    const isDarkMode = window.themeState.isDark;
-
-    const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
-    const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
-    const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
-    const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
-    const imgStyle = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
-    const wrapperStyle = isMyMessage ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
-    const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor}`;
-    const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
-    const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
+    const userColor = state.userColors[username] || '#000';
     const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
-
-    return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
+    
+    return `<div style="display:${isMyMessage ? 'flex' : 'flex'};flex-direction:${isMyMessage ? 'row-reverse' : 'row'};justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;"><div style="width:40px;height:40px;margin:0 10px;flex-shrink:0;"><div style="width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">` : ''}</div></div><div style="display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:${isMyMessage ? 'flex-end' : 'flex-start'};"><div style="font-weight:bold;margin-bottom:5px;color:${userColor};">${escapeHtml(displayName)}</div><div class="message-content" style="padding:10px 16px;border-radius:20px;background-color:${isMyMessage ? '#b3e6b3' : '#f1f1f1'};color:#333;word-break:break-word;max-width:100%;cursor:pointer;" onclick="startEdit(${index})">${formattedMessage}</div><div style="font-size:12px;color:#888;margin-top:3px;">${escapeHtml(time)}</div></div></div>`;
 }
 
 // toggleDarkMode 함수 수정
@@ -526,17 +515,7 @@ elements.copyBtn.addEventListener('click', () => {
         return;
     }
 
-    // 라이트 모드로 강제 설정하여 메시지 생성
-    const exportMessages = state.messages
-        .map((msg, idx) => {
-            const tempState = { ...state };
-            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
-            localStorage.setItem('theme-preference', 'light');
-            const messageHTML = createMessageHTML(msg, idx);
-            return messageHTML;
-        })
-        .join('\n');
-
+    const exportMessages = state.messages.map((msg, idx) => createMessageHTML(msg, idx)).join('');
     const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
 
     const exportContainer = document.createElement('textarea');
