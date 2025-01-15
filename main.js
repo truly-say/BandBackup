@@ -477,14 +477,13 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
-function createMessageHTML(message, index) {
+function createMessageHTML(message, index, forExport = false) {
     const { time, username, chatMessage } = message;
     const displayName = state.displayNames[username] || username;
     const profileImage = state.userProfileImages[username];
     const isMyMessage = state.selectedUsers.has(username);
-    // isDarkMode를 window.themeState에서 가져오도록 수정
-    const isDarkMode = window.themeState.isDark;
-
+    // forExport가 true일 경우 항상 라이트모드로 설정
+    const isDarkMode = forExport ? false : window.themeState.isDark;
     const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
     const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
     const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
@@ -526,15 +525,8 @@ elements.copyBtn.addEventListener('click', () => {
         return;
     }
 
-    // 라이트 모드로 강제 설정하여 메시지 생성
     const exportMessages = state.messages
-        .map((msg, idx) => {
-            const tempState = { ...state };
-            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
-            localStorage.setItem('theme-preference', 'light');
-            const messageHTML = createMessageHTML(msg, idx);
-            return messageHTML;
-        })
+        .map((msg, idx) => createMessageHTML(msg, idx, true))
         .join('\n');
 
     const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
