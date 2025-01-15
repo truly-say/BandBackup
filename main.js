@@ -508,19 +508,24 @@ function createMessageHTML(message, index, forExport = false) {
 }
 
 function toggleDarkMode() {
+    // 1. 상태 변경
     window.themeState.isDark = !window.themeState.isDark;
     localStorage.setItem('theme-preference', window.themeState.isDark ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', window.themeState.isDark);
     
-    // 채팅 컨테이너 즉시 업데이트를 위해 모든 메시지 다시 렌더링
+    // 2. HTML 캐시 초기화
+    state.transformedHtml = '';
+    
+    // 3. 메시지 다시 렌더링
     if (state.messages && state.messages.length > 0) {
         const chatContainer = document.getElementById('chat-container');
+        // 새로운 HTML 생성
         const formattedMessages = state.messages
             .map((message, index) => createMessageHTML(message, index))
             .join('\n');
         
-        state.transformedHtml = `<div>${formattedMessages}</div>`;
-        chatContainer.innerHTML = state.transformedHtml;
+        // 직접 DOM 업데이트
+        chatContainer.innerHTML = formattedMessages;
     }
     
     showStatusMessage();
