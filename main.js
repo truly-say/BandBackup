@@ -4,8 +4,7 @@ import config from './config.js';
 const IMGUR_CLIENT_ID = config.IMGUR_CLIENT_ID;
 const MAX_USERS = 25;
 const LOCAL_STORAGE_KEYS = {
-    PROFILES: 'chatProfiles',
-    SELECTED_USERS: 'selectedUsers'  // 새로운 키 추가
+    PROFILES: 'chatProfiles'
 };
 
 const state = {
@@ -477,27 +476,42 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
-function createMessageHTML(message, index) {
-    const { time, username, chatMessage } = message;
-    const displayName = state.displayNames[username] || username;
-    const profileImage = state.userProfileImages[username];
-    const isMyMessage = state.selectedUsers.has(username);
-    // isDarkMode를 window.themeState에서 가져오도록 수정
-    const isDarkMode = window.themeState.isDark;
+function createMessageHTML(message, index, forExport = false) {
+        const { time, username, chatMessage } = message;
+        const displayName = state.displayNames[username] || username;
+        const profileImage = state.userProfileImages[username];
+        const isMyMessage = state.selectedUsers.has(username);
+        
+        // 내보내기 시에는 항상 라이트 모드로 처리
+        const isDarkMode = forExport ? false : window.themeState.isDark;
 
-    const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
-    const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
-    const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
-    const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
-    const imgStyle = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
-    const wrapperStyle = isMyMessage ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
-    const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor}`;
-    const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
-    const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
-    const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
+        const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
+        const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
+        const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
+        const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
+        const imgStyle = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+        const wrapperStyle = isMyMessage ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
+        const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor}`;
 
-    return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
-}
+        // 메시지 배경색과 텍스트 색상 설정
+        let contentStyle;
+        if (forExport) {
+            // 내보내기용 스타일 (항상 라이트 모드)
+            contentStyle = isMyMessage 
+                ? 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;'
+                : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;';
+        } else {
+            // 화면 표시용 스타일 (다크모드 반영)
+            contentStyle = isMyMessage 
+                ? `padding:10px 16px;border-radius:20px;background-color:${isDarkMode ? '#2d6a4f' : '#b3e6b3'};color:${isDarkMode ? '#e2e8f0' : '#333'};word-break:break-word;max-width:100%;cursor:pointer;`
+                : `padding:10px 16px;border-radius:20px;background-color:${isDarkMode ? '#4c4f56' : '#f1f1f1'};color:${isDarkMode ? '#e2e8f0' : '#333'};word-break:break-word;max-width:100%;cursor:pointer;`;
+        }
+
+        const timeStyle = `font-size:12px;color:${isDarkMode && !forExport ? '#888' : '#666'};margin-top:3px;`;
+        const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
+
+        return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
+    }
 
 // toggleDarkMode 함수 수정
 function toggleDarkMode() {
@@ -515,38 +529,33 @@ function toggleDarkMode() {
 }
     
 elements.copyBtn.addEventListener('click', () => {
-    if (!state.transformedHtml) {
-        alert('먼저 채팅을 변환해주세요!');
-        return;
-    }
+        if (!state.messages.length) {
+            alert('먼저 채팅을 변환해주세요!');
+            return;
+        }
 
-    const uniqueUsers = new Set(state.messages.map(msg => msg.username));
-    if (uniqueUsers.size >= MAX_USERS + 1) {
-        alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
-        return;
-    }
+        const uniqueUsers = new Set(state.messages.map(msg => msg.username));
+        if (uniqueUsers.size >= MAX_USERS + 1) {
+            alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
+            return;
+        }
 
-    // 라이트 모드로 강제 설정하여 메시지 생성
-    const exportMessages = state.messages
-        .map((msg, idx) => {
-            const tempState = { ...state };
-            // 내보내기용 메시지 생성 시 라이트 모드 강제 적용
-            localStorage.setItem('theme-preference', 'light');
-            const messageHTML = createMessageHTML(msg, idx);
-            return messageHTML;
-        })
-        .join('\n');
+        // 내보내기용 메시지 생성 (항상 라이트모드)
+        const exportMessages = state.messages
+            .map((message, index) => createMessageHTML(message, index, true))
+            .join('\n');
 
-    const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
+        const fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages}</div>`;
 
-    const exportContainer = document.createElement('textarea');
-    exportContainer.value = fullHtml;
-    document.body.appendChild(exportContainer);
-    exportContainer.select();
-    document.execCommand('copy');
-    document.body.removeChild(exportContainer);
-    alert('채팅이 복사되었습니다!');
-});
+        const exportContainer = document.createElement('textarea');
+        exportContainer.value = fullHtml;
+        document.body.appendChild(exportContainer);
+        exportContainer.select();
+        document.execCommand('copy');
+        document.body.removeChild(exportContainer);
+        alert('채팅이 복사되었습니다!');
+    });
+
     
     // Add this to your existing JavaScript code
     function initializeMultiSelect() {
@@ -623,26 +632,25 @@ elements.copyBtn.addEventListener('click', () => {
     state.isFirstLoad = true;
 
     function renderMessages() {
-    const selectedUser = elements.chatUserSelect.value;
-    const chatContainer = elements.chatContainer;
-    const previousScrollTop = chatContainer.scrollTop;
-    const previousScrollHeight = chatContainer.scrollHeight;
+        const chatContainer = elements.chatContainer;
+        const previousScrollTop = chatContainer.scrollTop;
+        const previousScrollHeight = chatContainer.scrollHeight;
 
-    const formattedMessages = state.messages.map((message, index) =>
-        createMessageHTML(message, index, selectedUser)
-    ).join('\n');
+        // 화면 표시용 메시지 생성 (다크모드 반영)
+        const formattedMessages = state.messages
+            .map((message, index) => createMessageHTML(message, index, false))
+            .join('\n');
 
-    state.transformedHtml = `<div>${formattedMessages}</div>`;
-    chatContainer.innerHTML = state.transformedHtml;
+        chatContainer.innerHTML = `<div>${formattedMessages}</div>`;
 
-    // 채팅 컨테이너 스크롤 위치 복원
-    if (state.isFirstLoad) {
-        chatContainer.scrollTop = 0;
-        state.isFirstLoad = false;
-    } else {
-        chatContainer.scrollTop = previousScrollTop + (chatContainer.scrollHeight - previousScrollHeight);
+        // 스크롤 위치 관리
+        if (state.isFirstLoad) {
+            chatContainer.scrollTop = 0;
+            state.isFirstLoad = false;
+        } else {
+            chatContainer.scrollTop = previousScrollTop + (chatContainer.scrollHeight - previousScrollHeight);
+        }
     }
-}
 
     
     elements.analyzeBtn.addEventListener('click', () => {
@@ -778,9 +786,11 @@ elements.convertBtn.addEventListener('click', () => {
     }
 
     // 버튼 클릭 시 메시지를 표시하도록 연결
-    document.getElementById('themeToggle').addEventListener('click', function() {
-        showStatusMessage();
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        toggleDarkMode();
+        renderMessages();
     });
+});
 
     // Utility functions
     function escapeHtml(str) {
