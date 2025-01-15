@@ -482,32 +482,45 @@ function createMessageHTML(message, index, forExport = false) {
     const displayName = state.displayNames[username] || username;
     const profileImage = state.userProfileImages[username];
     const isMyMessage = state.selectedUsers.has(username);
-    // forExport가 true일 경우 항상 라이트모드로 설정
     const isDarkMode = forExport ? false : window.themeState.isDark;
     const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
+
+    // 동적으로 메시지 스타일 생성
+    const messageStyle = isMyMessage 
+        ? (isDarkMode 
+            ? 'background-color:#2d6a4f;color:#e2e8f0;' 
+            : 'background-color:#b3e6b3;color:#333;')
+        : (isDarkMode 
+            ? 'background-color:#4c4f56;color:#e2e8f0;' 
+            : 'background-color:#f1f1f1;color:#333;');
+
     const messageContainerStyle = isMyMessage ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:12px;align-items:start;' : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:12px;align-items:start;';
     const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
     const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
     const imgStyle = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
     const wrapperStyle = isMyMessage ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
     const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor}`;
-    const contentStyle = isMyMessage ? (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#2d6a4f;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#b3e6b3;color:#333;word-break:break-word;max-width:100%;cursor:pointer;') : (isDarkMode ? 'padding:10px 16px;border-radius:20px;background-color:#4c4f56;color:#e2e8f0;word-break:break-word;max-width:100%;cursor:pointer;' : 'padding:10px 16px;border-radius:20px;background-color:#f1f1f1;color:#333;word-break:break-word;max-width:100%;cursor:pointer;');
+    const contentStyle = `padding:10px 16px;border-radius:20px;word-break:break-word;max-width:100%;cursor:pointer;${messageStyle}`;
     const timeStyle = 'font-size:12px;color:#888;margin-top:3px;';
     const formattedMessage = escapeHtml(chatMessage).replace(/\n/g, '<br>');
 
     return `<div style="${messageContainerStyle}" data-index="${index}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileImage ? `<img src="${profileImage}" alt="${escapeHtml(displayName)}" style="${imgStyle}">` : ''}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${escapeHtml(displayName)}</div><div class="message-content" style="${contentStyle}" onclick="startEdit(${index})">${formattedMessage}</div><div style="${timeStyle}">${escapeHtml(time)}</div></div></div>`;
 }
 
-// toggleDarkMode 함수 수정
 function toggleDarkMode() {
     window.themeState.isDark = !window.themeState.isDark;
-    
     localStorage.setItem('theme-preference', window.themeState.isDark ? 'dark' : 'light');
     document.body.classList.toggle('dark-mode', window.themeState.isDark);
     
-    // 채팅 컨테이너 즉시 업데이트
+    // 채팅 컨테이너 즉시 업데이트를 위해 모든 메시지 다시 렌더링
     if (state.messages && state.messages.length > 0) {
-        renderMessages();
+        const chatContainer = document.getElementById('chat-container');
+        const formattedMessages = state.messages
+            .map((message, index) => createMessageHTML(message, index))
+            .join('\n');
+        
+        state.transformedHtml = `<div>${formattedMessages}</div>`;
+        chatContainer.innerHTML = state.transformedHtml;
     }
     
     showStatusMessage();
@@ -615,19 +628,17 @@ elements.copyBtn.addEventListener('click', () => {
     state.isFirstLoad = true;
 
     function renderMessages() {
-    const selectedUser = elements.chatUserSelect.value;
     const chatContainer = elements.chatContainer;
     const previousScrollTop = chatContainer.scrollTop;
     const previousScrollHeight = chatContainer.scrollHeight;
 
-    const formattedMessages = state.messages.map((message, index) =>
-        createMessageHTML(message, index, selectedUser)
-    ).join('\n');
+    const formattedMessages = state.messages
+        .map((message, index) => createMessageHTML(message, index))
+        .join('\n');
 
     state.transformedHtml = `<div>${formattedMessages}</div>`;
     chatContainer.innerHTML = state.transformedHtml;
 
-    // 채팅 컨테이너 스크롤 위치 복원
     if (state.isFirstLoad) {
         chatContainer.scrollTop = 0;
         state.isFirstLoad = false;
