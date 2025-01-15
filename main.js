@@ -4,7 +4,8 @@ import config from './config.js';
 const IMGUR_CLIENT_ID = config.IMGUR_CLIENT_ID;
 const MAX_USERS = 25;
 const LOCAL_STORAGE_KEYS = {
-    PROFILES: 'chatProfiles'
+    PROFILES: 'chatProfiles',
+    SELECTED_USERS: 'selectedUsers'  // 새로운 키 추가
 };
 
 const state = {
@@ -404,31 +405,41 @@ window.startEdit = startEdit;
 
     // Storage management
     function saveProfiles() {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEYS.PROFILES, JSON.stringify({
-                displayNames: state.displayNames,
-                userProfileImages: state.userProfileImages,
-                userColors: state.userColors // Add this
-            }));
-        } catch (error) {
-            console.error('Error saving profiles:', error);
-        }
+    try {
+        // 프로필 정보 저장
+        localStorage.setItem(LOCAL_STORAGE_KEYS.PROFILES, JSON.stringify({
+            displayNames: state.displayNames,
+            userProfileImages: state.userProfileImages,
+            userColors: state.userColors
+        }));
+        
+        // 선택된 사용자 저장
+        localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_USERS, 
+            JSON.stringify(Array.from(state.selectedUsers)));
+    } catch (error) {
+        console.error('Error saving profiles:', error);
     }
+}
 
-    function loadProfiles() {
-        try {
-            const savedProfiles = localStorage.getItem(LOCAL_STORAGE_KEYS.PROFILES);
-            if (savedProfiles) {
-                const profiles = JSON.parse(savedProfiles);
-                state.displayNames = profiles.displayNames || {};
-                state.userProfileImages = profiles.userProfileImages || {};
-                state.userColors = profiles.userColors || {}; // Add this
-            }
-        } catch (error) {
-            console.error('Error loading profiles:', error);
+   function loadProfiles() {
+    try {
+        const savedProfiles = localStorage.getItem(LOCAL_STORAGE_KEYS.PROFILES);
+        if (savedProfiles) {
+            const profiles = JSON.parse(savedProfiles);
+            state.displayNames = profiles.displayNames || {};
+            state.userProfileImages = profiles.userProfileImages || {};
+            state.userColors = profiles.userColors || {};
         }
-    }
 
+        // 저장된 선택 사용자 불러오기
+        const savedSelectedUsers = localStorage.getItem(LOCAL_STORAGE_KEYS.SELECTED_USERS);
+        if (savedSelectedUsers) {
+            state.selectedUsers = new Set(JSON.parse(savedSelectedUsers));
+        }
+    } catch (error) {
+        console.error('Error loading profiles:', error);
+    }
+}
     // UI Updates
     function updateProfileUI(username) {
         const usernameElement = document.getElementById(`username-${username}`);
@@ -635,69 +646,71 @@ elements.copyBtn.addEventListener('click', () => {
 
     
     elements.analyzeBtn.addEventListener('click', () => {
-        const chatData = elements.inputText.value.trim();
-        if (!chatData) {
-            alert('채팅 데이터를 입력해주세요!');
-            return;
-        }
+    const chatData = elements.inputText.value.trim();
+    if (!chatData) {
+        alert('채팅 데이터를 입력해주세요!');
+        return;
+    }
 
-        // 메시지 파싱
-        state.messages = parseMessages(chatData);
-        
-        // 유니크 유저네임 가져오기
-        const usernames = new Set(state.messages.map(msg => msg.username));
+    // 메시지 파싱
+    state.messages = parseMessages(chatData);
+    
+    // 유니크 유저네임 가져오기
+    const usernames = new Set(state.messages.map(msg => msg.username));
 
-        if (usernames.size > MAX_USERS) {
-            alert(`대화 참여자가 ${usernames.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
-            elements.userProfiles.innerHTML = '';
-            elements.userProfiles.style.display = 'none';
-            elements.userSelect.innerHTML = '';
-            elements.userSelect.style.display = 'none';
-            return;
-        }
+    if (usernames.size > MAX_USERS) {
+        alert(`대화 참여자가 ${usernames.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
+        elements.userProfiles.innerHTML = '';
+        elements.userProfiles.style.display = 'none';
+        elements.userSelect.innerHTML = '';
+        elements.userSelect.style.display = 'none';
+        return;
+    }
 
-        // Create profile inputs
-        elements.userProfiles.innerHTML = '<h3 style="margin-bottom: 15px;">채팅 참여자 프로필 설정</h3>';
-        Array.from(usernames).forEach(username => {
-            elements.userProfiles.appendChild(createProfileInput(username));
-        });
-        elements.userProfiles.style.display = 'block';
-
-        // Update user selection UI
-        elements.userSelect.innerHTML = `
-            <div class="user-select-container">
-                <h3>내 메시지로 표시할 사용자</h3>
-                <div id="user-checkboxes" class="user-checkboxes"></div>
-            </div>
-        `;
-
-        const checkboxContainer = document.getElementById('user-checkboxes');
-        Array.from(usernames).forEach(username => {
-            const label = document.createElement('label');
-            label.className = 'user-checkbox-label';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = username;
-            checkbox.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    state.selectedUsers.add(username);
-                } else {
-                    state.selectedUsers.delete(username);
-                }
-                renderMessages();
-            });
-
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(state.displayNames[username] || username));
-            checkboxContainer.appendChild(label);
-        });
-
-        elements.userSelect.style.display = 'block';
-
-        // 메시지 렌더링
-        renderMessages();
+    // Create profile inputs
+    elements.userProfiles.innerHTML = '<h3 style="margin-bottom: 15px;">채팅 참여자 프로필 설정</h3>';
+    Array.from(usernames).forEach(username => {
+        elements.userProfiles.appendChild(createProfileInput(username));
     });
+    elements.userProfiles.style.display = 'block';
+
+    // Update user selection UI
+    elements.userSelect.innerHTML = `
+        <div class="user-select-container">
+            <h3>내 메시지로 표시할 사용자</h3>
+            <div id="user-checkboxes" class="user-checkboxes"></div>
+        </div>
+    `;
+
+    const checkboxContainer = document.getElementById('user-checkboxes');
+    Array.from(usernames).forEach(username => {
+        const label = document.createElement('label');
+        label.className = 'user-checkbox-label';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = username;
+        // 저장된 선택 상태 반영
+        checkbox.checked = state.selectedUsers.has(username);
+        
+        checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                state.selectedUsers.add(username);
+            } else {
+                state.selectedUsers.delete(username);
+            }
+            saveProfiles(); // 선택 상태가 변경될 때마다 저장
+            renderMessages();
+        });
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(state.displayNames[username] || username));
+        checkboxContainer.appendChild(label);
+    });
+
+    elements.userSelect.style.display = 'block';
+    renderMessages();
+});
 
 
 elements.convertBtn.addEventListener('click', () => {
