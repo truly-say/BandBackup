@@ -1,0 +1,18 @@
+
+/* 모든 입력 요소와 버튼 스타일 */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+}
+
+textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+}
+
+/* 반응형 폼 요소 */
+@media (max-width: 768px) {
+  .btn {
+    width: 100%;
+  }
+}
