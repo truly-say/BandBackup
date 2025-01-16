@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #e6f3ff 200px, #ffffff 200px, #ffffff 100%);
+    background: linear-gradient(180deg, #f0f7e6 200px, #ffffff 200px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
@@ -26,7 +26,7 @@ body {
 }
 
 #header-container {
-    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
+     background: linear-gradient(135deg, #9bc167 0%, #7aa042 100%);
     width: 100%;
     padding: 1.5rem 0;
 }
@@ -147,9 +147,9 @@ textarea {
 }
 
 textarea:focus {
-    border-color: #4a90e2;
+    border-color: #7aa042;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    box-shadow: 0 0 0 3px rgba(122, 160, 66, 0.1);
     background-color: #ffffff;
 }
  .edit-textarea {
@@ -188,13 +188,13 @@ button {
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    background-color: #4a90e2;
+    background-color: #7aa042;
     color: white;
     transition: all 0.2s ease;
 }
 
 button:hover {
-    background-color: #357abd;
+    background-color: #8fb355;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -339,9 +339,9 @@ button:hover {
 }
 
 .user-select select:focus {
-    border-color: #4a90e2;
+    border-color: #7aa042;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+     box-shadow: 0 0 0 3px rgba(122, 160, 66, 0.1);
     background-color: #ffffff;
 }
 
@@ -349,7 +349,7 @@ button:hover {
     position: fixed;
     bottom: 20px;
     right: 40px;
-    background-color: #4a90e2;
+    background-color: #7aa042;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     color: white;
     border-radius: 50px;
@@ -357,7 +357,7 @@ button:hover {
 }
 
 #themeToggle:hover {
-    background-color: #357abd;
+    background-color: #8fb355;
 }
 #update-log {
     margin: 2rem 0;
@@ -369,7 +369,7 @@ button:hover {
 
 .update-header {
     padding: 1.25rem;
-    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
+    background: linear-gradient(135deg, #9bc167 0%, #7aa042 100%);
     color: #ffffff;
     cursor: pointer;
     display: flex;
@@ -379,7 +379,7 @@ button:hover {
 }
 
 .update-header:hover {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    background: linear-gradient(135deg, #7aa042 0%, #8fb355 100%);
 }
 
  #update-log .header strong {
