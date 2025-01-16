@@ -449,11 +449,24 @@ body {
 }
 /* 기존 미디어 쿼리에 추가할 내용 */
  @media (max-width: 768px) {
-    /* 컨테이너 조정 */
-     .main-container {
-         padding: 1rem;
-         margin: 0.5rem;
+    .main-container {
+        margin: 1rem;
+        padding: 1.5rem;
     }
+ #header-container {
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+        padding: 1.5rem 0;
+    }
+
+    #title {
+        font-size: 2rem;
+    }
+
+    #contact-info {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+     
     /* 채팅 메시지 레이아웃 최적화 */
      .message-wrapper {
          max-width: calc(80% - 30px);
@@ -516,15 +529,22 @@ body {
          min-width: 60px;
          padding: 4px 8px;
     }
+     #update-log {
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+
+     
     /#themeToggle {
     position: fixed;
-    bottom: 2rem;
-    right: 2.5rem;
-    padding: 0.75rem 1.5rem;
+     bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.6rem 1.2rem;
     background-color: #1a1a1a;
     color: #ffffff;
     border-radius: 12px;
     font-weight: 500;
+        font-size: 0.9rem;
     box-shadow: 
         0 4px 12px rgba(0, 0, 0, 0.15),
         0 2px 4px rgba(0, 0, 0, 0.1);
@@ -559,6 +579,29 @@ body {
 }
 /* 더 작은 모바일 화면을 위한 추가 최적화 */
  @media (max-width: 480px) {
+     .main-container {
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 16px;
+    }
+
+    #header-container {
+        margin: -1rem -1rem 1rem -1rem;
+        padding: 1rem 0;
+    }
+
+     #title {
+        font-size: 1.75rem;
+    }
+
+    #update-log {
+        padding: 1rem;
+    }
+
+    #update-log .header {
+        margin: -1rem -1rem 1rem -1rem;
+        padding: 1rem;
+    }
      .message-wrapper {
          max-width: calc(85% - 20px);
     }
