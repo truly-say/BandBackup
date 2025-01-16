@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #f0f7e6 200px, #ffffff 200px, #ffffff 100%);
+    background: linear-gradient(180deg, #e6f7f2 200px, #ffffff 200px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
@@ -26,12 +26,12 @@ body {
 }
 
 #header-container {
-     background: linear-gradient(135deg, #9bc167 0%, #7aa042 100%);
+    background: linear-gradient(135deg, #81F7BE 0%, #5ee7a7 100%);
     width: 100%;
     padding: 1.5rem 0;
 }
 #title, #contact-info {
-    color: #ffffff;
+    color: #1a1a1a;
     text-align: center;
     margin: 0;
     padding: 0.5rem 0;
@@ -147,9 +147,9 @@ textarea {
 }
 
 textarea:focus {
-    border-color: #7aa042;
+    border-color: #5ee7a7;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(122, 160, 66, 0.1);
+    box-shadow: 0 0 0 3px rgba(94, 231, 167, 0.1);
     background-color: #ffffff;
 }
  .edit-textarea {
@@ -188,13 +188,13 @@ button {
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    background-color: #7aa042;
-    color: white;
+    background-color: #5ee7a7;
+    color: #1a1a1a;
     transition: all 0.2s ease;
 }
 
 button:hover {
-    background-color: #8fb355;
+    background-color: #81F7BE;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -339,9 +339,9 @@ button:hover {
 }
 
 .user-select select:focus {
-    border-color: #7aa042;
+    border-color: #5ee7a7;
     outline: none;
-     box-shadow: 0 0 0 3px rgba(122, 160, 66, 0.1);
+    box-shadow: 0 0 0 3px rgba(94, 231, 167, 0.1);
     background-color: #ffffff;
 }
 
@@ -349,15 +349,15 @@ button:hover {
     position: fixed;
     bottom: 20px;
     right: 40px;
-    background-color: #7aa042;
+    background-color: #5ee7a7;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: white;
+    color: #1a1a1a;
     border-radius: 50px;
     padding: 0.75rem 1.5rem;
 }
 
 #themeToggle:hover {
-    background-color: #8fb355;
+    background-color: #81F7BE;
 }
 #update-log {
     margin: 2rem 0;
@@ -369,8 +369,8 @@ button:hover {
 
 .update-header {
     padding: 1.25rem;
-    background: linear-gradient(135deg, #9bc167 0%, #7aa042 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #81F7BE 0%, #5ee7a7 100%);
+    color: #1a1a1a;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -379,7 +379,7 @@ button:hover {
 }
 
 .update-header:hover {
-    background: linear-gradient(135deg, #7aa042 0%, #8fb355 100%);
+    background: linear-gradient(135deg, #5ee7a7 0%, #81F7BE 100%);
 }
 
  #update-log .header strong {
@@ -417,33 +417,24 @@ button:hover {
     content: "•";
     position: absolute;
     left: 0;
-    color: #0000FF;
+    color: #5ee7a7;  /* 민트색으로 변경 */
 }
 
-/* Dark mode */
-body.dark #update-log {
-    background: #1a1a1a;
-    border-color: #333;
-}
-
-body.dark .update-content {
-    color: #e2e8f0;
-}
 /* Clear Button */
  #clear-btn {
      padding: 10px 15px;
      border: 1px solid #ccc;
      background-color: #f9f9f9;
-     color: blue;
+     color: #5ee7a7;
      font-size: 14px;
      font-weight: bold;
 }
  #clear-btn:hover {
      background-color: #ffffff;
-     color: #0056b3;
+      color: #81F7BE; 
 }
  #clear-btn:active {
-     background-color: #e6e6e6;
+    background-color: #e6e6e6;
 }
 /* Profile Delete Button */
  .profile-delete-btn {
