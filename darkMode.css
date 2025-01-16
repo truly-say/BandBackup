@@ -14,10 +14,6 @@
     z-index: 9999;
 }
 
-body.dark #title,
-body.dark #contact-info {
-    color: black !important;
-}
 
 body.dark #statusMessage {
     background-color: rgba(30, 41, 59, 0.9);
