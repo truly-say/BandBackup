@@ -25,7 +25,7 @@ body {
     overflow: hidden;
 }
 #header-container {
-    background: #000000;
+    background: linear-gradient(180deg, #000000 0%, #000033 100%);
     width: 100%;
     padding: 1rem 0; /* 헤더 패딩 축소 */
 }
