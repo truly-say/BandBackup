@@ -362,7 +362,7 @@ button:hover {
 
 .update-header {
     padding: 1rem;
-    background: #000000;
+    background: linear-gradient(180deg, #000000 0%, #000033 100%); /* 검정에서 진한 파란색으로 그라데이션 */
     color: #ffffff;
     cursor: pointer;
     display: flex;
@@ -372,7 +372,7 @@ button:hover {
 }
 
 .update-header:hover {
-    background: #0000FF;
+    background: linear-gradient(180deg, #000033 0%, #0000FF 100%);
 }
 
  #update-log .header strong {
@@ -386,11 +386,13 @@ button:hover {
 
 .update-content {
     padding: 1rem;
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
 }
 
 .update-content.show {
-    display: block;
+    max-height: 500px; /* 충분히 큰 값으로 설정 */
 }
 
 .update-content ul {
@@ -409,6 +411,16 @@ button:hover {
     position: absolute;
     left: 0;
     color: #0000FF;
+}
+
+/* Dark mode */
+body.dark #update-log {
+    background: #1a1a1a;
+    border-color: #333;
+}
+
+body.dark .update-content {
+    color: #e2e8f0;
 }
 /* Clear Button */
  #clear-btn {
