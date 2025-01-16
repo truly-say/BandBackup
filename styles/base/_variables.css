@@ -20,22 +20,6 @@
   --primary-bg: #1a1a1a;
   --secondary-bg: #2d2d2d;
   --primary-text: #e2e8f0;
-  
-  /* Dark Mode Styles */
-#statusMessage {
-    position: fixed;
-    bottom: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(30, 41, 59, 0.9); /* Dark mode background */
-    color: #e2e8f0;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    opacity: 0;
-    transition: opacity 0.3s ease, bottom 0.3s ease;
-    z-index: 9999;
-}
 
 body.dark #title,
 body.dark #contact-info {
