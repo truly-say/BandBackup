@@ -34,10 +34,10 @@ body.dark {
 }
 
 body.dark .main-container {
-    background: rgba(30, 30, 30, 0.98);
+    background: rgba(17, 24, 39, 0.98);
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 10px 20px rgba(0, 0, 0, 0.2);
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 body.dark #title {
@@ -59,9 +59,9 @@ body.dark #statusMessage {
 }
 
 body.dark #footer {
-    background-color: #1a1a1a;
-    color: #a0aec0;
-    border-top: 1px solid #333;
+    background-color: #111827;
+    color: #9ca3af;
+    border-top-color: #374151;
 }
 
 body.dark textarea {
@@ -164,20 +164,19 @@ body.dark .user-select select option {
 
 
 body.dark #update-log {
-    background: #2d2d2d;
-    border-color: #404040;
-    color: #e2e8f0;
+    background: #1f2937;
+    border-color: #374151;
 }
 
 body.dark #update-log .header {
-    background: #000;
-}
-
-body.dark #update-log .header strong {
-    color: #e2e8f0;
+    background: #111827;
 }
 
 body.dark #update-log ul {
+    color: #e2e8f0;
+}
+
+body.dark #update-log .header strong {
     color: #e2e8f0;
 }
 
