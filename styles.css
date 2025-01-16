@@ -1,5 +1,4 @@
-/* Base Styles */
- * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,12 +6,13 @@
 
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #000000 200px, #ffffff 200px, #ffffff 100%);
-    color: #1a1a1a;
+    background: linear-gradient(180deg, #e6f3ff 200px, #ffffff 200px, #ffffff 100%);
+    color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
     overflow-y: auto;
 }
+
 /* Main Container */
 .main-container {
     width: 100%;
@@ -20,33 +20,35 @@ body {
     margin: 2rem auto;
     padding: 2rem;
     background: rgba(255, 255, 255, 0.98);
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
     overflow: hidden;
 }
+
 #header-container {
-    background: linear-gradient(180deg, #000000 0%, #000033 100%);
+    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
     width: 100%;
-    padding: 1rem 0; /* 헤더 패딩 축소 */
+    padding: 1.5rem 0;
 }
 #title, #contact-info {
     color: #ffffff;
     text-align: center;
     margin: 0;
-    padding: 0.5rem 0; /* 패딩 축소 */
+    padding: 0.5rem 0;
 }
 
 #title {
     font-size: 2.5rem;
     font-weight: 800;
     letter-spacing: -0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #contact-info {
     font-size: 1.1rem;
-    line-height: 1.6; /* 줄간격 축소 */
-    opacity: 0.9;
-    margin-bottom: 0.5rem; /* 하단 여백 추가 */
+    line-height: 1.6;
+    opacity: 0.95;
+    margin-bottom: 0.5rem;
 }
  #separator{
      border: none; /* border-top: none으로 설정 */
@@ -131,24 +133,25 @@ body {
 /* Input Elements */
 textarea {
     width: 100%;
-    height: 300px; /* 높이 증가 */
+    height: 300px;
     padding: 1rem;
     border: 2px solid #e0e0e0;
-    border-radius: 12px;
+    border-radius: 16px;
     font-family: inherit;
     font-size: 0.95rem;
     resize: vertical;
     transition: all 0.2s ease;
     margin-bottom: 1.5rem;
-    min-height: 200px; /* 최소 높이 설정 */
+    min-height: 200px;
+    background-color: #fafafa;
 }
 
 textarea:focus {
-    border-color: #0000FF;
+    border-color: #4a90e2;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    background-color: #ffffff;
 }
-
  .edit-textarea {
      width: 100%;
      min-height: 50px;
@@ -181,18 +184,19 @@ textarea:focus {
 button {
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    background-color: #0000FF;
+    background-color: #4a90e2;
     color: white;
     transition: all 0.2s ease;
 }
 
 button:hover {
-    background-color: #0000cc;
+    background-color: #357abd;
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 /* Chat Messages */
  .chat-message {
@@ -310,10 +314,10 @@ button:hover {
  .user-select {
     background: #ffffff;
     border: 1px solid #e0e0e0;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .user-select label {
@@ -327,42 +331,45 @@ button:hover {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background-color: #ffffff;
-    color: #1a1a1a;
+    border-radius: 12px;
+    background-color: #fafafa;
+    color: #2c3e50;
     font-size: 1rem;
     transition: all 0.2s ease;
 }
 
 .user-select select:focus {
-    border-color: #0000FF;
+    border-color: #4a90e2;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    background-color: #ffffff;
 }
 
  #themeToggle {
     position: fixed;
     bottom: 20px;
     right: 40px;
-    background-color: #000000;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    background-color: #4a90e2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     color: white;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
 }
 
 #themeToggle:hover {
-    background-color: #0000FF;
+    background-color: #357abd;
 }
- #update-log {
+#update-log {
     margin: 2rem 0;
-    border-radius: 12px;
-    background: #f7fafc;
+    border-radius: 16px;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     overflow: hidden;
 }
 
 .update-header {
-    padding: 1rem;
-    background: linear-gradient(180deg, #000000 0%, #000033 100%); /* 검정에서 진한 파란색으로 그라데이션 */
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
     color: #ffffff;
     cursor: pointer;
     display: flex;
@@ -372,7 +379,7 @@ button:hover {
 }
 
 .update-header:hover {
-    background: linear-gradient(180deg, #000033 0%, #0000FF 100%);
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
 }
 
  #update-log .header strong {
@@ -493,10 +500,10 @@ body.dark .update-content {
 }
 /* 기존 미디어 쿼리에 추가할 내용 */
  @media (max-width: 768px) {
-    /* 컨테이너 조정 */
      .main-container {
-         padding: 1rem;
-         margin: 1rem auto;
+        padding: 1rem;
+        margin: 1rem auto;
+        border-radius: 20px;
     }
       
     /* 채팅 메시지 레이아웃 최적화 */
@@ -504,13 +511,17 @@ body.dark .update-content {
          max-width: calc(80% - 30px);
         /* 모바일에서는 더 넓게 */
     }
-    /* 버튼 그룹 최적화 */
-     button {
-         padding: 0.5rem 1rem;
-         font-size: 0.9rem;
-         margin: 0 0.25rem 0.5rem 0;
-         width: calc(50% - 0.5rem);
-        /* 버튼 2개씩 배치 */
+    #title {
+        font-size: 2rem;
+    }
+    
+    button {
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+    }
+
+     .message-content {
+        padding: 10px 16px;
     }
       .profile-delete-btn {
         width: 32px; /* 원하는 정사각형 크기 */
@@ -591,7 +602,9 @@ body.dark .update-content {
       #title {
         font-size: 1.75rem;
     }
-
+ .main-container {
+        border-radius: 16px;
+    }
     #contact-info {
         font-size: 1rem;
     }
@@ -603,10 +616,9 @@ body.dark .update-content {
          width: 32px;
          height: 32px;
     }
-     button {
-         width: 100%;
-        /* 버튼을 한 줄에 하나씩 */
-         margin: 0 0 0.5rem 0;
+    button {
+        width: 100%;
+        margin-bottom: 0.5rem;
     }
      .username {
          font-size: 0.9rem;
