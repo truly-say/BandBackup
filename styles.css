@@ -17,7 +17,7 @@ body {
 .main-container {
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 2rem auto;
     padding: 2rem;
     background: rgba(255, 255, 255, 0.98);
     border-radius: 16px;
@@ -456,7 +456,7 @@ button:hover {
     /* 컨테이너 조정 */
      .main-container {
          padding: 1rem;
-         margin: 0.5rem;
+         margin: 1rem auto;
     }
       
     /* 채팅 메시지 레이아웃 최적화 */
