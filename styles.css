@@ -25,10 +25,9 @@ body {
     overflow: hidden;
 }
 
-/* Header Section */
 #header-container {
     background: linear-gradient(135deg, #72F033 0%, #06A31C 100%);
-    margin: -2.5rem -2.5rem 2rem -2.5rem;
+    margin: 0 0 2rem 0;  /* 음수 마진을 없애거나 적절히 조정 */
     padding: 2rem 0;
     position: relative;
 }
