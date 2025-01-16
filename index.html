@@ -29,14 +29,20 @@
             <button id="clear-btn">초기화</button>
         </div>
         <div id="update-log">
-            <ul>
-                <li><strong>25.01.18 19:00~20:00 프로그램 점검</strong></li>
-                <li>채팅 내에서 줄바꿈 시 내용이 누락되는 현상 해결</li>
-                <li>채팅 미리보기에서 편집이 되지 않는 문제 해결</li>
-                <li>초기화 전까지 내 메세지로 표현되는 사용자 기억</li>
-                <li>다크 모드에서 채팅 색상이 그대로인 문제 수정 중</li>
-            </ul>
-        </div>
+    <div class="update-header" onclick="toggleUpdateLog()">
+        <span class="toggle-icon">▼</span>
+        <strong>업데이트 내역</strong>
+    </div>
+    <div class="update-content">
+        <ul>
+            <li><strong>25.01.18 19:00~20:00 프로그램 점검</strong></li>
+            <li>채팅 내에서 줄바꿈 시 내용이 누락되는 현상 해결</li>
+            <li>채팅 미리보기에서 편집이 되지 않는 문제 해결</li>
+            <li>초기화 전까지 내 메세지로 표현되는 사용자 기억</li>
+            <li>다크 모드에서 채팅 색상이 그대로인 문제 수정 중</li>
+        </ul>
+    </div>
+</div>
         <div id="user-select" class="user-select" style="display: none;">
             <h3>내 메시지로 표시할 사용자:</h3>
             <select id="chat-user">
