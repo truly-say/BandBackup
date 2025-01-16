@@ -477,6 +477,29 @@ body:not(.dark) .chat-message .username {
     isDark: localStorage.getItem('theme-preference') === 'dark'
 };
 
+    function toggleUpdateLog() {
+    const content = document.querySelector('.update-content');
+    const icon = document.querySelector('.toggle-icon');
+    
+    content.classList.toggle('show');
+    icon.style.transform = content.classList.contains('show') ? 'rotate(-180deg)' : 'rotate(0deg)';
+    
+    // 토글 상태를 localStorage에 저장
+    localStorage.setItem('updateLogOpen', content.classList.contains('show'));
+}
+
+// 페이지 로드 시 이전 상태 복원
+document.addEventListener('DOMContentLoaded', function() {
+    const content = document.querySelector('.update-content');
+    const icon = document.querySelector('.toggle-icon');
+    const wasOpen = localStorage.getItem('updateLogOpen') === 'true';
+    
+    if (wasOpen) {
+        content.classList.add('show');
+        icon.style.transform = 'rotate(-180deg)';
+    }
+});
+
 function createMessageHTML(message, index, forExport = false) {
     const { time, username, chatMessage } = message;
     const displayName = state.displayNames[username] || username;
