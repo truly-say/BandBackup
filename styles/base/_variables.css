@@ -1,0 +1,24 @@
+:root {
+  /* Light theme variables */
+  --primary-bg: #ffffff;
+  --secondary-bg: #f5f7fa;
+  --primary-text: #2d3748;
+  --accent-color: #72F033;
+  --accent-dark: #06A31C;
+  
+  /* Spacing & sizing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary-bg: #1a1a1a;
+  --secondary-bg: #2d2d2d;
+  --primary-text: #e2e8f0;
+  /* ... 기타 다크 모드 변수 ... */
+}
