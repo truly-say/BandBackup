@@ -18,6 +18,31 @@ const state = {
     isFirstLoad: true
 };
 
+// DOM이 완전히 로드된 후 실행되도록 이벤트 리스너를 추가
+document.addEventListener('DOMContentLoaded', () => {
+    // 전역 스코프에 함수 추가
+    window.toggleUpdateLog = function() {
+        const content = document.querySelector('.update-content');
+        const icon = document.querySelector('.toggle-icon');
+        
+        content.classList.toggle('show');
+        icon.style.transform = content.classList.contains('show') ? 'rotate(-180deg)' : 'rotate(0deg)';
+        
+        // 토글 상태를 localStorage에 저장
+        localStorage.setItem('updateLogOpen', content.classList.contains('show'));
+    }
+
+    // 페이지 로드 시 이전 상태 복원
+    const content = document.querySelector('.update-content');
+    const icon = document.querySelector('.toggle-icon');
+    const wasOpen = localStorage.getItem('updateLogOpen') === 'true';
+    
+    if (wasOpen) {
+        content.classList.add('show');
+        icon.style.transform = 'rotate(-180deg)';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // elements 객체는 여기서 정의
     const elements = {
