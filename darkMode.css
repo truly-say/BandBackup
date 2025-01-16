@@ -29,15 +29,18 @@ body:not(.dark) #statusMessage {
 }
 
 body.dark {
-    background: linear-gradient(180deg, #000000 200px, #1a1a1a 200px, #2d2d2d 100%);
-    color: #e2e8f0;
+    background: linear-gradient(180deg, #000000 200px, #1a1a1a 200px, #1a1a1a 100%);
+    color: #ffffff;
 }
 
 body.dark .main-container {
-    background: rgba(30, 30, 30, 0.98);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 10px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(26, 26, 26, 0.98);
+}
+
+body.dark textarea {
+    background: #2a2a2a;
+    border-color: #404040;
+    color: #ffffff;
 }
 
 body.dark #title {
@@ -59,22 +62,21 @@ body.dark #statusMessage {
 }
 
 body.dark #footer {
-    background-color: #1a1a1a;
+     background-color: #1a1a1a;
     color: #a0aec0;
     border-top: 1px solid #333;
 }
 
-body.dark textarea {
-    background: #2d2d2d;
-    border-color: #404040;
-    color: #e2e8f0;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
+
 
 body.dark .edit-textarea {
     background: #2d2d2d;
     border-color: #3498db;
     color: #e2e8f0;
+}
+body.dark textarea:focus {
+    border-color: #0000FF;
+    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.2);
 }
 
 body.dark button {
