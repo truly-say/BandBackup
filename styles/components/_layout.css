@@ -1,1 +1,22 @@
 
+/* 모든 레이아웃 관련 스타일 */
+.main-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  background: linear-gradient(180deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+}
+
+.footer {
+  margin-top: var(--spacing-lg);
+}
+
+/* 반응형 레이아웃 */
+@media (max-width: 768px) {
+  .main-container {
+    padding: var(--spacing-sm);
+  }
+}
