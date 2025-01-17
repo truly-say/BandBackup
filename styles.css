@@ -7,7 +7,7 @@
 /* Base Styles */
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #e6f3ff 100px, #ffffff 100px, #ffffff 100%);
+    background: linear-gradient(180deg, #e6f3ff 50px, #ffffff 50px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
