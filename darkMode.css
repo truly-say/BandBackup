@@ -106,23 +106,30 @@ body.dark .chat-message .username {
 }
 
 body.dark .chat-message.mine .message-content {
-    background-color: #3b4d61;
-    color: #e2e8f0;
-}
-
-body.dark .chat-message.other .message-content {
     background-color: #2d3748;
     color: #e2e8f0;
 }
 
-body.dark .message-content:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+body.dark .chat-message.other .message-content {
+    background-color: #1a1f2e;
+    color: #e2e8f0;
+}
+
+/* Message hover states */
+body.dark .chat-message.mine .message-content:hover {
+    background-color: #3b4d61;
+}
+
+body.dark .chat-message.other .message-content:hover {
+    background-color: #2d3748;
 }
 
 body.dark .chat-time {
-    color: #a0aec0;
+    color: #9ca3af;
 }
-
+body.dark .username {
+    color: #e2e8f0;
+}
 body.dark .user-profiles {
     background: #2d2d2d;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -134,11 +141,15 @@ body.dark .user-profile {
 
 /* 다크 모드에서 내 메시지로 표시할 사용자 */
 body.dark .user-select {
-    background-color: #2d2d2d;
+    background: #1a1f2e;
+    border-color: #2d3748;
     border: 1px solid #444;
     padding: 16px;
     border-radius: 8px;
     margin-bottom: 15px;
+}
+body.dark .user-select h3 {
+    color: #60a5fa;
 }
 
 body.dark .user-select label {
@@ -150,40 +161,39 @@ body.dark .user-select label {
 }
 
 body.dark .user-select select {
-    background-color: #3a3a3a;
+    background-color: #2d3748;
     color: #e2e8f0;
+    border-color: #3b4d61;
     border: 1px solid #404040;
     border-radius: 6px;
     padding: 12px;
     width: 100%;
     font-size: 14px;
 }
-
-body.dark .user-select select option {
-    background-color: #3a3a3a;
-    color: #e2e8f0;
+body.dark .user-select select:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
 body.dark .user-select select option {
-    background-color: #3a3a3a;
+    background-color: #2d3748;
     color: #e2e8f0;
     padding: 8px;
 }
 
-
 body.dark #update-log {
-    background: #1a1a1a;
-    border-color: #333;
+    background: #1a1f2e;
+    border-color: #2d3748;
 }
 
 body.dark .update-content {
     color: #e2e8f0;
 }
 
-body.dark #update-log .header {
-    background: #000;
+body.dark .update-header {
+    background: linear-gradient(135deg, #3b4d61 0%, #2d3748 100%);
+    color: #e2e8f0;
 }
-
 body.dark #update-log .header strong {
     color: #e2e8f0;
 }
@@ -191,6 +201,18 @@ body.dark #update-log .header strong {
 body.dark #update-log ul {
     color: #e2e8f0;
 }
+body.dark .update-content.show {
+    background: #1a1f2e;
+}
+
+body.dark .update-content li {
+    color: #e2e8f0;
+}
+
+body.dark .update-content li::before {
+    color: #60a5fa;
+}
+
 
 body.dark #clear-btn {
     background-color: #2d2d2d;
