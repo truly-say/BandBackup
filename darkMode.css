@@ -25,23 +25,13 @@ body:not(.dark) #statusMessage {
 }
 
 body.dark {
-   background: linear-gradient(180deg, #1a1f2e 200px, #1a1f2e 200px, #1a1f2e 100%);
+    background: linear-gradient(180deg, #1a1f2e 200px, #1a1f2e 200px, #1a1f2e 100%);
     color: #e2e8f0;
-}
-
-body.dark #header-container {
-    margin-bottom: 1rem;
-    background-color: #1a1a1a;
-    padding: 1rem;
-    border-bottom: 1px solid #333;
 }
 
 body.dark .main-container {
     background: rgba(26, 31, 46, 0.98);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;  /* Match other containers */
-    max-width: 800px;  /* Match other containers */
-    margin: 0 auto;  /* Center the container */
 }
 body.dark #title,
 body.dark .header-text {
@@ -52,14 +42,6 @@ body.dark .header-text {
 body.dark textarea {
     background: #2d3748;
     border-color: #4a5568;
-    color: #e2e8f0;
-}
-
-body.dark #title {
-    color: #f1f5f9;
-}
-
-body.dark .header-text {
     color: #e2e8f0;
 }
 
@@ -137,15 +119,14 @@ body.dark .user-profile {
 }
 
 /* 다크 모드에서 내 메시지로 표시할 사용자 */
-body.dark .user-select,
-body.dark #user-profiles {
+body.dark .user-select {
     background: #1a1f2e;
     border: 1px solid #374151;
+    border-color: #2d3748;
+    border: 1px solid #444;
     padding: 16px;
     border-radius: 8px;
-    margin: 15px auto;  /* Center and add consistent spacing */
-    width: 90%;  /* Match container width */
-    max-width: 800px;  /* Match container max-width */
+    margin-bottom: 15px;
 }
 body.dark .user-select h3,
 body.dark #user-profiles h3 {
