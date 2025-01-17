@@ -18,7 +18,7 @@ body {
     display: flex;
     justify-content: flex-start;
     gap: 15px;
-    padding: 1rem 2rem;
+     padding: 0.5rem 1rem;
 }
 
 .social-links a {
@@ -32,12 +32,12 @@ body {
 }
 
 .header-text {
-    margin: 20px auto;
+    margin: 0.25rem 0; auto;
     padding: 0 20px;
     max-width: 900px;
     text-align: left;
     color: #2c3e50;
-    line-height: 1.6;
+    line-height: 1.4;
 }
 
 /* 리사이즈 가능한 채팅 컨테이너 */
@@ -56,15 +56,16 @@ body {
     max-width: 900px;
     margin: 0 auto 2rem;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 24px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.1);
 }
 
 #header-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 1rem 1rem 0;
+   padding: 0.5rem 1rem 0;
 }
 
 #title, #contact-info {
@@ -80,7 +81,7 @@ body {
     font-weight: 800;
     text-align: left;
     letter-spacing: -0.02em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.1rem;
 }
 
 .header-text {
@@ -689,14 +690,18 @@ body.dark .update-content li::before {
      #header-container {
     max-width: 900px;
     margin: 0 auto;
-     padding: 0.5rem 1rem 0;
+    padding: 0.4rem 1rem 0;
 }
     #title {
     margin-bottom: 0.15rem;
 }
+      .social-links {
+        padding: 0.4rem 1rem;
+    }
+    
     .header-text {
         font-size: 1rem;
-        margin-bottom: 0.4rem;
+        margin: 0.2rem 0;
     }
     
     .main-container {
@@ -725,27 +730,25 @@ body.dark .update-content li::before {
         background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
     }
     #header-container {
-        padding: 0.5rem 0.75rem 0;
+        padding: 0.3rem 0.75rem 0;
     }
     
      #title {
         font-size: 1.75rem;
         margin-bottom: 0.15rem;
     }
-     .header-text {
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+    .header-text {
+        margin: 0.15rem 0;
     }
     
-    .main-container {
+     .main-container {
         margin: 0 0.75rem 1rem;
         padding: 1.25rem;
     }
     
     .social-links {
-        padding: 0.5rem 0.75rem;
+        padding: 0.3rem 0.75rem;
     }
-    
     .social-links a {
         font-size: 20px;
     
