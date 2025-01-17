@@ -1,7 +1,167 @@
-[Previous styles remain the same up to Message Styles section, then add:]
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-/* Message Details
--------------------------------------------------- */
+/* Base Styles */
+body {
+    font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+    background: linear-gradient(180deg, #e6f3ff 100px, #ffffff 100px, #ffffff 100%);
+    color: #2c3e50;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* Header Section */
+#header-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem 0;
+}
+
+#title {
+    color: #4a90e2;
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: left;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.1rem;
+}
+
+.header-text {
+    color: #4a90e2;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    text-align: left;
+    margin: 0.25rem 0;
+    padding: 0;
+}
+
+/* Social Links */
+.social-links {
+    position: static;
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 0.5rem 1rem;
+}
+
+.social-links a {
+    color: #4a90e2;
+    font-size: 24px;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #357abd;
+}
+
+/* Main Container */
+.main-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+}
+
+/* Chat Container */
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    max-height: 700px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.chat-container.expanded {
+    max-height: none;
+    overflow: visible;
+}
+
+.chat-container.resizable {
+    resize: horizontal;
+    overflow: auto;
+    min-width: 300px;
+    max-width: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+/* Scrollbar Styles */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Message Styles */
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    align-items: flex-start;
+    overflow: hidden;
+}
+
+.chat-message.mine {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.chat-message.other {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.message-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: calc(60% - 50px);
+    justify-content: flex-end;
+    position: relative;
+}
+
+.message-content {
+    padding: 10px 16px;
+    border-radius: 20px;
+    max-width: 100%;
+    word-wrap: break-word;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.message-content:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.chat-message.mine .message-content {
+    background-color: #b3e6b3;
+    color: #333;
+}
+
+.chat-message.other .message-content {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+/* Username and Time */
 .username {
     font-weight: bold;
     margin: 0 10px 5px 0;
@@ -21,44 +181,31 @@
     text-align: right;
 }
 
-/* Edit Interface
--------------------------------------------------- */
-.edit-textarea {
-    width: 100%;
-    min-height: 50px;
-    padding: 8px;
-    border: 2px solid #3498db;
-    border-radius: 15px;
-    resize: vertical;
-    font: inherit;
-}
-
-.edit-buttons {
+/* Profile Styles */
+.profile-container {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
 }
 
-.edit-buttons button {
-    padding: 6px 12px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
+.profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #ccc;
+    overflow: hidden;
 }
 
-.edit-buttons button.delete-button {
-    background-color: #f44336;
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.edit-buttons button:hover {
-    opacity: 0.8;
-}
-
-/* User Profiles
--------------------------------------------------- */
+/* User Profile Management */
 .user-profiles {
     margin-bottom: 20px;
     padding: 15px;
@@ -98,8 +245,7 @@
     font-size: 12px;
 }
 
-/* Profile Management
--------------------------------------------------- */
+/* Profile Preview and Delete */
 .profile-preview {
     width: 40px;
     height: 40px;
@@ -131,8 +277,7 @@
     opacity: 1;
 }
 
-/* File Input
--------------------------------------------------- */
+/* File Input Styles */
 .file-input-wrapper {
     display: flex;
     align-items: center;
@@ -158,8 +303,103 @@ input[type="file"] {
     display: none;
 }
 
-/* Status Message
--------------------------------------------------- */
+/* Button Styles */
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background-color: #4a90e2;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Clear Button */
+#clear-btn {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    color: blue;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#clear-btn:hover {
+    background-color: #ffffff;
+    color: #0056b3;
+}
+
+#clear-btn:active {
+    background-color: #e6e6e6;
+}
+
+/* Edit Interface */
+.edit-textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 8px;
+    border: 2px solid #3498db;
+    border-radius: 15px;
+    resize: vertical;
+    font: inherit;
+}
+
+.edit-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.edit-buttons button {
+    padding: 6px 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.edit-buttons button.delete-button {
+    background-color: #f44336;
+}
+
+.edit-buttons button:hover {
+    opacity: 0.8;
+}
+
+/* Textarea Styles */
+textarea {
+    width: 100%;
+    height: 200px;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+    min-height: 200px;
+    background-color: #fafafa;
+}
+
+textarea:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    background-color: #ffffff;
+}
+
+/* Status Message */
 #statusMessage {
     position: fixed;
     bottom: -50px;
@@ -185,8 +425,7 @@ input[type="file"] {
     opacity: 0;
 }
 
-/* User Select
--------------------------------------------------- */
+/* User Select */
 .user-select {
     background: #ffffff;
     border: 1px solid #e0e0e0;
@@ -229,8 +468,23 @@ input[type="file"] {
     background-color: #ffffff;
 }
 
-/* Stats Container
--------------------------------------------------- */
+/* Theme Toggle */
+#themeToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+    background-color: #4a90e2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+}
+
+#themeToggle:hover {
+    background-color: #357abd;
+}
+
+/* Stats Container */
 .stats-container {
     margin-top: 10px;
     padding: 10px;
@@ -245,28 +499,90 @@ input[type="file"] {
     color: #333;
 }
 
-/* Clear Button
--------------------------------------------------- */
-#clear-btn {
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    color: blue;
-    font-size: 14px;
-    font-weight: bold;
+/* Update Log */
+#update-log {
+    margin: 2rem auto;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
 }
 
-#clear-btn:hover {
-    background-color: #ffffff;
-    color: #0056b3;
+.update-header {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-#clear-btn:active {
-    background-color: #e6e6e6;
+.update-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    padding: 0;
 }
 
-/* Dark Mode Styles
--------------------------------------------------- */
+.update-content.show {
+    max-height: 500px;
+    padding: 1.5rem;
+}
+
+.update-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.update-content li {
+    margin: 0.75rem 0;
+    padding-left: 1rem;
+    position: relative;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-break: keep-all;
+    word-wrap: break-word;
+}
+
+.update-content li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4a90e2;
+}
+
+/* Footer */
+#footer {
+    background-color: rgba(74, 144, 226, 0.05);
+    color: #4a90e2;
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(74, 144, 226, 0.1);
+    margin-top: 30px;
+}
+
+#footer p {
+    margin: 0.5rem 0;
+    color: #357abd;
+}
+
+ #separator{
+     border: none; /* border-top: none으로 설정 */
+     margin: 0;
+     background: transparent;
+}
+
+.update-header:hover {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+
+/* Dark mode */
 body.dark #update-log {
     background: #1a1a1a;
     border-color: #333;
@@ -280,60 +596,238 @@ body.dark .update-content li::before {
     color: #76a9e0;
 }
 
-[Update the responsive design section to include these additional mobile styles:]
 
-@media (max-width: 768px) {
-    .profile-delete-btn {
-        width: 32px;
-        height: 32px;
+
+ @media (max-width: 768px) {
+    .header-text {
         font-size: 1rem;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
+        margin-bottom: 0.75rem;
+    }
+    
+    .main-container {
+        margin: 0 1rem 1.5rem;
+    }
+    
+    .social-links {
+        padding: 0.5rem 1rem;
+    }
+     
+     .main-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+}
+      
+    /* 채팅 메시지 레이아웃 최적화 */
+     .message-wrapper {
+         max-width: calc(80% - 30px);
+        /* 모바일에서는 더 넓게 */
+    }
+    body {
+        background: linear-gradient(180deg, #e6f3ff 80px, #ffffff 80px, #ffffff 100%);
+    }
+    
+    #title {
+        font-size: 2rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    button {
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
     }
 
-    .user-profile {
-        grid-template-columns: auto 1fr;
-        gap: 10px;
-        padding: 10px;
+     .message-content {
+        padding: 10px 16px;
+    }
+      .profile-delete-btn {
+        width: 32px; /* 원하는 정사각형 크기 */
+        height: 32px; /* 버튼의 높이를 동일하게 */
+        font-size: 1rem; /* 글씨 크기 조정 */
+        padding: 0; /* 버튼 안쪽 여백 제거 */
+        display: flex; /* 중앙 정렬을 위한 플렉스 */
+        align-items: center; /* 세로 중앙 정렬 */
+        justify-content: center; /* 가로 중앙 정렬 */
+        border-radius: 50%; /* 필요 시 버튼을 원형으로 */
+    }
+    /* 프로필 섹션 최적화 */
+     .user-profile {
+         grid-template-columns: auto 1fr;
+         gap: 10px;
+         padding: 10px;
+    }
+     .name-container {
+         flex-wrap: wrap;
+    }
+     .display-name-input {
+         width: 100%;
+         margin-bottom: 5px;
+    }
+    /* 색상 선택기와 파일 업로드 최적화 */
+     .color-picker {
+         width: 24px;
+         height: 24px;
+    }
+     .file-input-label {
+         padding: 6px 12px;
+         font-size: 0.8rem;
+    }
+    /* 텍스트 영역 최적화 */
+     textarea {
+         height: 150px;
+         font-size: 0.9rem;
+         padding: 0.75rem;
+    }
+    /* 편집 버튼 최적화 */
+     .edit-buttons {
+         flex-wrap: wrap;
+         gap: 5px;
+    }
+     .edit-buttons button {
+         width: auto;
+         flex: 1;
+         min-width: 60px;
+         padding: 4px 8px;
+    }
+    /* 테마 토글 버튼 위치 조정 */
+     #themeToggle {
+         bottom: 10px;
+         right: 10px;
+         padding: 8px 16px;
+         font-size: 0.9rem;
+    }
+    /* 스크롤바 최적화 */
+     .chat-container::-webkit-scrollbar {
+         width: 4px;
+    }
+    /* 업데이트 로그 최적화 */
+     #update-log {
+         padding: 1rem;
+         font-size: 0.9rem;
+    }
+    /* 상태 메시지 최적화 */
+     #statusMessage {
+         padding: 8px 16px;
+         font-size: 0.9rem;
+         max-width: 90%;
+         left: 50%;
+         transform: translateX(-50%);
     }
 
-    .name-container {
-        flex-wrap: wrap;
+     .social-links {
+    position: static;
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 0.5rem 2rem; /* Reduced vertical padding */
+}
+     
+#header-container {
+     #header-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.4rem 1rem 0;
+}
+    #title {
+    margin-bottom: 0.15rem;
+}
+      .social-links {
+        padding: 0.4rem 1rem;
     }
-
-    .display-name-input {
+    
+    .header-text {
+        font-size: 1rem;
+        margin: 0.2rem 0;
+    }
+    
+    .main-container {
+    width: 100%;
+    max-width: 900px;
+     margin: 0 1rem 1.5rem;
+        padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+}
+    
+    #update-log {
+        margin: 1.5rem 0;
+        border-radius: 16px;
+    }
+    .chat-container.resizable {
+        resize: none;
         width: 100%;
-        margin-bottom: 5px;
     }
-
-    .color-picker {
-        width: 24px;
-        height: 24px;
+}
+/* 더 작은 모바일 화면을 위한 추가 최적화 */
+ @media (max-width: 480px) {
+   body {
+        background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
     }
-
-    .file-input-label {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+    #header-container {
+        padding: 0.3rem 0.75rem 0;
     }
-
-    textarea {
-        height: 150px;
+    
+     #title {
+        font-size: 1.75rem;
+        margin-bottom: 0.15rem;
+    }
+    .header-text {
+        margin: 0.15rem 0;
+    }
+    
+     .main-container {
+        margin: 0 0.75rem 1rem;
+        padding: 1.25rem;
+    }
+    
+    .social-links {
+        padding: 0.3rem 0.75rem;
+    }
+    .social-links a {
+        font-size: 20px;
+    
+    #update-log {
+        margin: 1rem 0;
+    }
+    
+    .update-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .update-content.show {
+        padding: 1rem;
+    }
+    
+}
+ @media screen and (max-width: 480px) {
+    #header-container {
+        padding: 1rem 0.75rem 0.75rem;
+    }
+    
+    #title {
+        font-size: 1.75rem;
+    }
+    
+    .header-text {
         font-size: 0.9rem;
-        padding: 0.75rem;
+        margin-bottom: 1rem;
     }
-
-    .edit-buttons {
-        flex-wrap: wrap;
-        gap: 5px;
+    
+    #update-log {
+        margin: 1rem;
     }
-
-    .edit-buttons button {
-        width: auto;
-        flex: 1;
-        min-width: 60px;
-        padding: 4px 8px;
+    
+    .update-header {
+        padding: 1rem;
+    }
+    
+    .update-content.show {
+        padding: 1rem;
     }
 }
