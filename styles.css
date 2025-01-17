@@ -72,6 +72,7 @@ body {
 #title, #contact-info {
     color: #2c3e50; 
     margin: 0;
+    text-align: center;
     padding: 0.5rem 0;
 }
 
