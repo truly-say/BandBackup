@@ -398,16 +398,17 @@ button:hover {
     background-color: #357abd;
 }
 #update-log {
-    margin: 2rem auto;
-    max-width: 800px;
+    margin: 1rem;
     border-radius: 16px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     overflow: hidden;
+    width: auto;
+    max-width: 800px;
 }
 
 .update-header {
-    padding: 1.25rem;
+    padding: 1rem;
     background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
     color: #ffffff;
     cursor: pointer;
@@ -415,14 +416,15 @@ button:hover {
     align-items: center;
     gap: 0.5rem;
     user-select: none;
+    font-size: 0.95rem;
 }
 
 .update-header:hover {
     background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
 }
-
 .toggle-icon {
     transition: transform 0.3s ease;
+    font-size: 0.8rem;
 }
 
 .update-content {
@@ -433,7 +435,7 @@ button:hover {
 }
 
 .update-content.show {
-    padding: 1rem;
+    padding: 0.8rem;
     max-height: 500px;
 }
 
@@ -442,12 +444,15 @@ button:hover {
     padding: 0;
     margin: 0;
 }
-
 .update-content li {
     margin: 0.75rem 0;
     padding-left: 1rem;
     position: relative;
     color: #1a1a1a;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-break: keep-all;
+    word-wrap: break-word;
 }
 
 .update-content li::before {
@@ -693,4 +698,23 @@ body.dark .update-content li::before {
          font-size: 0.8rem;
     }
 }
- 
+ @media screen and (max-width: 480px) {
+    #update-log {
+        margin: 0.5rem;
+        border-radius: 12px;
+    }
+
+    .update-header {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .update-content.show {
+        padding: 0.6rem;
+    }
+
+    .update-content li {
+        font-size: 0.85rem;
+        margin: 0.6rem 0;
+    }
+}
