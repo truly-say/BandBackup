@@ -164,17 +164,18 @@ body {
      opacity: 0;
     /* 사라지게 설정 */
 }
- ##footer {
-    background-color: #f9f9f9;
-    color: #555;
+ #footer {
+    background-color: rgba(74, 144, 226, 0.05);
+    color: #4a90e2;
     text-align: center;
-    padding: 0 0 1.5rem; /* Adjusted bottom padding */
-    border-top: 1px solid #ddd;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(74, 144, 226, 0.1);
     margin-top: 30px;
 }
 
 #footer p {
-    margin: 0.5rem 0; /* Add small margin to footer text */
+    margin: 0.5rem 0;
+    color: #357abd;
 }
 
 textarea {
@@ -685,23 +686,29 @@ body.dark .update-content li::before {
 }
      
 #header-container {
-        #header-container {
-        padding: 1rem 1rem 0.5rem;
-    }
-    
+     #header-container {
+    max-width: 900px;
+    margin: 0 auto;
+     padding: 0.5rem 1rem 0;
+}
     #title {
-        font-size: 2rem;
-    }
-    
+    margin-bottom: 0.15rem;
+}
     .header-text {
         font-size: 1rem;
         margin-bottom: 0.4rem;
     }
     
     .main-container {
-        margin: 0 1rem 1.5rem;
+    width: 100%;
+    max-width: 900px;
+     margin: 0 1rem 1.5rem;
         padding: 1.5rem;
-    }
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+}
     
     #update-log {
         margin: 1.5rem 0;
@@ -718,7 +725,7 @@ body.dark .update-content li::before {
         background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
     }
     #header-container {
-        padding: 0.75rem 0.75rem 0.25rem;
+        padding: 0.5rem 0.75rem 0;
     }
     
      #title {
@@ -732,6 +739,7 @@ body.dark .update-content li::before {
     
     .main-container {
         margin: 0 0.75rem 1rem;
+        padding: 1.25rem;
     }
     
     .social-links {
