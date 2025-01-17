@@ -504,12 +504,11 @@ body:not(.dark) .chat-message .username {
 
     function toggleUpdateLog() {
     const content = document.querySelector('.update-content');
-    const icon = document.querySelector('.toggle-icon');
-    
-    content.classList.toggle('show');
-    icon.style.transform = content.classList.contains('show') ? 'rotate(-180deg)' : 'rotate(0deg)';
-    
-    // 토글 상태를 localStorage에 저장
+         const icon = document.querySelector('.toggle-icon');
+            content.classList.toggle('show');
+            icon.style.transform = content.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0)';
+        
+        // 토글 상태를 localStorage에 저장
     localStorage.setItem('updateLogOpen', content.classList.contains('show'));
 }
 
