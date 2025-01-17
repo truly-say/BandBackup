@@ -16,9 +16,9 @@ body {
 .social-links {
     position: static;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 15px;
-    padding: 1rem 0;
+    padding: 1rem 2rem;
 }
 
 .social-links a {
@@ -30,6 +30,7 @@ body {
 .social-links a:hover {
     color: #357abd;
 }
+
 .header-text {
     margin: 20px auto;
     padding: 0 20px;
@@ -63,8 +64,9 @@ body {
 #header-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 1rem 1rem 0.5rem;
+    padding: 1rem 1rem 0;
 }
+
 #title, #contact-info {
     color: #2c3e50; 
     margin: 0;
@@ -78,7 +80,7 @@ body {
     font-weight: 800;
     text-align: left;
     letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem; /* Reduced space between title and info */
 }
 
 .header-text {
@@ -86,7 +88,7 @@ body {
     font-size: 1.1rem;
     line-height: 1.6;
     text-align: left;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem; /* Reduced space between info and main container */
 }
 
  #separator{
@@ -165,7 +167,7 @@ body {
     background-color: #f9f9f9;
     color: #555;
     text-align: center;
-    padding: 20px 0;
+    padding: 0 0 20px 0; 
     border-top: 1px solid #ddd;
     margin-top: 30px;
 }
@@ -418,6 +420,10 @@ button:hover {
     padding: 1rem 1.5rem;
     background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
     color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .update-header:hover {
@@ -425,17 +431,17 @@ button:hover {
 }
 .toggle-icon {
     transition: transform 0.3s ease;
-    font-size: 0.8rem;
 }
 
 .update-content {
-    transition: all 0.3s ease-out;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    padding: 0;
 }
-
 .update-content.show {
+    max-height: 500px;
     padding: 1.5rem;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
 }
 
 .update-content ul {
@@ -546,6 +552,10 @@ body.dark .update-content li::before {
 }
 /* 기존 미디어 쿼리에 추가할 내용 */
  @media (max-width: 768px) {
+     #header-container {
+        padding: 1rem 1rem 0;
+    }
+     
      .main-container {
         padding: 1rem;
         margin: 1rem auto;
@@ -563,6 +573,7 @@ body.dark .update-content li::before {
     
     #title {
         font-size: 2rem;
+        margin-bottom: 0.2rem;
     }
     
     button {
@@ -650,7 +661,7 @@ body.dark .update-content li::before {
      .social-links {
         position: static;
         justify-content: center;
-        padding: 15px 0;
+        padding: 1rem;
     }
 #header-container {
         #header-container {
@@ -663,6 +674,7 @@ body.dark .update-content li::before {
     
     .header-text {
         font-size: 1rem;
+        margin-bottom: 0.4rem;
     }
     
     .main-container {
@@ -688,12 +700,13 @@ body.dark .update-content li::before {
         padding: 0.75rem 0.75rem 0.25rem;
     }
     
-    #title {
+     #title {
         font-size: 1.75rem;
+        margin-bottom: 0.15rem;
     }
-    
     .header-text {
         font-size: 0.9rem;
+        margin-bottom: 0.3rem;
     }
     
     .main-container {
@@ -701,6 +714,13 @@ body.dark .update-content li::before {
         padding: 1rem;
         border-radius: 16px;
     }
+    
+    .social-links {
+        padding: 0.75rem;
+    }
+    
+    .social-links a {
+        font-size: 20px;
     
     #update-log {
         margin: 1rem 0;
@@ -714,13 +734,6 @@ body.dark .update-content li::before {
         padding: 1rem;
     }
     
-    .social-links {
-        padding: 0.75rem 0;
-    }
-    
-    .social-links a {
-        font-size: 20px;
-    }
 }
  @media screen and (max-width: 480px) {
     #header-container {
