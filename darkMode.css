@@ -131,12 +131,12 @@ body.dark .username {
     color: #e2e8f0;
 }
 body.dark .user-profiles {
-    background: #2d2d2d;
+    background: #1a1e2d;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 body.dark .user-profile {
-    background: #2d2d2d;
+    background: #1a1e2d;
 }
 
 /* 다크 모드에서 내 메시지로 표시할 사용자 */
