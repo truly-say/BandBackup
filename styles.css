@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #e6f3ff 200px, #ffffff 200px, #ffffff 100%);
+   background: linear-gradient(180deg, #e6f3ff 100px, #ffffff 100px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
@@ -64,13 +64,14 @@ body {
 }
 
 #header-container {
-    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
+    background: none;
     width: 100%;
     padding: 1.5rem 0;
+    text-align: left;
 }
 #title, #contact-info {
-    color: #ffffff;
-    text-align: center;
+    color: #2c3e50;  /* Theme-appropriate color */
+    text-align: left;
     margin: 0;
     padding: 0.5rem 0;
 }
@@ -79,11 +80,10 @@ body {
     font-size: 2.5rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #contact-info {
-    font-size: 1.1rem;
+     font-size: 1.1rem;
     line-height: 1.6;
     opacity: 0.95;
     margin-bottom: 0.5rem;
@@ -549,6 +549,10 @@ body.dark .update-content {
          max-width: calc(80% - 30px);
         /* 모바일에서는 더 넓게 */
     }
+    body {
+        background: linear-gradient(180deg, #e6f3ff 80px, #ffffff 80px, #ffffff 100%);
+    }
+    
     #title {
         font-size: 2rem;
     }
@@ -652,15 +656,20 @@ body.dark .update-content {
 }
 /* 더 작은 모바일 화면을 위한 추가 최적화 */
  @media (max-width: 480px) {
-      #title {
+   body {
+        background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
+    }
+    
+    #title {
         font-size: 1.75rem;
     }
- .main-container {
-        border-radius: 16px;
-    }
+    
     #contact-info {
         font-size: 1rem;
     }
+ .main-container {
+        border-radius: 16px;
+
       
       .message-wrapper {
          max-width: calc(85% - 20px);
