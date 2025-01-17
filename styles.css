@@ -398,7 +398,8 @@ button:hover {
     background-color: #357abd;
 }
 #update-log {
-    margin: 2rem 0;
+    margin: 2rem auto;
+    max-width: 800px;
     border-radius: 16px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -420,42 +421,40 @@ button:hover {
     background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
 }
 
- #update-log .header strong {
-     color: #d1d5db;
-    /* '업데이트 내역:' 글자색 */
-     display: block;
-}
 .toggle-icon {
     transition: transform 0.3s ease;
 }
 
 .update-content {
-    padding: 1rem;
+    padding: 0;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
 }
 
 .update-content.show {
-    max-height: 500px; /* 충분히 큰 값으로 설정 */
+    padding: 1rem;
+    max-height: 500px;
 }
 
 .update-content ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .update-content li {
     margin: 0.75rem 0;
     padding-left: 1rem;
     position: relative;
+    color: #1a1a1a;
 }
 
 .update-content li::before {
     content: "•";
     position: absolute;
     left: 0;
-    color: #0000FF;
+    color: #4a90e2;
 }
 
 /* Dark mode */
@@ -464,9 +463,14 @@ body.dark #update-log {
     border-color: #333;
 }
 
-body.dark .update-content {
+body.dark .update-content li {
     color: #e2e8f0;
 }
+
+body.dark .update-content li::before {
+    color: #76a9e0;
+}
+
 /* Clear Button */
  #clear-btn {
      padding: 10px 15px;
