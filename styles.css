@@ -13,6 +13,44 @@ body {
     overflow-y: auto;
 }
 
+.social-links {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.social-links a {
+    color: #4a90e2;
+    font-size: 24px;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #357abd;
+}
+.header-text {
+    margin: 20px auto;
+    padding: 0 20px;
+    max-width: 900px;
+    text-align: left;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* 리사이즈 가능한 채팅 컨테이너 */
+.chat-container.resizable {
+    resize: horizontal;
+    overflow: auto;
+    min-width: 300px;
+    max-width: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin: 0 auto;
+}
+
 /* Main Container */
 .main-container {
     width: 100%;
@@ -595,6 +633,21 @@ body.dark .update-content {
          max-width: 90%;
          left: 50%;
          transform: translateX(-50%);
+    }
+
+     .social-links {
+        position: static;
+        justify-content: center;
+        padding: 15px 0;
+    }
+
+    .header-text {
+        text-align: center;
+    }
+
+    .chat-container.resizable {
+        resize: none;
+        width: 100%;
     }
 }
 /* 더 작은 모바일 화면을 위한 추가 최적화 */
