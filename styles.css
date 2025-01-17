@@ -397,10 +397,33 @@ button:hover {
 #themeToggle:hover {
     background-color: #357abd;
 }
-<form name="f1" method="get">
-		<input name="id">
-	</form>
-	
+#update-log {
+    margin: 2rem auto;
+    max-width: 800px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.update-header {
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.update-header:hover {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
 
 .update-content {
     padding: 0;
@@ -410,7 +433,7 @@ button:hover {
 }
 
 .update-content.show {
-    padding: 0.8rem;
+    padding: 1rem;
     max-height: 500px;
 }
 
@@ -425,10 +448,6 @@ button:hover {
     padding-left: 1rem;
     position: relative;
     color: #1a1a1a;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    word-break: keep-all;
-    word-wrap: break-word;
 }
 
 .update-content li::before {
@@ -436,20 +455,6 @@ button:hover {
     position: absolute;
     left: 0;
     color: #4a90e2;
-}
-
-/* Dark mode */
-body.dark #update-log {
-    background: #1a1a1a;
-    border-color: #333;
-}
-
-body.dark .update-content li {
-    color: #e2e8f0;
-}
-
-body.dark .update-content li::before {
-    color: #76a9e0;
 }
 
 /* Dark mode */
@@ -686,27 +691,6 @@ body.dark .update-content li::before {
     }
      .chat-time {
          font-size: 0.8rem;
-    }
-}
-
-     @media screen and (max-width: 480px) {
-    #update-log {
-        margin: 0.5rem;
-        border-radius: 12px;
-    }
-
-    .update-header {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .update-content.show {
-        padding: 0.6rem;
-    }
-
-    .update-content li {
-        font-size: 0.85rem;
-        margin: 0.6rem 0;
     }
 }
  
