@@ -535,7 +535,7 @@ function createMessageHTML(message, index, forExport = false) {
     // 동적으로 메시지 스타일 생성
     const messageStyle = isMyMessage 
         ? (isDarkMode 
-            ? 'background-color:#2d6a4f;color:#e2e8f0;' 
+            ? 'background-color:#2d3647;color:#e2e8f0;' 
             : 'background-color:#b3e6b3;color:#333;')
         : (isDarkMode 
             ? 'background-color:#4c4f56;color:#e2e8f0;' 
