@@ -82,7 +82,7 @@ body.dark .edit-textarea {
     color: #e2e8f0;
 }
 body.dark textarea:focus {
-    border-color: #0000FF;
+    border-color: #2d3748;
     box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.2);
 }
 
@@ -105,25 +105,6 @@ body.dark .chat-message .username {
     display: inline-block; 
 }
 
-body.dark .chat-message.mine .message-content {
-    background-color: #2d3748;
-    color: #e2e8f0;
-}
-
-body.dark .chat-message.other .message-content {
-    background-color: #1a1f2e;
-    color: #e2e8f0;
-}
-
-/* Message hover states */
-body.dark .chat-message.mine .message-content:hover {
-    background-color: #3b4d61;
-}
-
-body.dark .chat-message.other .message-content:hover {
-    background-color: #2d3748;
-}
-
 body.dark .chat-time {
     color: #9ca3af;
 }
@@ -131,12 +112,12 @@ body.dark .username {
     color: #e2e8f0;
 }
 body.dark .user-profiles {
-    background: #1a1e2d;
+    background: #2d3748;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 body.dark .user-profile {
-    background: #1a1e2d;
+    background: #2d3748;
 }
 
 /* 다크 모드에서 내 메시지로 표시할 사용자 */
