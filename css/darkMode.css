@@ -1,0 +1,405 @@
+/* /css/darkMode.css - 다크 모드 스타일 */
+
+#statusMessage {
+    position: fixed;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease, top 0.3s ease;
+    z-index: 9999;
+}
+
+
+body.dark #statusMessage {
+    background-color: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+}
+
+body:not(.dark) #statusMessage {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333333;
+}
+
+body.dark {
+    background: linear-gradient(180deg, #111827 100px, #1a1f2e 100px, #1a1f2e 100%);
+    color: #e2e8f0;
+}
+
+body.dark .main-container {
+    background: rgba(26, 31, 46, 0.98);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+body.dark #title,
+body.dark .header-text {
+    color: #60a5fa;
+}
+
+body.dark textarea {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+body.dark #title,
+body.dark .header-text {
+    color: #60a5fa;
+}
+
+body.dark .chat-container::-webkit-scrollbar-thumb {
+    background: #666;
+}
+
+body.dark .chat-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+body.dark #statusMessage {
+    background: rgba(30, 41, 59, 0.9);
+}
+
+body.dark #footer {
+    background-color: #1a1a1a;
+    color: #a0aec0;
+    border-top: 1px solid #333;
+}
+
+body.dark .footer-social-links a {
+    color: #60a5fa;
+}
+
+body.dark .footer-social-links a:hover {
+    color: #93c5fd;
+}
+
+body.dark .edit-textarea {
+    background: #2d2d2d;
+    border-color: #3498db;
+    color: #e2e8f0;
+}
+
+body.dark textarea:focus {
+    border-color: #2d3748;
+    box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.2);
+}
+
+body.dark button {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark button:hover {
+    background-color: #4a5568;
+}
+
+/* 다크모드 메시지 스타일 - 밴드 스타일 */
+body.dark .chat-message .username {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
+body.dark .chat-time {
+    color: #9ca3af;
+}
+
+/* 다크모드 말풍선 스타일 */
+body.dark .chat-message.other .message-content {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+
+body.dark .chat-message.other .message-content:before {
+    background-color: #2d3748;
+}
+
+body.dark .chat-message.mine .message-content {
+    background-color: #2d5d31; /* 어두운 녹색 */
+    color: #e2e8f0;
+}
+
+body.dark .chat-message.mine .message-content:before {
+    background-color: #2d5d31;
+}
+
+/* 다크모드 @태그 스타일 */
+body.dark .tagged-user {
+    color: #60a5fa;
+}
+
+/* 다크모드 프로필 카드 스타일 */
+body.dark .user-profile-card {
+    background: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .user-profile-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .user-profile-card.drag-over {
+    border: 2px dashed #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+body.dark .profile-preview {
+    background-color: #4a5568;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .drag-drop-info {
+    color: #a0aec0;
+}
+
+body.dark .display-name-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e2e8f0;
+}
+
+body.dark .display-name-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+}
+
+body.dark .file-input-label {
+    background-color: #3b82f6;
+    color: #e2e8f0;
+}
+
+body.dark .file-input-label:hover {
+    background-color: #2563eb;
+}
+
+body.dark .original-name {
+    color: #9ca3af;
+}
+
+body.dark .profile-reset-btn {
+    background: #374151;
+    color: #9ca3af;
+}
+
+/* 다크모드에서 프로필 설정 영역 */
+body.dark .user-profiles {
+    background: #1e293b;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .profile-header {
+    border-bottom-color: #374151;
+}
+
+body.dark .profile-header h3 {
+    color: #60a5fa;
+}
+
+body.dark .profile-info {
+    color: #e2e8f0;
+}
+
+body.dark .upload-info {
+    color: #9ca3af;
+}
+
+body.dark .action-button {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+}
+
+body.dark .action-button:hover {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+/* 다크모드 프로필 카드 */
+body.dark .user-profile-card {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+/* 다크모드 체크박스 스타일 */
+body.dark .my-message-checkbox {
+    accent-color: #60a5fa;
+}
+
+body.dark .is-my-message {
+    border-color: #60a5fa;
+    background-color: rgba(96, 165, 250, 0.08);
+}
+
+body.dark .profile-grid {
+    gap: 16px;
+}
+
+body.dark .user-profiles {
+    background: #1e293b;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .user-profile {
+    background: #2d3748;
+}
+
+/* 다크모드 체크박스 스타일 */
+body.dark .user-checkbox-label {
+    background: #2d3748;
+    color: #e2e8f0;
+}
+
+body.dark .user-checkbox-label:hover {
+    background: #374151;
+}
+
+body.dark .user-checkboxes {
+    gap: 8px;
+}
+
+/* 다크 모드에서 내 메시지로 표시할 사용자 */
+body.dark .user-select {
+    background: #1a1f2e;
+    border: 1px solid #374151;
+    border-color: #2d3748;
+    border: 1px solid #444;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+body.dark .user-select h3,
+body.dark #user-profiles h3 {
+    color: #60a5fa;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+body.dark .user-select label {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: block;
+}
+
+body.dark .user-select select,
+body.dark #user-profiles select {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    border: 1px solid #4B5563;
+    border-radius: 6px;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+body.dark .user-select select:focus,
+body.dark #user-profiles select:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+body.dark .user-select select option {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    padding: 8px;
+}
+
+/* 다크모드 업데이트 로그 */
+body.dark #update-log {
+    background: #1a1f2e;
+    border-color: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .update-header {
+    background: linear-gradient(135deg, #3b4d61 0%, #2d3748 100%);
+}
+
+body.dark .update-content.show {
+    background: #1a1f2e;
+}
+
+body.dark .update-content li {
+    color: #e2e8f0;
+}
+
+body.dark .update-content li::before {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+/* 다크모드 로딩 오버레이 */
+body.dark .loading-overlay {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+body.dark .loading-spinner {
+    border-color: rgba(96, 165, 250, 0.2);
+    border-top-color: #60a5fa;
+}
+
+body.dark .loading-message {
+    color: #e2e8f0;
+}
+
+body.dark #clear-btn {
+    background-color: #374151;
+    border: 1px solid #4B5563;
+    color: #93c5fd;
+    transition: all 0.2s ease;
+}
+
+body.dark #clear-btn:hover {
+    background-color: #4B5563;
+    color: #bfdbfe;
+}
+
+body.dark #clear-btn:active {
+    background-color: #1f2937;
+}
+
+/* 다크모드 파일 입력 라벨 */
+body.dark .file-input-label {
+    background-color: #3b82f6;
+    color: #e2e8f0;
+}
+
+body.dark .file-input-label:hover {
+    background-color: #2563eb;
+}
+
+body.dark .display-name-input {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e2e8f0;
+}
+
+body.dark .original-name {
+    color: #a0aec0;
+}
+
+/* 포맷 지원 정보 다크모드 */
+body.dark .supported-formats-info {
+    background-color: #2d3748;
+    border-left-color: #60a5fa;
+    color: #e2e8f0;
+}
+
+body.dark .supported-formats-info strong {
+    color: #60a5fa;
+}

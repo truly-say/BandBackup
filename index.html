@@ -1,60 +1,59 @@
+<!-- /index.html - 밴드 채팅 백업 도구 메인 페이지 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>밴드 채팅 백업 도구</title>
-    <link rel="icon" href="선청고등학교2.png" type="image/png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="darkMode.css">
+    <link rel="icon" href="선청.png" type="image/png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/darkMode.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Social Links -->
-    <div class="social-links">
-        <a href="https://twitter.com/C2H5OH_snow" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="https://github.com/truly-say" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-        <a href="mailto:situationmul2@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
-    </div>
     <div id="header-container">
         <div id="title">밴드 채팅 백업 도구</div>
         <div class="header-text">
-        <div>네이버 밴드 채팅 백업을 위한 웹사이트입니다.</div>
-    </div>
+            <div>네이버 밴드 채팅 백업을 위한 웹사이트입니다.</div>
+        </div>
     </div>
     <div class="main-container">
         <textarea id="input-text" placeholder="①밴드에서 내보낸 채팅을 붙여넣은 뒤 분석을 누르면 프로필 사진 설정을 할 수 있습니다.
 ②반드시 변환하기를 눌러야 html 복사가 가능합니다.
             
-대화하는 인원수가 25명을 넘길 시 작동하지 않습니다.
-이름에 콜론(:)이 들어있을 시 내용이 깨집니다."></textarea>
+대화하는 인원수가 25명을 넘길 시 작동하지 않습니다."></textarea>
         <div class="button-container">
-            <button id="analyze-btn">① 채팅 분석</button>
-            <button id="convert-btn">② 변환하기</button>
-            <button id="copy-btn">③ HTML 복사</button>
-            <button id="clear-btn">초기화</button>
+            <button id="analyze-btn"><i class="fas fa-search"></i> ① 채팅 분석</button>
+            <button id="convert-btn"><i class="fas fa-sync-alt"></i> ② 변환하기</button>
+            <button id="copy-btn"><i class="fas fa-copy"></i> ③ HTML 복사</button>
+            <button id="clear-btn"><i class="fas fa-trash"></i> 초기화</button>
         </div>
         <div id="update-log">
-    <div class="update-header" onclick="toggleUpdateLog()">
-        <span class="toggle-icon">▼</span>
-        <strong>업데이트 내역</strong>
-    </div>
-    <div class="update-content">
-        <ul>
-            <li>25.01.15:초기화 전까지 내 메세지로 표현되는 사용자 기억</li>
-            <li>25.01.16:업데이트 내역 토글로 변환</li>
-            <li>다크 모드에서 채팅 색상이 그대로인 문제 수정 중</li>
-        </ul>
-    </div>
-</div>
-        <div id="user-select" class="user-select" style="display: none;">
-            <h3>내 메시지로 표시할 사용자:</h3>
-            <select id="chat-user">
-                <option value="">선택 안함 (모든 메시지를 왼쪽에 표시)</option>
-            </select>
+            <div class="update-header" onclick="toggleUpdateLog()">
+                <span class="toggle-icon">▼</span>
+                <strong>업데이트 내역</strong>
+            </div>
+            <div class="update-content">
+                <ul>
+                    <li>25.03.10: 메시지 편집 기능 추가 및 버그 수정</li>
+                    <li>25.03.09: 연속 메시지 처리 개선, 이미지 최적화 강화, 모듈 분리</li>
+                    <li>25.03.09: 프로필 설정 개선, UI 디자인 개선, 전체 초기화 기능 추가</li>
+                </ul>
+            </div>
         </div>
         <div id="user-profiles" class="user-profiles" style="display: none;">
-            <h3>채팅 참여자 프로필 설정</h3>
+            <div class="profile-header">
+                <h3>채팅 참여자 프로필 설정</h3>
+                <p class="profile-info">체크박스를 선택하면 해당 사용자의 메시지가 내 메시지로 표시됩니다. (복수 선택 가능)</p>
+                <div class="profile-actions">
+                    <button id="reset-all-profiles" class="action-button">전체 프로필 초기화</button>
+                    <button id="uncheck-all" class="action-button">모든 체크 해제</button>
+                </div>
+                <p class="upload-info">※ 이미지 삽입 시 업로드 및 변환 과정에 시간이 소요될 수 있습니다.</p>
+            </div>
+            <div class="profile-grid">
+                <!-- 여기에 프로필 카드가 추가됩니다 -->
+            </div>
         </div>
         <div class="chat-container" id="chat-container"></div>
     </div>
@@ -63,9 +62,90 @@
     <footer id="footer">
         <p>본 웹사이트는 '선청고등학교' 커뮤의 채팅 백업을 위해 만들어졌습니다.</p>
         <p>해당 사이트는 @C2H5OH_snow이 제작했습니다.</p>
+        <div class="footer-social-links">
+            <a href="https://twitter.com/C2H5OH_snow" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://github.com/truly-say" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
     </footer>
-    <script type="module" src="config.js"></script>
-    <script type="module" src="darkMode.js"></script>
-    <script type="module" src="main.js"></script>
+    
+    <!-- 모듈식 JS 로드 순서 (의존성 순) -->
+    <!-- 1. URL 압축 라이브러리 (다른 모듈의 의존성) -->
+<script src="js/urlCompressor.js"></script>
+<script src="js/lzStringCompressor.js"></script>
+
+<!-- 2. 기본 유틸리티 모듈들 -->
+<script src="js/messageParser.js"></script>
+<script src="js/storageManager.js"></script>
+<script src="js/uiManager.js"></script>
+
+<!-- 3. 기능 모듈들 -->
+<script src="js/aspectRatioOptimizer.js"></script>
+<script src="js/imageHandler.js"></script>
+<script src="js/themeManager.js"></script>
+<script src="js/profileManager.js"></script>
+<script src="js/exportManager.js"></script>
+<script src="js/editManager.js"></script>
+
+<!-- 4. 마지막으로 메인 앱 로드 -->
+<script src="js/app.js"></script>
+    
+    <!-- 모듈 체크 및 폴백 로직 -->
+    <script>
+    // 모듈 로딩 확인 및 전역 객체 정의 (폴백)
+    document.addEventListener('DOMContentLoaded', function() {
+        // 필수 모듈 확인
+        if (typeof MessageParser === 'undefined') {
+            console.warn('MessageParser 모듈이 로드되지 않았습니다. 기본 기능만 사용합니다.');
+            window.MessageParser = {
+                parseMessages: function(chatData) {
+                    // 간단한 기본 구현
+                    const lines = chatData.split('\n');
+                    const messages = [];
+                    const regex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
+                    
+                    let currentMessage = null;
+                    lines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) return;
+                        
+                        const match = trimmedLine.match(regex);
+                        if (match) {
+                            if (currentMessage) messages.push(currentMessage);
+                            currentMessage = {
+                                time: match[1].trim(),
+                                username: match[2].trim(),
+                                chatMessage: match[3].trim()
+                            };
+                        } else if (currentMessage) {
+                            currentMessage.chatMessage += '\n' + trimmedLine;
+                        }
+                    });
+                    
+                    if (currentMessage) messages.push(currentMessage);
+                    return messages;
+                },
+                escapeHtml: function(str) {
+                    if (!str) return '';
+                    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                },
+                safeId: function(text) {
+                    return text.replace(/[^a-z0-9]/gi, '_');
+                }
+            };
+        }
+        
+        // 모든 모듈이 정상적으로 로드되었는지 확인
+        console.log('모듈 상태 확인:');
+        console.log('- MessageParser:', typeof MessageParser !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- StorageManager:', typeof StorageManager !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- UIManager:', typeof UIManager !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- ImageHandler:', typeof ImageHandler !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- ThemeManager:', typeof ThemeManager !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- ProfileManager:', typeof ProfileManager !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- ExportManager:', typeof ExportManager !== 'undefined' ? '로드됨' : '로드 실패');
+        console.log('- EditManager:', typeof EditManager !== 'undefined' ? '로드됨' : '로드 실패');
+    });
+    </script>
 </body>
 </html>

@@ -1,13 +1,15 @@
+/* /css/styles.css - 기본 스타일 정의 */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Base Styles */
+/* Body */
 body {
     font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(180deg, #e6f3ff 50px, #ffffff 50px, #ffffff 100%);
+    background: linear-gradient(180deg, #eef4fc 100px, #ffffff 100px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
@@ -39,23 +41,9 @@ body {
     padding: 0;
 }
 
-/* Social Links */
+/* Social Links - 제거됨 */
 .social-links {
-    position: static;
-    display: flex;
-    justify-content: flex-start;
-    gap: 15px;
-    padding: 0.5rem 1rem;
-}
-
-.social-links a {
-    color: #4a90e2;
-    font-size: 24px;
-    transition: color 0.3s ease;
-}
-
-.social-links a:hover {
-    color: #357abd;
+    display: none;
 }
 
 /* Main Container */
@@ -145,6 +133,39 @@ body {
     word-wrap: break-word;
     margin-bottom: 5px;
     cursor: pointer;
+    position: relative; /* 말풍선 꼬리 위치 기준 */
+}
+
+/* 말풍선 꼬리 추가 */
+.chat-message.mine .message-content::before {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    border-style: solid;
+    border-width: 0 0 15px 15px;
+    border-color: transparent;
+    border-bottom-color: #d8f4e7;
+}
+
+.chat-message.other .message-content::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 0;
+    border-style: solid;
+    border-width: 0 15px 15px 0;
+    border-color: transparent;
+    border-bottom-color: #f1f1f1;
+}
+
+/* 다크모드 말풍선 꼬리 색상 */
+body.dark .chat-message.mine .message-content::before {
+    border-bottom-color: #2d3647;
+}
+
+body.dark .chat-message.other .message-content::before {
+    border-bottom-color: #4c4f56;
 }
 
 .message-content:hover {
@@ -152,13 +173,19 @@ body {
 }
 
 .chat-message.mine .message-content {
-    background-color: #b3e6b3;
+    background-color: #d8f4e7;
     color: #333;
 }
 
 .chat-message.other .message-content {
     background-color: #f1f1f1;
     color: #333;
+}
+
+/* @ 태그 스타일 */
+.message-content .tag {
+    color: #0d5bd1;
+    font-weight: bold;
 }
 
 /* Username and Time */
@@ -205,25 +232,254 @@ body {
     object-fit: cover;
 }
 
-/* User Profile Management */
+/* User Profile Management - 카드 형식으로 개선 (세로형) */
 .user-profiles {
     margin-bottom: 20px;
-    padding: 15px;
+    padding: 20px;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.user-profile {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 20px;
-    padding: 15px;
-    background: white;
-    border-radius: 8px;
+/* 프로필 헤더 영역 */
+.profile-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #4a90e2;
     margin-bottom: 10px;
+}
+
+.profile-info {
+    font-size: 0.95rem;
+    color: #4b5563;
+    margin-bottom: 15px;
+}
+
+.upload-info {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* 프로필 액션 버튼 */
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.action-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+/* 프로필 그리드 레이아웃 */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+/* 사용자 프로필 카드 스타일 (세로형) */
+.user-profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 18px;
     position: relative;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.user-profile-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+/* 체크박스 스타일 */
+.my-message-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #4a90e2;
+}
+
+.is-my-message {
+    border: 2px solid #4a90e2;
+    background-color: rgba(74, 144, 226, 0.03);
+}
+
+/* 드래그 오버 상태 */
+.user-profile-card.drag-over {
+    border: 2px dashed #4a90e2;
+    background-color: rgba(74, 144, 226, 0.05);
+}
+
+/* 이미지 컨테이너 */
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+/* 프로필 미리보기 (크기 증가) */
+.profile-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 이름 컨테이너 */
+.name-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+/* 표시 이름 입력 */
+.display-name-input {
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.display-name-input:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* 파일 입력 숨김 */
+.profile-file-input {
+    display: none;
+}
+
+/* 원래 이름 표시 */
+.original-name {
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* 파일 입력 라벨 */
+.file-input-label {
+    padding: 8px 12px;
+    background-color: #4a90e2; /* 더 진한 파란색 */
+    color: white; /* 흰색으로 명확하게 */
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .file-input-label:hover {
+    background-color: #357abd; /* 호버 시 색상도 조정 */
+  }
+
+.file-input-label::before {
+    content: '\f03e';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 400;
+    margin-right: 8px;
+}
+
+/* 초기화 버튼 */
+.profile-reset-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: none;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+.profile-reset-btn:hover {
+    background: #e2e8f0;
+    color: #ef4444;
+}
+
+/* 색상 선택기 스타일 */
+.color-picker {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
 }
 
 .name-container {
@@ -243,6 +499,46 @@ body {
 .original-name {
     color: #666;
     font-size: 12px;
+}
+
+/* 로딩 오버레이 스타일 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #ffffff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+    margin-top: 15px;
+    color: white;
+    font-size: 16px;
 }
 
 /* Profile Preview and Delete */
@@ -282,17 +578,6 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.file-input-label {
-    padding: 8px 16px;
-    background-color: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    white-space: nowrap;
 }
 
 .file-input-label:hover {
@@ -382,7 +667,7 @@ textarea {
     height: 200px;
     padding: 1rem;
     border: 2px solid #e0e0e0;
-    border-radius: 16px;
+    border-radius: 10px;
     font-family: inherit;
     font-size: 0.95rem;
     resize: vertical;
@@ -402,7 +687,7 @@ textarea:focus {
 /* Status Message */
 #statusMessage {
     position: fixed;
-    bottom: -50px;
+    top: -50px; /* 상단에서 시작 */
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.9);
@@ -411,9 +696,9 @@ textarea:focus {
     border-radius: 8px;
     font-size: 14px;
     opacity: 0;
-    transition: opacity 0.3s ease, bottom 0.3s ease;
+    transition: opacity 0.3s ease, top 0.3s ease; /* bottom -> top 변경 */
     z-index: 9999;
-}
+  }
 
 #statusMessage.show-up {
     bottom: 10px;
@@ -501,11 +786,12 @@ textarea:focus {
 
 /* Update Log */
 #update-log {
-    margin: 2rem auto;
-    border-radius: 16px;
+    margin: 1.5rem auto;
+    border-radius: 10px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .update-header {
@@ -537,7 +823,7 @@ textarea:focus {
 }
 .update-content li {
     margin: 0.75rem 0;
-    padding-left: 1rem;
+    padding-left: 1.25rem;
     position: relative;
     color: #1a1a1a;
     font-size: 0.9rem;
@@ -551,6 +837,7 @@ textarea:focus {
     position: absolute;
     left: 0;
     color: #4a90e2;
+    font-weight: bold;
 }
 
 /* Footer */
@@ -558,7 +845,7 @@ textarea:focus {
     background-color: rgba(74, 144, 226, 0.05);
     color: #4a90e2;
     text-align: center;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     border-top: 1px solid rgba(74, 144, 226, 0.1);
     margin-top: 30px;
 }
@@ -566,39 +853,101 @@ textarea:focus {
 #footer p {
     margin: 0.5rem 0;
     color: #357abd;
+    font-size: 0.9rem;
 }
 
- #separator{
-     border: none; /* border-top: none으로 설정 */
-     margin: 0;
-     background: transparent;
+/* Footer 소셜 링크 */
+.footer-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 12px;
+}
+
+.footer-social-links a {
+    color: #4a90e2;
+    font-size: 22px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-social-links a:hover {
+    color: #357abd;
+    transform: translateY(-2px);
+}
+
+#separator{
+    border: none; /* border-top: none으로 설정 */
+    margin: 0;
+    background: transparent;
 }
 
 .update-header:hover {
     background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
 }
+
 .toggle-icon {
     transition: transform 0.3s ease;
 }
 
-
-/* Dark mode */
-body.dark #update-log {
-    background: #1a1a1a;
-    border-color: #333;
+/* 지원 형식 정보 스타일 */
+.supported-formats-info {
+    margin: 0.5rem 0 1rem;
+    padding: 0.75rem;
+    background-color: #f1f7ff;
+    border-radius: 8px;
+    border-left: 4px solid #4a90e2;
+    font-size: 0.9rem;
+    color: #333;
 }
 
-body.dark .update-content li {
-    color: #e2e8f0;
+.supported-formats-info strong {
+    color: #4a90e2;
+    margin-right: 0.25rem;
 }
 
-body.dark .update-content li::before {
-    color: #76a9e0;
+/* 버튼 컨테이너 스타일 */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
+.button-container button {
+    flex: 1;
+    min-width: 120px;
+}
 
+/* 체크박스 스타일 개선 */
+.user-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
 
- @media (max-width: 768px) {
+.user-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.user-checkbox-label:hover {
+    background: #e2e8f0;
+}
+
+.user-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #4a90e2;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
     .header-text {
         font-size: 1rem;
         margin-bottom: 0.75rem;
@@ -612,19 +961,25 @@ body.dark .update-content li::before {
         padding: 0.5rem 1rem;
     }
      
-     .main-container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 2rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 24px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-}
+    .main-container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto 2rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* 프로필 그리드 조정 */
+    .profile-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
       
     /* 채팅 메시지 레이아웃 최적화 */
-     .message-wrapper {
-         max-width: calc(80% - 30px);
+    .message-wrapper {
+        max-width: calc(80% - 30px);
         /* 모바일에서는 더 넓게 */
     }
     body {
@@ -641,10 +996,11 @@ body.dark .update-content li::before {
         border-radius: 10px;
     }
 
-     .message-content {
+    .message-content {
         padding: 10px 16px;
     }
-      .profile-delete-btn {
+    
+    .profile-delete-btn {
         width: 32px; /* 원하는 정사각형 크기 */
         height: 32px; /* 버튼의 높이를 동일하게 */
         font-size: 1rem; /* 글씨 크기 조정 */
@@ -655,87 +1011,90 @@ body.dark .update-content li::before {
         border-radius: 50%; /* 필요 시 버튼을 원형으로 */
     }
     /* 프로필 섹션 최적화 */
-     .user-profile {
-         grid-template-columns: auto 1fr;
-         gap: 10px;
-         padding: 10px;
+    .user-profile-card {
+        padding: 15px;
     }
-     .name-container {
-         flex-wrap: wrap;
+    
+    .name-container {
+        flex-wrap: wrap;
     }
-     .display-name-input {
-         width: 100%;
-         margin-bottom: 5px;
+    
+    .display-name-input {
+        width: 100%;
+        margin-bottom: 5px;
     }
     /* 색상 선택기와 파일 업로드 최적화 */
-     .color-picker {
-         width: 24px;
-         height: 24px;
+    .color-picker {
+        width: 24px;
+        height: 24px;
     }
-     .file-input-label {
-         padding: 6px 12px;
-         font-size: 0.8rem;
+    
+    .file-input-label {
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
     /* 텍스트 영역 최적화 */
-     textarea {
-         height: 150px;
-         font-size: 0.9rem;
-         padding: 0.75rem;
+    textarea {
+        height: 150px;
+        font-size: 0.9rem;
+        padding: 0.75rem;
     }
     /* 편집 버튼 최적화 */
-     .edit-buttons {
-         flex-wrap: wrap;
-         gap: 5px;
+    .edit-buttons {
+        flex-wrap: wrap;
+        gap: 5px;
     }
-     .edit-buttons button {
-         width: auto;
-         flex: 1;
-         min-width: 60px;
-         padding: 4px 8px;
+    
+    .edit-buttons button {
+        width: auto;
+        flex: 1;
+        min-width: 60px;
+        padding: 4px 8px;
     }
     /* 테마 토글 버튼 위치 조정 */
-     #themeToggle {
-         bottom: 10px;
-         right: 10px;
-         padding: 8px 16px;
-         font-size: 0.9rem;
+    #themeToggle {
+        bottom: 10px;
+        right: 10px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
     }
     /* 스크롤바 최적화 */
-     .chat-container::-webkit-scrollbar {
-         width: 4px;
+    .chat-container::-webkit-scrollbar {
+        width: 4px;
     }
     /* 업데이트 로그 최적화 */
-     #update-log {
-         padding: 1rem;
-         font-size: 0.9rem;
+    #update-log {
+        padding: 1rem;
+        font-size: 0.9rem;
     }
     /* 상태 메시지 최적화 */
-     #statusMessage {
-         padding: 8px 16px;
-         font-size: 0.9rem;
-         max-width: 90%;
-         left: 50%;
-         transform: translateX(-50%);
+    #statusMessage {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        max-width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
-     .social-links {
-    position: static;
-    display: flex;
-    justify-content: flex-start;
-    gap: 15px;
-    padding: 0.5rem 2rem; /* Reduced vertical padding */
-}
+    .social-links {
+        position: static;
+        display: flex;
+        justify-content: flex-start;
+        gap: 15px;
+        padding: 0.5rem 2rem; /* 상하 여백 감소 */
+    }
      
-#header-container {
-     #header-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0.4rem 1rem 0;
-}
+    #header-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0.4rem 1rem 0;
+    }
+    
     #title {
-    margin-bottom: 0.15rem;
-}
-      .social-links {
+        margin-bottom: 0.15rem;
+    }
+    
+    .social-links {
         padding: 0.4rem 1rem;
     }
     
@@ -745,43 +1104,62 @@ body.dark .update-content li::before {
     }
     
     .main-container {
-    width: 100%;
-    max-width: 900px;
-     margin: 0 1rem 1.5rem;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 1rem 1.5rem;
         padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 24px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(74, 144, 226, 0.1);
-}
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(74, 144, 226, 0.1);
+    }
     
     #update-log {
         margin: 1.5rem 0;
         border-radius: 16px;
     }
+    
     .chat-container.resizable {
         resize: none;
         width: 100%;
     }
+
+    .button-container {
+        gap: 6px;
+    }
+    
+    .button-container button {
+        font-size: 0.85rem;
+        min-width: 80px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 체크박스 그리드 조정 */
+    .user-checkboxes {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 }
+
 /* 더 작은 모바일 화면을 위한 추가 최적화 */
- @media (max-width: 480px) {
-   body {
+@media (max-width: 480px) {
+    body {
         background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
     }
+    
     #header-container {
         padding: 0.3rem 0.75rem 0;
     }
     
-     #title {
+    #title {
         font-size: 1.75rem;
         margin-bottom: 0.15rem;
     }
+    
     .header-text {
         margin: 0.15rem 0;
     }
     
-     .main-container {
+    .main-container {
         margin: 0 0.75rem 1rem;
         padding: 1.25rem;
     }
@@ -789,8 +1167,10 @@ body.dark .update-content li::before {
     .social-links {
         padding: 0.3rem 0.75rem;
     }
+    
     .social-links a {
         font-size: 20px;
+    }
     
     #update-log {
         margin: 1rem 0;
@@ -804,8 +1184,32 @@ body.dark .update-content li::before {
         padding: 1rem;
     }
     
+    .button-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .button-container button {
+        width: 100%;
+    }
+    
+    .supported-formats-info {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    
+    /* 프로필 그리드를 단일 컬럼으로 */
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* 체크박스 목록도 단일 컬럼으로 */
+    .user-checkboxes {
+        grid-template-columns: 1fr;
+    }
 }
- @media screen and (max-width: 480px) {
+
+@media screen and (max-width: 480px) {
     #header-container {
         padding: 1rem 0.75rem 0.75rem;
     }
