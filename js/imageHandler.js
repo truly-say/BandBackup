@@ -6,9 +6,9 @@
 const ImageHandler = {
     // 기본 설정
     settings: {
-        profileImageSize: 100,  // 기본 프로필 이미지 크기 (픽셀)
-        quality: 0.4,          // 기본 이미지 품질 (0.4 = 40%)
-        compressImages: true    // 이미지 압축 사용 여부
+        profileImageSize: 500,  
+        quality: 0.75,         
+        compressImages: true   // 이미지 압축 사용 여부
     },
 
     /**
@@ -50,12 +50,12 @@ const ImageHandler = {
                 img.src = imageDataUrl;
                 previewElement.appendChild(img);
                 
-                // 비율 유지 이미지 최적화 사용 (있는 경우)
+                // 통합 이미지 최적화 프로세서 사용 (있는 경우)
                 let optimizedImageUrl;
-                if (typeof AspectRatioOptimizer !== 'undefined') {
+                if (typeof OptimizedImageProcessor !== 'undefined') {
                     // 내 메시지 사용자는 더 높은 품질로 처리
                     const isImportant = true; // 업로드 시에는 기본적으로 중요하게 처리
-                    optimizedImageUrl = await AspectRatioOptimizer.optimizeImage(imageDataUrl, isImportant);
+                    optimizedImageUrl = await OptimizedImageProcessor.optimizeImage(imageDataUrl, isImportant);
                 } else {
                     // 기존 최적화 사용
                     optimizedImageUrl = await this.optimizeImage(imageDataUrl);
@@ -89,7 +89,7 @@ const ImageHandler = {
     },
 
     /**
-     * 이미지 최적화 함수
+     * 이미지 최적화 함수 (사이즈 및 품질 조정)
      * @param {string} imageDataUrl - 이미지 Data URL
      * @returns {Promise<string>} 최적화된 이미지 URL
      */
@@ -117,44 +117,31 @@ const ImageHandler = {
                 
                 img.onload = () => {
                     try {
-                        // 고급 설정 로드
-                        let advancedSettings = {};
-                        if (typeof StorageManager !== 'undefined' && StorageManager) {
-                            advancedSettings = StorageManager.loadAdvancedSettings();
-                        }
+                        // 고정 크기 및 품질 사용
+                        const maxSize = 500; // 500x500 고정
+                        const imageQuality = 0.9; // 90% 품질 고정
                         
-                        // 설정 적용 (사용자 정의 설정 또는 기본값)
-                        const maxSize = advancedSettings.maxImageSize || this.settings.profileImageSize;
-                        const imageQuality = advancedSettings.imageQuality || this.settings.quality;
-                        const useCompression = advancedSettings.hasOwnProperty('useImageCompression') 
-                            ? advancedSettings.useImageCompression 
-                            : this.settings.compressImages;
-                        
-                        // 캔버스에 이미지 그리기 (크기 최적화)
+                        // 캔버스에 이미지 그리기 (정사각형 크롭)
                         const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // 이미지가 최대 크기보다 큰 경우에만 조정
-                        if (width > maxSize || height > maxSize) {
-                            if (width > height) {
-                                height = Math.round(height * maxSize / width);
-                                width = maxSize;
-                            } else {
-                                width = Math.round(width * maxSize / height);
-                                height = maxSize;
-                            }
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
+                        canvas.width = maxSize;
+                        canvas.height = maxSize;
                         
                         const ctx = canvas.getContext('2d');
                         ctx.imageSmoothingEnabled = true;
                         ctx.imageSmoothingQuality = 'high';
-                        ctx.drawImage(img, 0, 0, width, height);
                         
-                        // 이미지 형식 및 품질 설정
+                        // 정사각형으로 중앙 부분 크롭
+                        const size = Math.min(img.width, img.height);
+                        const offsetX = (img.width - size) / 2;
+                        const offsetY = (img.height - size) / 2;
+                        
+                        ctx.drawImage(
+                            img, 
+                            offsetX, offsetY, size, size, 
+                            0, 0, maxSize, maxSize
+                        );
+                        
+                        // 이미지 형식 및 품질 설정 (WebP 우선)
                         let optimizedUrl;
                         if (canvas.toDataURL('image/webp').startsWith('data:image/webp')) {
                             // WebP 지원 시
@@ -164,8 +151,8 @@ const ImageHandler = {
                             optimizedUrl = canvas.toDataURL('image/jpeg', imageQuality);
                         }
                         
-                        // 이미지 압축 적용 (설정에 따라)
-                        if (useCompression) {
+                        // 이미지 압축 적용
+                        if (this.settings.compressImages) {
                             // LZ-String 압축 우선 사용 (사용 가능한 경우)
                             if (typeof ImageCompressor !== 'undefined' && ImageCompressor) {
                                 const compressedUrl = ImageCompressor.compressImageUrl(optimizedUrl);
@@ -246,7 +233,7 @@ const ImageHandler = {
     },
 
     /**
-     * 드래그 앤 드롭 설정
+     * 향상된 드래그 앤 드롭 설정 - 웹 이미지도 처리
      * @param {HTMLElement} container - 드래그 대상 컨테이너
      * @param {HTMLElement} previewElement - 이미지 미리보기 요소
      * @param {Function} onComplete - 처리 완료 콜백
@@ -266,23 +253,75 @@ const ImageHandler = {
             container.classList.remove('drag-over');
         });
         
-        // 드롭 이벤트
+        // 드롭 이벤트 - 파일과 웹 이미지 모두 처리
         container.addEventListener('drop', (e) => {
             e.preventDefault();
             e.stopPropagation();
             container.classList.remove('drag-over');
             
-            // 드롭된 파일 가져오기
+            // 1. 파일 확인 (로컬 파일 드래그)
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 const file = e.dataTransfer.files[0];
                 
                 // 이미지 파일 확인
                 if (file.type.startsWith('image/')) {
-                    // 이미지 처리 로직 호출
+                    // 이미지 처리 로직 호출 (내부 이미지)
                     this.processUploadedImage(file, previewElement, onComplete);
+                    return;
                 } else {
                     alert('이미지 파일만 업로드 가능합니다.');
+                    return;
                 }
+            }
+            
+            // 2. 웹 이미지 URL 확인 (웹페이지에서 드래그)
+            let imageUrl = null;
+            
+            // HTML 이미지에서 드래그한 경우
+            if (e.dataTransfer.getData('text/html')) {
+                const html = e.dataTransfer.getData('text/html');
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const img = tempDiv.querySelector('img');
+                
+                if (img && img.src) {
+                    imageUrl = img.src;
+                }
+            }
+            
+            // 이미지 URL을 직접 드래그한 경우
+            if (!imageUrl && e.dataTransfer.getData('text/uri-list')) {
+                imageUrl = e.dataTransfer.getData('text/uri-list');
+            }
+            
+            // 일반 텍스트로 URL을 드래그한 경우 (fallback)
+            if (!imageUrl && e.dataTransfer.getData('text/plain')) {
+                const text = e.dataTransfer.getData('text/plain');
+                // URL 형식 체크
+                if (text.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i) || 
+                    text.match(/^https?:\/\/(i\.imgur\.com|i\.ibb\.co)\/.+$/i)) {
+                    imageUrl = text;
+                }
+            }
+            
+            // 이미지 URL이 있으면 외부 이미지로 처리
+            if (imageUrl) {
+                // 미리보기 이미지 표시
+                previewElement.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                previewElement.appendChild(img);
+                
+                // 완료 콜백 호출 (외부 URL 그대로 사용)
+                if (typeof onComplete === 'function') {
+                    onComplete(imageUrl);
+                }
+                
+                if (typeof UIManager !== 'undefined' && UIManager) {
+                    UIManager.showStatusMessage('웹 이미지가 외부 링크로 적용되었습니다', false);
+                }
+            } else {
+                alert('이미지를 찾을 수 없습니다. 다른 이미지를 시도해보세요.');
             }
         });
     },
@@ -304,34 +343,6 @@ const ImageHandler = {
         return Math.round(decodedSize / 1024 * 10) / 10;
     }
 };
-
-// 초기 이미지 설정 로드
-function initImageSettings() {
-    // 저장된 이미지 설정 불러오기
-    if (typeof StorageManager !== 'undefined' && StorageManager) {
-        const savedSettings = StorageManager.loadImageSettings();
-        if (savedSettings) {
-            ImageHandler.updateSettings(savedSettings);
-        }
-        
-        // 고급 설정 불러오기
-        const advancedSettings = StorageManager.loadAdvancedSettings();
-        if (advancedSettings) {
-            // 이미지 관련 설정 적용
-            const imageSettings = {
-                profileImageSize: advancedSettings.maxImageSize || ImageHandler.settings.profileImageSize,
-                quality: advancedSettings.imageQuality || ImageHandler.settings.quality,
-                compressImages: advancedSettings.hasOwnProperty('useImageCompression') 
-                    ? advancedSettings.useImageCompression 
-                    : ImageHandler.settings.compressImages
-            };
-            ImageHandler.updateSettings(imageSettings);
-        }
-    }
-}
-
-// DOM 로드 시 이미지 설정 초기화
-document.addEventListener('DOMContentLoaded', initImageSettings);
 
 // 전역 변수로 노출
 window.ImageHandler = ImageHandler;

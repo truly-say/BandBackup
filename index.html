@@ -1,6 +1,7 @@
 <!-- /index.html - 밴드 채팅 백업 도구 메인 페이지 -->
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="css/darkMode.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <div id="header-container">
         <div id="title">밴드 채팅 백업 도구</div>
@@ -62,90 +64,89 @@
     <footer id="footer">
         <p>본 웹사이트는 '선청고등학교' 커뮤의 채팅 백업을 위해 만들어졌습니다.</p>
         <p>해당 사이트는 @C2H5OH_snow이 제작했습니다.</p>
-        <div class="footer-social-links">
-            <a href="https://twitter.com/C2H5OH_snow" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="https://github.com/truly-say" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-        </div>
     </footer>
-    
-    <!-- 모듈식 JS 로드 순서 (의존성 순) -->
+
     <!-- 1. URL 압축 라이브러리 (다른 모듈의 의존성) -->
-<script src="js/urlCompressor.js"></script>
-<script src="js/lzStringCompressor.js"></script>
+    <script src="js/urlCompressor.js"></script>
+    <script src="js/lzStringCompressor.js"></script>
 
-<!-- 2. 기본 유틸리티 모듈들 -->
-<script src="js/messageParser.js"></script>
-<script src="js/storageManager.js"></script>
-<script src="js/uiManager.js"></script>
+    <!-- 2. 기본 유틸리티 모듈들 -->
+    <script src="js/messageParser.js"></script>
+    <script src="js/storageManager.js"></script>
+    <script src="js/uiManager.js"></script>
 
-<!-- 3. 기능 모듈들 -->
-<script src="js/aspectRatioOptimizer.js"></script>
-<script src="js/imageHandler.js"></script>
-<script src="js/themeManager.js"></script>
-<script src="js/profileManager.js"></script>
-<script src="js/exportManager.js"></script>
-<script src="js/editManager.js"></script>
+    <!-- 3. 이미지 처리 모듈 -->
+    <script src="js/optimizedImageProcessor.js"></script>
+    <script src="js/imageHandler.js"></script>
 
-<!-- 4. 마지막으로 메인 앱 로드 -->
-<script src="js/app.js"></script>
-    
+    <!-- 4. 기능 모듈들 -->
+    <script src="js/aspectRatioOptimizer.js"></script>
+    <script src="js/themeManager.js"></script>
+    <script src="js/profileManager.js"></script>
+    <script src="js/exportManager.js"></script>
+    <script src="js/editManager.js"></script>
+
+    <!-- 5. 마지막으로 메인 앱 로드 -->
+    <script src="js/app.js"></script>
+
     <!-- 모듈 체크 및 폴백 로직 -->
     <script>
-    // 모듈 로딩 확인 및 전역 객체 정의 (폴백)
-    document.addEventListener('DOMContentLoaded', function() {
-        // 필수 모듈 확인
-        if (typeof MessageParser === 'undefined') {
-            console.warn('MessageParser 모듈이 로드되지 않았습니다. 기본 기능만 사용합니다.');
-            window.MessageParser = {
-                parseMessages: function(chatData) {
-                    // 간단한 기본 구현
-                    const lines = chatData.split('\n');
-                    const messages = [];
-                    const regex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
-                    
-                    let currentMessage = null;
-                    lines.forEach(line => {
-                        const trimmedLine = line.trim();
-                        if (!trimmedLine) return;
-                        
-                        const match = trimmedLine.match(regex);
-                        if (match) {
-                            if (currentMessage) messages.push(currentMessage);
-                            currentMessage = {
-                                time: match[1].trim(),
-                                username: match[2].trim(),
-                                chatMessage: match[3].trim()
-                            };
-                        } else if (currentMessage) {
-                            currentMessage.chatMessage += '\n' + trimmedLine;
-                        }
-                    });
-                    
-                    if (currentMessage) messages.push(currentMessage);
-                    return messages;
-                },
-                escapeHtml: function(str) {
-                    if (!str) return '';
-                    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-                },
-                safeId: function(text) {
-                    return text.replace(/[^a-z0-9]/gi, '_');
-                }
-            };
-        }
-        
-        // 모든 모듈이 정상적으로 로드되었는지 확인
-        console.log('모듈 상태 확인:');
-        console.log('- MessageParser:', typeof MessageParser !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- StorageManager:', typeof StorageManager !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- UIManager:', typeof UIManager !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- ImageHandler:', typeof ImageHandler !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- ThemeManager:', typeof ThemeManager !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- ProfileManager:', typeof ProfileManager !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- ExportManager:', typeof ExportManager !== 'undefined' ? '로드됨' : '로드 실패');
-        console.log('- EditManager:', typeof EditManager !== 'undefined' ? '로드됨' : '로드 실패');
-    });
+        // 모듈 로딩 확인 및 전역 객체 정의 (폴백)
+        document.addEventListener('DOMContentLoaded', function () {
+            // 필수 모듈 확인
+            if (typeof MessageParser === 'undefined') {
+                console.warn('MessageParser 모듈이 로드되지 않았습니다. 기본 기능만 사용합니다.');
+                window.MessageParser = {
+                    parseMessages: function (chatData) {
+                        // 간단한 기본 구현
+                        const lines = chatData.split('\n');
+                        const messages = [];
+                        const regex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
+
+                        let currentMessage = null;
+                        lines.forEach(line => {
+                            const trimmedLine = line.trim();
+                            if (!trimmedLine) return;
+
+                            const match = trimmedLine.match(regex);
+                            if (match) {
+                                if (currentMessage) messages.push(currentMessage);
+                                currentMessage = {
+                                    time: match[1].trim(),
+                                    username: match[2].trim(),
+                                    chatMessage: match[3].trim()
+                                };
+                            } else if (currentMessage) {
+                                currentMessage.chatMessage += '\n' + trimmedLine;
+                            }
+                        });
+
+                        if (currentMessage) messages.push(currentMessage);
+                        return messages;
+                    },
+                    escapeHtml: function (str) {
+                        if (!str) return '';
+                        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                    },
+                    safeId: function (text) {
+                        return text.replace(/[^a-z0-9]/gi, '_');
+                    }
+                };
+            }
+
+            // 모든 모듈이 정상적으로 로드되었는지 확인
+            console.log('모듈 상태 확인:');
+            console.log('- MessageParser:', typeof MessageParser !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- StorageManager:', typeof StorageManager !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- UIManager:', typeof UIManager !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- ImageHandler:', typeof ImageHandler !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- ThemeManager:', typeof ThemeManager !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- ProfileManager:', typeof ProfileManager !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- ExportManager:', typeof ExportManager !== 'undefined' ? '로드됨' : '로드 실패');
+            console.log('- EditManager:', typeof EditManager !== 'undefined' ? '로드됨' : '로드 실패');
+        });
     </script>
 </body>
+
 </html>

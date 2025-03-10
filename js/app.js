@@ -142,32 +142,146 @@ function renderMessages() {
     
     let prevUsername = null;
     let messageHTML = [];
+    let messageGroup = [];
     
+    // 메시지 그룹화
     for (let i = 0; i < state.messages.length; i++) {
         const message = state.messages[i];
         const { username } = message;
         
-        const isSameUser = username === prevUsername;
-        const isLast = i === state.messages.length - 1 || state.messages[i + 1].username !== username;
-        
-        // 연속 메시지 처리
-        if (isSameUser) {
-            let isContinuous = true;
-            
-            if (typeof MessageParser !== 'undefined' && MessageParser) {
-                const timeMatch = MessageParser.isSameTimeFrame(state.messages[i - 1].time, message.time);
-                isContinuous = timeMatch;
+        if (username !== prevUsername) {
+            // 새 그룹 시작 - 이전 그룹 처리
+            if (messageGroup.length > 0) {
+                // 그룹의 마지막 메시지 인덱스 찾기
+                const lastIndex = messageGroup[messageGroup.length - 1];
+                
+                for (let j = 0; j < messageGroup.length; j++) {
+                    const msgIndex = messageGroup[j];
+                    const msg = state.messages[msgIndex];
+                    const isSameUser = msg.username === prevUsername;
+                    const isFirst = j === 0;
+                    const isLast = j === messageGroup.length - 1;
+                    
+                    // 연속 메시지 처리
+                    if (!isFirst) {
+                        let isContinuous = true;
+                        
+                        if (typeof MessageParser !== 'undefined' && MessageParser) {
+                            const timeMatch = MessageParser.isSameTimeFrame(state.messages[msgIndex - 1].time, msg.time);
+                            isContinuous = timeMatch;
+                        }
+                        
+                        if (typeof UIManager !== 'undefined' && UIManager) {
+                            const html = UIManager.createMessageHTML(msg, msgIndex, state, isContinuous, isLast);
+                            
+                            // isLast인 경우 .last 클래스 추가
+                            if (isLast) {
+                                const classStart = html.indexOf('class="');
+                                if (classStart !== -1) {
+                                    const classEnd = html.indexOf('"', classStart + 7);
+                                    const beforeClass = html.substring(0, classEnd);
+                                    const afterClass = html.substring(classEnd);
+                                    messageHTML.push(beforeClass + ' last' + afterClass);
+                                } else {
+                                    messageHTML.push(html);
+                                }
+                            } else {
+                                messageHTML.push(html);
+                            }
+                        }
+                    } else {
+                        // 새 사용자의 메시지
+                        if (typeof UIManager !== 'undefined' && UIManager) {
+                            const html = UIManager.createMessageHTML(msg, msgIndex, state, false, isLast);
+                            
+                            // isLast인 경우 .last 클래스 추가 
+                            if (isLast) {
+                                const classStart = html.indexOf('class="');
+                                if (classStart !== -1) {
+                                    const classEnd = html.indexOf('"', classStart + 7);
+                                    const beforeClass = html.substring(0, classEnd);
+                                    const afterClass = html.substring(classEnd);
+                                    messageHTML.push(beforeClass + ' last' + afterClass);
+                                } else {
+                                    messageHTML.push(html);
+                                }
+                            } else {
+                                messageHTML.push(html);
+                            }
+                        }
+                    }
+                }
             }
             
-            if (typeof UIManager !== 'undefined' && UIManager) {
-                messageHTML.push(UIManager.createMessageHTML(message, i, state, isContinuous, isLast));
-            }
-        } else {
-            // 새 사용자의 메시지
-            if (typeof UIManager !== 'undefined' && UIManager) {
-                messageHTML.push(UIManager.createMessageHTML(message, i, state, false, isLast));
-            }
+            // 새 그룹 시작
             prevUsername = username;
+            messageGroup = [i];
+        } else {
+            // 같은 그룹에 메시지 추가
+            messageGroup.push(i);
+        }
+    }
+    
+    // 마지막 그룹 처리
+    if (messageGroup.length > 0) {
+        // 그룹의 마지막 메시지 인덱스 찾기
+        const lastIndex = messageGroup[messageGroup.length - 1];
+        
+        for (let j = 0; j < messageGroup.length; j++) {
+            const msgIndex = messageGroup[j];
+            const msg = state.messages[msgIndex];
+            const isSameUser = msg.username === prevUsername;
+            const isFirst = j === 0;
+            const isLast = j === messageGroup.length - 1;
+            
+            // 연속 메시지 처리
+            if (!isFirst) {
+                let isContinuous = true;
+                
+                if (typeof MessageParser !== 'undefined' && MessageParser) {
+                    const timeMatch = MessageParser.isSameTimeFrame(state.messages[msgIndex - 1].time, msg.time);
+                    isContinuous = timeMatch;
+                }
+                
+                if (typeof UIManager !== 'undefined' && UIManager) {
+                    const html = UIManager.createMessageHTML(msg, msgIndex, state, isContinuous, isLast);
+                    
+                    // isLast인 경우 .last 클래스 추가
+                    if (isLast) {
+                        const classStart = html.indexOf('class="');
+                        if (classStart !== -1) {
+                            const classEnd = html.indexOf('"', classStart + 7);
+                            const beforeClass = html.substring(0, classEnd);
+                            const afterClass = html.substring(classEnd);
+                            messageHTML.push(beforeClass + ' last' + afterClass);
+                        } else {
+                            messageHTML.push(html);
+                        }
+                    } else {
+                        messageHTML.push(html);
+                    }
+                }
+            } else {
+                // 새 사용자의 메시지
+                if (typeof UIManager !== 'undefined' && UIManager) {
+                    const html = UIManager.createMessageHTML(msg, msgIndex, state, false, isLast);
+                    
+                    // isLast인 경우 .last 클래스 추가 
+                    if (isLast) {
+                        const classStart = html.indexOf('class="');
+                        if (classStart !== -1) {
+                            const classEnd = html.indexOf('"', classStart + 7);
+                            const beforeClass = html.substring(0, classEnd);
+                            const afterClass = html.substring(classEnd);
+                            messageHTML.push(beforeClass + ' last' + afterClass);
+                        } else {
+                            messageHTML.push(html);
+                        }
+                    } else {
+                        messageHTML.push(html);
+                    }
+                }
+            }
         }
     }
     
