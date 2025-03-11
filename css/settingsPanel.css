@@ -1,0 +1,238 @@
+/* /css/settingsPanel.css - 설정 패널 및 설정 버튼 스타일 */
+
+/* 설정 버튼 (기존 테마 토글 버튼 대체) */
+.settings-button {
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.settings-button:hover {
+    background-color: #357abd;
+}
+
+/* 설정 패널 기본 스타일 */
+.settings-panel {
+    position: fixed;
+    width: 250px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    z-index: 999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 설정 옵션 컨테이너 */
+.settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-option:last-of-type {
+    border-bottom: none;
+}
+
+/* 설정 라벨 */
+.settings-label {
+    font-size: 14px;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-label i {
+    width: 18px;
+    text-align: center;
+    color: #4a90e2;
+}
+
+/* 토글 스위치 컨테이너 */
+.settings-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+
+/* 체크박스 숨김 */
+.settings-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* 슬라이더 스타일 */
+.settings-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 34px;
+}
+
+.settings-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+/* 체크 상태 스타일 */
+input:checked + .settings-slider {
+    background-color: #4a90e2;
+}
+
+input:checked + .settings-slider:before {
+    transform: translateX(16px);
+}
+
+/* 구분선 */
+.settings-divider {
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 10px 0;
+}
+
+/* 설정 정보 영역 */
+.settings-about {
+    padding: 10px 0 5px;
+    font-size: 12px;
+    color: #718096;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.settings-about-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.settings-about-credits {
+    font-style: italic;
+    text-align: right;
+    opacity: 0.8;
+}
+
+/* 다크 모드 스타일 */
+body.dark .settings-button {
+    background-color: #3182ce;
+}
+
+body.dark .settings-button:hover {
+    background-color: #2c5282;
+}
+
+body.dark .settings-panel {
+    background-color: #1e293b;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .settings-option {
+    border-bottom-color: #2d3748;
+}
+
+body.dark .settings-label {
+    color: #e2e8f0;
+}
+
+body.dark .settings-label i {
+    color: #60a5fa;
+}
+
+body.dark .settings-slider {
+    background-color: #4a5568;
+}
+
+body.dark input:checked + .settings-slider {
+    background-color: #3182ce;
+}
+
+body.dark .settings-divider {
+    background-color: #2d3748;
+}
+
+body.dark .settings-about {
+    color: #a0aec0;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .settings-button {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .settings-panel {
+        width: 220px;
+        padding: 12px;
+    }
+    
+    .settings-label {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .settings-button {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .settings-panel {
+        width: 200px;
+        padding: 10px;
+    }
+    
+    .settings-label {
+        font-size: 12px;
+    }
+    
+    .settings-switch {
+        width: 32px;
+        height: 18px;
+    }
+    
+    .settings-slider:before {
+        height: 14px;
+        width: 14px;
+    }
+    
+    input:checked + .settings-slider:before {
+        transform: translateX(14px);
+    }
+}

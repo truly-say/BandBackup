@@ -2,18 +2,18 @@
 
 // 애플리케이션 상태 객체
 const state = {
-    messages: [],
-    userProfileImages: {},
-    userColors: {},
-    displayNames: {},
-    selectedUsers: new Set(),
-    darkMode: false,
-    isProcessing: false,
-    isFirstLoad: true,
-    highlightTags: true 
+    messages: [],                // 파싱된 메시지 배열
+    userProfileImages: {},       // 사용자 프로필 이미지
+    userColors: {},              // 사용자 이름 색상
+    displayNames: {},            // 사용자 표시 이름
+    selectedUsers: new Set(),    // 내 메시지로 표시할 사용자 집합
+    darkMode: false,             // 다크 모드 상태
+    isProcessing: false,         // 처리 중 상태
+    isFirstLoad: true,           // 첫 로드 여부
+    highlightTags: true,         // @태그 강조 상태
+    showMyProfile: true          // 내 메시지 프로필 이미지 표시 상태
 };
 
-// DOM이 로드된 후 초기화
 // DOM이 로드된 후 초기화
 document.addEventListener('DOMContentLoaded', function() {
     console.log('앱 초기화 시작');
@@ -30,10 +30,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // 태그 강조 설정 불러오기
         state.highlightTags = StorageManager.loadTagHighlightSetting();
         
+        // 내 메시지 프로필 이미지 표시 설정 불러오기
+        if (typeof StorageManager.loadShowMyProfileSetting === 'function') {
+            state.showMyProfile = StorageManager.loadShowMyProfileSetting();
+        } else {
+            const savedSetting = localStorage.getItem('showMyProfile');
+            state.showMyProfile = savedSetting === null ? true : savedSetting === 'true';
+        }
+        
         // 고급 설정 불러오기
         const advancedSettings = StorageManager.loadAdvancedSettings();
         if (advancedSettings) {
             state.highlightTags = advancedSettings.highlightTags;
+            if (advancedSettings.hasOwnProperty('showMyProfile')) {
+                state.showMyProfile = advancedSettings.showMyProfile;
+            }
         }
     }
 
@@ -41,9 +52,20 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     
     // 테마 초기화
-    if (typeof ThemeManager !== 'undefined' && ThemeManager) {
-        ThemeManager.initializeTheme(state);
-        ThemeManager.initUpdateLogToggle();
+    if (typeof UIManager !== 'undefined' && UIManager) {
+        UIManager.initializeTheme(state);
+        UIManager.initUpdateLogToggle();
+    }
+    
+    // 설정 패널 초기화 
+    if (typeof SettingsPanel !== 'undefined' && SettingsPanel) {
+        SettingsPanel.init(state, renderMessages);
+    }
+    
+    // 도움말 시스템 초기화 
+    if (typeof HelpSystem !== 'undefined' && HelpSystem) {
+        const isDarkMode = document.body.classList.contains('dark');
+        HelpSystem.init(isDarkMode);
     }
     
     console.log('앱 초기화 완료');
@@ -60,7 +82,6 @@ function setupEventListeners() {
     const convertBtn = document.getElementById('convert-btn');
     const copyBtn = document.getElementById('copy-btn');
     const clearBtn = document.getElementById('clear-btn');
-    const themeToggle = document.getElementById('themeToggle');
     
     // 채팅 분석 버튼
     if (analyzeBtn) {
@@ -102,20 +123,6 @@ function setupEventListeners() {
         console.error('clear-btn 요소를 찾을 수 없습니다');
     }
     
-    // 테마 토글 버튼
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            console.log('테마 토글 버튼 클릭됨');
-            if (typeof ThemeManager !== 'undefined' && ThemeManager) {
-                ThemeManager.toggleTheme(state, renderMessages);
-            } else {
-                console.error('ThemeManager가 로드되지 않았습니다');
-            }
-        });
-    } else {
-        console.error('themeToggle 요소를 찾을 수 없습니다');
-    }
-    
     console.log('이벤트 리스너 설정 완료');
 }
 
@@ -140,146 +147,71 @@ function renderMessages() {
     const previousScrollTop = chatContainer.scrollTop;
     const previousScrollHeight = chatContainer.scrollHeight;
     
-    let prevUsername = null;
     let messageHTML = [];
-    let messageGroup = [];
     
-    // 메시지 그룹화
+    // 사용자별 메시지 그룹화 처리
+    const messageGroups = [];
+    let currentGroup = [];
+    let currentUsername = null;
+    
+    // 메시지 그룹화 - 삭제 후에도 동일 사용자 메시지 통합
     for (let i = 0; i < state.messages.length; i++) {
         const message = state.messages[i];
         const { username } = message;
         
-        if (username !== prevUsername) {
-            // 새 그룹 시작 - 이전 그룹 처리
-            if (messageGroup.length > 0) {
-                // 그룹의 마지막 메시지 인덱스 찾기
-                const lastIndex = messageGroup[messageGroup.length - 1];
-                
-                for (let j = 0; j < messageGroup.length; j++) {
-                    const msgIndex = messageGroup[j];
-                    const msg = state.messages[msgIndex];
-                    const isSameUser = msg.username === prevUsername;
-                    const isFirst = j === 0;
-                    const isLast = j === messageGroup.length - 1;
-                    
-                    // 연속 메시지 처리
-                    if (!isFirst) {
-                        let isContinuous = true;
-                        
-                        if (typeof MessageParser !== 'undefined' && MessageParser) {
-                            const timeMatch = MessageParser.isSameTimeFrame(state.messages[msgIndex - 1].time, msg.time);
-                            isContinuous = timeMatch;
-                        }
-                        
-                        if (typeof UIManager !== 'undefined' && UIManager) {
-                            const html = UIManager.createMessageHTML(msg, msgIndex, state, isContinuous, isLast);
-                            
-                            // isLast인 경우 .last 클래스 추가
-                            if (isLast) {
-                                const classStart = html.indexOf('class="');
-                                if (classStart !== -1) {
-                                    const classEnd = html.indexOf('"', classStart + 7);
-                                    const beforeClass = html.substring(0, classEnd);
-                                    const afterClass = html.substring(classEnd);
-                                    messageHTML.push(beforeClass + ' last' + afterClass);
-                                } else {
-                                    messageHTML.push(html);
-                                }
-                            } else {
-                                messageHTML.push(html);
-                            }
-                        }
-                    } else {
-                        // 새 사용자의 메시지
-                        if (typeof UIManager !== 'undefined' && UIManager) {
-                            const html = UIManager.createMessageHTML(msg, msgIndex, state, false, isLast);
-                            
-                            // isLast인 경우 .last 클래스 추가 
-                            if (isLast) {
-                                const classStart = html.indexOf('class="');
-                                if (classStart !== -1) {
-                                    const classEnd = html.indexOf('"', classStart + 7);
-                                    const beforeClass = html.substring(0, classEnd);
-                                    const afterClass = html.substring(classEnd);
-                                    messageHTML.push(beforeClass + ' last' + afterClass);
-                                } else {
-                                    messageHTML.push(html);
-                                }
-                            } else {
-                                messageHTML.push(html);
-                            }
-                        }
-                    }
-                }
+        if (username !== currentUsername) {
+            // 새 그룹 시작 - 이전 그룹 저장
+            if (currentGroup.length > 0) {
+                messageGroups.push({
+                    username: currentUsername,
+                    messages: [...currentGroup]
+                });
+                currentGroup = [];
             }
-            
-            // 새 그룹 시작
-            prevUsername = username;
-            messageGroup = [i];
-        } else {
-            // 같은 그룹에 메시지 추가
-            messageGroup.push(i);
+            currentUsername = username;
         }
+        
+        // 현재 그룹에 메시지 추가
+        currentGroup.push({
+            index: i,
+            message: message
+        });
     }
     
     // 마지막 그룹 처리
-    if (messageGroup.length > 0) {
-        // 그룹의 마지막 메시지 인덱스 찾기
-        const lastIndex = messageGroup[messageGroup.length - 1];
+    if (currentGroup.length > 0) {
+        messageGroups.push({
+            username: currentUsername,
+            messages: [...currentGroup]
+        });
+    }
+    
+    // 각 그룹 렌더링
+    for (const group of messageGroups) {
+        const username = group.username;
+        const messages = group.messages;
         
-        for (let j = 0; j < messageGroup.length; j++) {
-            const msgIndex = messageGroup[j];
-            const msg = state.messages[msgIndex];
-            const isSameUser = msg.username === prevUsername;
-            const isFirst = j === 0;
-            const isLast = j === messageGroup.length - 1;
+        // 각 그룹의 메시지 처리
+        for (let i = 0; i < messages.length; i++) {
+            const { index, message } = messages[i];
+            const isFirst = i === 0;
+            const isLast = i === messages.length - 1;
             
-            // 연속 메시지 처리
-            if (!isFirst) {
-                let isContinuous = true;
+            // 연속 메시지 처리 (첫 번째가 아닌 모든 메시지는 연속 메시지로 간주)
+            const isContinuous = !isFirst;
+            
+            // HTML 생성
+            if (typeof UIManager !== 'undefined' && UIManager) {
+                const html = UIManager.createMessageHTML(message, index, state, isContinuous, isLast);
                 
-                if (typeof MessageParser !== 'undefined' && MessageParser) {
-                    const timeMatch = MessageParser.isSameTimeFrame(state.messages[msgIndex - 1].time, msg.time);
-                    isContinuous = timeMatch;
-                }
-                
-                if (typeof UIManager !== 'undefined' && UIManager) {
-                    const html = UIManager.createMessageHTML(msg, msgIndex, state, isContinuous, isLast);
-                    
-                    // isLast인 경우 .last 클래스 추가
-                    if (isLast) {
-                        const classStart = html.indexOf('class="');
-                        if (classStart !== -1) {
-                            const classEnd = html.indexOf('"', classStart + 7);
-                            const beforeClass = html.substring(0, classEnd);
-                            const afterClass = html.substring(classEnd);
-                            messageHTML.push(beforeClass + ' last' + afterClass);
-                        } else {
-                            messageHTML.push(html);
-                        }
-                    } else {
-                        messageHTML.push(html);
-                    }
-                }
-            } else {
-                // 새 사용자의 메시지
-                if (typeof UIManager !== 'undefined' && UIManager) {
-                    const html = UIManager.createMessageHTML(msg, msgIndex, state, false, isLast);
-                    
-                    // isLast인 경우 .last 클래스 추가 
-                    if (isLast) {
-                        const classStart = html.indexOf('class="');
-                        if (classStart !== -1) {
-                            const classEnd = html.indexOf('"', classStart + 7);
-                            const beforeClass = html.substring(0, classEnd);
-                            const afterClass = html.substring(classEnd);
-                            messageHTML.push(beforeClass + ' last' + afterClass);
-                        } else {
-                            messageHTML.push(html);
-                        }
-                    } else {
-                        messageHTML.push(html);
-                    }
+                // 마지막 메시지에 .last 클래스 추가
+                if (isLast) {
+                    // div class="chat-message mine" 또는 div class="chat-message other" 형태를 찾아서 last 추가
+                    const classPattern = /class="chat-message (mine|other)"/;
+                    const modifiedHtml = html.replace(classPattern, 'class="chat-message $1 last"');
+                    messageHTML.push(modifiedHtml);
+                } else {
+                    messageHTML.push(html);
                 }
             }
         }
@@ -376,16 +308,6 @@ function handleAnalyze() {
         ProfileManager.createProfileSettings(state, renderMessages);
     } else {
         console.error('ProfileManager가 로드되지 않았거나 createProfileSettings 함수가 없습니다');
-    }
-
-    // 프로필 설정 UI 생성 후 고급 설정 버튼 추가
-    if (typeof ProfileManager !== 'undefined' && ProfileManager && typeof ProfileManager.createProfileSettings === 'function') {
-        ProfileManager.createProfileSettings(state, renderMessages);
-        
-        // 고급 설정 버튼 추가
-        if (typeof UIManager !== 'undefined' && UIManager && typeof UIManager.addAdvancedSettingsButton === 'function') {
-            UIManager.addAdvancedSettingsButton(state);
-        }
     }
 
     // 메시지 렌더링

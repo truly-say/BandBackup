@@ -1,7 +1,7 @@
-// /js/lzStringCompressor.js - 이미지 URL 압축 유틸리티
+// /js/compressor.js - 통합 압축 및 이미지 URL 최적화 모듈
 
 /**
- * LZ-String 라이브러리 (인라인 버전)
+ * LZ-String 라이브러리 - 데이터 압축용
  * https://github.com/pieroxy/lz-string/
  */
 const LZString = function() {
@@ -190,39 +190,39 @@ const LZString = function() {
       };
     return i;
   }();
-  
-  /**
-   * 이미지 URL 압축 유틸리티 모듈
-   */
-  const ImageCompressor = {
+
+/**
+ * 통합 압축 모듈 - 이미지 URL 압축 및 데이터 최적화
+ */
+const Compressor = {
     /**
      * 이미지 URL 압축 (LZ-String 사용)
      * @param {string} imageDataUrl - 이미지 Data URL
      * @returns {string} 압축된 URL
      */
     compressImageUrl: function(imageDataUrl) {
-      if (!imageDataUrl || !imageDataUrl.startsWith('data:')) {
-        return imageDataUrl; // 압축 불가능한 형식이면 원본 반환
-      }
-  
-      try {
-        // 헤더와 데이터 부분 분리
-        const [header, base64Data] = imageDataUrl.split(',');
-        
-        if (!base64Data) {
-          console.warn('유효하지 않은 이미지 데이터 URL');
-          return imageDataUrl;
+        if (!imageDataUrl || !imageDataUrl.startsWith('data:')) {
+            return imageDataUrl; // 압축 불가능한 형식이면 원본 반환
         }
-        
-        // LZ-String으로 압축 (URL 안전 버전 사용)
-        const compressedData = LZString.compressToEncodedURIComponent(base64Data);
-        
-        // 압축 식별자와 함께 압축된 데이터 반환
-        return `${header},LZSTR:${compressedData}`;
-      } catch (error) {
-        console.error('이미지 URL 압축 중 오류 발생:', error);
-        return imageDataUrl; // 압축 실패 시 원본 반환
-      }
+
+        try {
+            // 헤더와 데이터 부분 분리
+            const [header, base64Data] = imageDataUrl.split(',');
+            
+            if (!base64Data) {
+                console.warn('유효하지 않은 이미지 데이터 URL');
+                return imageDataUrl;
+            }
+            
+            // LZ-String으로 압축 (URL 안전 버전 사용)
+            const compressedData = LZString.compressToEncodedURIComponent(base64Data);
+            
+            // 압축 식별자와 함께 압축된 데이터 반환
+            return `${header},LZSTR:${compressedData}`;
+        } catch (error) {
+            console.error('이미지 URL 압축 중 오류 발생:', error);
+            return imageDataUrl; // 압축 실패 시 원본 반환
+        }
     },
     
     /**
@@ -231,42 +231,43 @@ const LZString = function() {
      * @returns {string} 원본 이미지 Data URL
      */
     decompressImageUrl: function(compressedImageUrl) {
-      if (!compressedImageUrl) {
-        return compressedImageUrl;
-      }
-      
-      try {
-        // LZSTR 형식 처리
-        if (compressedImageUrl.includes('LZSTR:')) {
-          // 헤더와 압축된 데이터 부분 분리
-          const [header, compressedData] = compressedImageUrl.split(',');
-          
-          // 압축 식별자 제거
-          const cleanCompressedData = compressedData.replace('LZSTR:', '');
-          
-          // LZ-String으로 압축 해제
-          const originalBase64 = LZString.decompressFromEncodedURIComponent(cleanCompressedData);
-          
-          // 원본 Data URL 반환
-          return `${header},${originalBase64}`;
+        if (!compressedImageUrl) {
+            return compressedImageUrl;
         }
         
-        // 현재 코드에서 지원하는 다른 압축 형식 처리
-        if (compressedImageUrl.includes('OPTIMIZE:') || 
-            compressedImageUrl.includes('NOCOMPRESS:') ||
-            compressedImageUrl.includes('LZPROF:')) {
-          // 기존 UrlCompressor로 처리 위임
-          if (typeof UrlCompressor !== 'undefined' && UrlCompressor) {
-            return UrlCompressor.decompressImageUrl(compressedImageUrl);
-          }
+        try {
+            // LZSTR 형식 처리
+            if (compressedImageUrl.includes('LZSTR:')) {
+                // 헤더와 압축된 데이터 부분 분리
+                const [header, compressedData] = compressedImageUrl.split(',');
+                
+                // 압축 식별자 제거
+                const cleanCompressedData = compressedData.replace('LZSTR:', '');
+                
+                // LZ-String으로 압축 해제
+                const originalBase64 = LZString.decompressFromEncodedURIComponent(cleanCompressedData);
+                
+                // 원본 Data URL 반환
+                return `${header},${originalBase64}`;
+            }
+            
+            // 기존 형식 처리 (이전 버전 호환성)
+            if (compressedImageUrl.includes('OPTIMIZE:')) {
+                const [header, compressedData] = compressedImageUrl.split(',');
+                const cleanCompressedData = compressedData.replace('OPTIMIZE:', '');
+                return `${header},${cleanCompressedData}`;
+            }
+            
+            if (compressedImageUrl.includes('NOCOMPRESS:')) {
+                return compressedImageUrl.replace('NOCOMPRESS:', '');
+            }
+            
+            // 압축되지 않은 경우 원본 반환
+            return compressedImageUrl;
+        } catch (error) {
+            console.error('이미지 URL 복원 중 오류 발생:', error);
+            return compressedImageUrl; // 복원 실패 시 원본 반환
         }
-        
-        // 압축되지 않은 경우 원본 반환
-        return compressedImageUrl;
-      } catch (error) {
-        console.error('이미지 URL 복원 중 오류 발생:', error);
-        return compressedImageUrl; // 복원 실패 시 원본 반환
-      }
     },
     
     /**
@@ -275,29 +276,33 @@ const LZString = function() {
      * @returns {string} 압축 해제된 이미지가 포함된 HTML
      */
     decompressAllImages: function(html) {
-      if (!html) return html;
-      
-      try {
-        // LZSTR 형식 처리
-        html = html.replace(/data:[^,]+,LZSTR:([^"']+)/g, (match, p1) => {
-          try {
-            const originalBase64 = LZString.decompressFromEncodedURIComponent(p1);
-            return `data:image/jpeg;base64,${originalBase64}`;
-          } catch (error) {
-            return match; // 오류 시 원본 유지
-          }
-        });
+        if (!html) return html;
         
-        // 다른 압축 형식 처리 (기존 코드 호환성)
-        if (typeof UrlCompressor !== 'undefined' && UrlCompressor) {
-          html = UrlCompressor.decompressAllImages(html);
+        try {
+            // LZSTR 형식 처리
+            html = html.replace(/data:[^,]+,LZSTR:([^"']+)/g, (match, p1) => {
+                try {
+                    const originalBase64 = LZString.decompressFromEncodedURIComponent(p1);
+                    return `data:image/jpeg;base64,${originalBase64}`;
+                } catch (error) {
+                    return match; // 오류 시 원본 유지
+                }
+            });
+            
+            // 기존 형식 처리 (이전 버전 호환성)
+            html = html.replace(/data:[^,]+,OPTIMIZE:([^"']+)/g, (match, p1) => {
+                return `data:image/jpeg;base64,${p1}`;
+            });
+            
+            html = html.replace(/data:[^,]+,NOCOMPRESS:([^"']+)/g, (match, p1) => {
+                return `data:image/jpeg;base64,${p1}`;
+            });
+            
+            return html;
+        } catch (error) {
+            console.error('HTML 내 이미지 압축 해제 중 오류:', error);
+            return html; // 실패 시 원본 HTML 반환
         }
-        
-        return html;
-      } catch (error) {
-        console.error('HTML 내 이미지 압축 해제 중 오류:', error);
-        return html; // 실패 시 원본 HTML 반환
-      }
     },
     
     /**
@@ -306,15 +311,15 @@ const LZString = function() {
      * @returns {number} 크기 (KB)
      */
     getDataUrlSize: function(dataUrl) {
-      if (!dataUrl) return 0;
-      // Base64 부분만 추출
-      const base64 = dataUrl.split(',')[1];
-      if (!base64) return 0;
-      
-      // Base64 디코딩 후 바이트 수 계산
-      const decodedSize = atob(base64).length;
-      // KB 단위로 변환 (소수점 1자리)
-      return Math.round(decodedSize / 1024 * 10) / 10;
+        if (!dataUrl) return 0;
+        // Base64 부분만 추출
+        const base64 = dataUrl.split(',')[1];
+        if (!base64) return 0;
+        
+        // Base64 디코딩 후 바이트 수 계산
+        const decodedSize = atob(base64).length;
+        // KB 단위로 변환 (소수점 1자리)
+        return Math.round(decodedSize / 1024 * 10) / 10;
     },
     
     /**
@@ -324,18 +329,62 @@ const LZString = function() {
      * @returns {number} 압축률 (%)
      */
     getCompressionRatio: function(originalUrl, compressedUrl) {
-      const originalSize = this.getDataUrlSize(originalUrl);
-      const compressedSize = this.getDataUrlSize(compressedUrl);
-      
-      if (originalSize === 0) return 0;
-      
-      // 압축률 계산 (%) - 높을수록 좋음
-      return Math.round((1 - compressedSize / originalSize) * 100);
+        const originalSize = this.getDataUrlSize(originalUrl);
+        const compressedSize = this.getDataUrlSize(compressedUrl);
+        
+        if (originalSize === 0) return 0;
+        
+        // 압축률 계산 (%) - 높을수록 좋음
+        return Math.round((1 - compressedSize / originalSize) * 100);
+    },
+    
+    /**
+     * 정규식에서 사용되는 특수 문자 이스케이프 처리
+     * @param {string} str - 이스케이프할 문자열
+     * @returns {string} 이스케이프된 문자열
+     */
+    escapeRegExp: function(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $&는 일치한 문자열 전체를 의미
+    },
+    
+    /**
+     * Base64 문자열을 URL 안전한 형식으로 변환
+     * @param {string} base64Str - 표준 Base64 문자열
+     * @returns {string} URL 안전한 Base64 문자열
+     */
+    base64ToBase64Url: function(base64Str) {
+        if (!base64Str) return '';
+        return base64Str
+            .replace(/\+/g, '-')  // '+' → '-'
+            .replace(/\//g, '_')  // '/' → '_'
+            .replace(/=+$/, '');  // 끝의 '=' 패딩 제거
+    },
+    
+    /**
+     * URL 안전한 Base64에서 표준 Base64로 변환
+     * @param {string} base64Url - URL 안전한 Base64 문자열
+     * @returns {string} 표준 Base64 문자열
+     */
+    base64UrlToBase64: function(base64Url) {
+        if (!base64Url) return '';
+        
+        // 필요한 패딩 추가
+        let base64 = base64Url
+            .replace(/-/g, '+')  // '-' → '+'
+            .replace(/_/g, '/'); // '_' → '/'
+            
+        // 패딩 추가
+        while (base64.length % 4) {
+            base64 += '=';
+        }
+        
+        return base64;
     }
-  };
-  
-  // 전역 변수로 노출
-  window.LZString = LZString;
-  window.ImageCompressor = ImageCompressor;
-  
-  console.log('LZ-String 압축 모듈이 성공적으로 로드되었습니다.');
+};
+
+// 전역 변수로 노출 - 기존 호환성 유지
+window.LZString = LZString;
+window.UrlCompressor = Compressor;
+window.ImageCompressor = Compressor;
+
+console.log('통합 압축 모듈이 성공적으로 로드되었습니다.');

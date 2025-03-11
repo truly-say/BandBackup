@@ -31,26 +31,26 @@ const ExportManager = {
         }
         
         // 처리 중 상태 표시
-    state.isProcessing = true;
-    if (typeof toggleLoading === 'function') {
-        toggleLoading(true, '채팅 내용을 복사 중입니다...');
-    }
-    
-    try {
-        // 비율 유지 이미지 최적화 적용 (내보내기 전)
-        if (typeof AspectRatioOptimizer !== 'undefined') {
-            if (typeof showStatus === 'function') {
-                showStatus('이미지 최적화 중...', state.darkMode);
-            }
-            
-            // 모든 사용자 이미지 최적화
-            await AspectRatioOptimizer.optimizeAllUserImages(state);
+        state.isProcessing = true;
+        if (typeof toggleLoading === 'function') {
+            toggleLoading(true, '채팅 내용을 복사 중입니다...');
         }
         
-        // HTML 생성
-        if (typeof showStatus === 'function') {
-            showStatus('HTML 생성 중...', state.darkMode);
-        }
+        try {
+            // 비율 유지 이미지 최적화 적용 (내보내기 전)
+            if (typeof AspectRatioOptimizer !== 'undefined') {
+                if (typeof showStatus === 'function') {
+                    showStatus('이미지 최적화 중...', state.darkMode);
+                }
+                
+                // 모든 사용자 이미지 최적화
+                await AspectRatioOptimizer.optimizeAllUserImages(state);
+            }
+            
+            // HTML 생성
+            if (typeof showStatus === 'function') {
+                showStatus('HTML 생성 중...', state.darkMode);
+            }
             const exportMessages = [];
             
             // 메시지 그룹화와 처리
@@ -87,8 +87,14 @@ const ExportManager = {
                 this.processMessageGroup(messageGroup, exportMessages, state);
             }
             
-            // 최종 HTML 생성 - 각 메시지 간에 줄바꿈 추가
-            let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('\n')}</div>`;
+            // 최종 HTML 생성 - 가독성을 버리고 용량을 절약하기 위해 1줄로 압축
+            let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('')}</div>`;
+            
+            // 줄바꿈, 불필요한 공백 제거하여 1줄로 압축
+            fullHtml = fullHtml.replace(/\s+/g, ' ')
+                              .replace(/> </g, '><')
+                              .replace(/\n/g, '')
+                              .trim();
             
             // 압축된 이미지 URL을 복원 (HTML 복사 시에만)
             if (typeof UrlCompressor !== 'undefined' && UrlCompressor) {
@@ -138,99 +144,142 @@ const ExportManager = {
      * @param {Object} state - 애플리케이션 상태
      */
     processMessageGroup: function(messageGroup, exportMessages, state) {
+        // 동일 시간 메시지인지 확인하는 함수
+        const isSameTimeFrame = (time1, time2) => {
+            if (!time1 || !time2) return false;
+            
+            // 간단한 문자열 비교 (기본)
+            return time1 === time2;
+        };
+        
         messageGroup.forEach((groupMsg, groupIndex) => {
-       const { message, index } = groupMsg;
-       const { time, username, chatMessage } = message;
-       const displayName = state.displayNames[username] || username;
-       const isMyMessage = state.selectedUsers.has(username);
-       
-           const isFirst = groupIndex === 0;
-           const isLast = groupIndex === messageGroup.length - 1;
-           const isContinuous = !isFirst;
-           
-           // 사용자 색상
-           const userColor = state.userColors[username] || '#000000';
-           
-           // 메시지 스타일 설정
-           const bubbleColor = isMyMessage 
-               ? (state.darkMode ? '#2d3647' : '#d8f4e7')
-               : (state.darkMode ? '#4c4f56' : '#f1f1f1');
-   
-           const textColor = isMyMessage
-               ? (state.darkMode ? '#e2e8f0' : '#333')
-               : (state.darkMode ? '#e2e8f0' : '#333');
-           
-           // 말풍선 둥근 모서리 스타일 - 연속 메시지 여부와 위치에 따라 조정
-           let bubbleRadius;
-           if (isLast) {
-               // 마지막 메시지 (연속 또는 단일 메시지에 상관없이)
-               bubbleRadius = isMyMessage
-                   ? '20px 0 20px 20px'  // 오른쪽 상단 모서리만 직각, 오른쪽 하단 모서리는 둥글게
-                   : '0 20px 20px 20px'; // 왼쪽 상단 모서리만 직각, 왼쪽 하단 모서리는 둥글게
-           } else if (isContinuous) {
-               // 연속된 메시지 중 중간 메시지
-               bubbleRadius = isMyMessage
-                   ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
-                   : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
-           } else {
-               // 연속 메시지의 첫 번째 메시지 (마지막이 아닌)
-               bubbleRadius = isMyMessage
-                   ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
-                   : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
-           }
-                   
-           const messageContainerStyle = isMyMessage 
-               ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:2px;align-items:flex-start;' 
-               : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:2px;align-items:flex-start;';
-               
-           // 마지막 메시지만 여백 추가
-           const marginStyle = isLast ? 'margin-bottom:10px;' : '';
-               
-           const wrapperStyle = isMyMessage 
-               ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' 
-               : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
-           
-           // 프로필 이미지 영역
-           const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
-           const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
-           
-           // 연속 메시지일 경우 프로필 숨김
-           const profileVisibilityStyle = isContinuous ? 'visibility:hidden;' : '';
-           
-           // 이미지 URL 사용 (있는 경우 - 압축된 상태 유지)
-           const profileImage = state.userProfileImages[username]; // 압축 상태로 유지
-           const profileHTML = profileImage 
-               ? `<img src="${profileImage}" alt="${this.escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`
-               : ''; // 이미지가 없으면 회색 배경만 표시
-                   
-           // 사용자 이름 (연속 메시지일 경우 표시 안 함)
-           const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor};${isContinuous ? 'display:none;' : ''}`;
-           
-           // 말풍선 스타일
-           const bubbleStyle = `position:relative;padding:10px 16px;border-radius:${bubbleRadius};word-break:break-word;max-width:100%;background-color:${bubbleColor};color:${textColor};`;
-           
-           // 말풍선 꼬리 위치와 모양 - 연속 메시지가 아닐 경우에만 꼬리 표시
-           let tailStyle = 'display:none;'; // 기본적으로 숨김
-           
-           if (!isContinuous) {
-               tailStyle = isMyMessage
-                   ? `position:absolute;width:0;height:0;top:0;right:-8px;border-style:solid;border-width:0 0 8px 8px;border-color:transparent transparent transparent ${bubbleColor};`
-                   : `position:absolute;width:0;height:0;top:0;left:-8px;border-style:solid;border-width:0 8px 8px 0;border-color:transparent ${bubbleColor} transparent transparent;`;
-           }
-           
-           // 시간 (마지막 메시지만 표시)
-           const timeStyle = `font-size:12px;color:#888;margin-top:3px;${isLast ? '' : 'display:none;'}`;
-           
-           // 메시지 포맷팅 - 참여자 목록 전달
-           const formattedMessage = this.formatMessageText(this.escapeHtml(chatMessage), state);
-           
-           // 메시지 HTML 생성 (한 줄로 압축)
-           const html = `<div style="${messageContainerStyle}${marginStyle}"><div style="${profileStyle}${profileVisibilityStyle}"><div style="${pictureStyle}">${profileHTML}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${this.escapeHtml(displayName)}</div><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
-           
-           // 각 메시지를 별도의 줄에 추가 (메시지 개수 세기 용도)
-           exportMessages.push(html);
-       });
-   },
+            const { message, index } = groupMsg;
+            const { time, username, chatMessage } = message;
+            const displayName = state.displayNames[username] || username;
+            const isMyMessage = state.selectedUsers.has(username);
+            
+            const isFirst = groupIndex === 0;
+            const isLast = groupIndex === messageGroup.length - 1;
+            
+            // 연속 메시지 여부 (첫 번째 메시지가 아닌 경우)
+            let isContinuous = !isFirst;
+            
+            // 동일 사용자, 동일 시간인지 확인
+            if (isContinuous && groupIndex > 0) {
+                const prevMessage = messageGroup[groupIndex - 1].message;
+                isContinuous = isSameTimeFrame(prevMessage.time, time);
+            }
+            
+            // 사용자 색상
+            const userColor = state.userColors[username] || '#000000';
+            
+            // 메시지 스타일 설정
+            const bubbleColor = isMyMessage 
+                ? (state.darkMode ? '#2d3647' : '#d8f4e7')
+                : (state.darkMode ? '#4c4f56' : '#f1f1f1');
+    
+            const textColor = isMyMessage
+                ? (state.darkMode ? '#e2e8f0' : '#333')
+                : (state.darkMode ? '#e2e8f0' : '#333');
+            
+            // 말풍선 둥근 모서리 스타일 - 연속 메시지 여부와 위치에 따라 조정
+            let bubbleRadius;
+            if (isLast) {
+                // 마지막 메시지 (연속 또는 단일 메시지에 상관없이)
+                bubbleRadius = isMyMessage
+                    ? '20px 0 20px 20px'  // 오른쪽 상단 모서리만 직각, 오른쪽 하단 모서리는 둥글게
+                    : '0 20px 20px 20px'; // 왼쪽 상단 모서리만 직각, 왼쪽 하단 모서리는 둥글게
+            } else if (isContinuous) {
+                // 연속된 메시지 중 중간 메시지
+                bubbleRadius = isMyMessage
+                    ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
+                    : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
+            } else {
+                // 연속 메시지의 첫 번째 메시지 (마지막이 아닌)
+                bubbleRadius = isMyMessage
+                    ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
+                    : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
+            }
+                    
+            const messageContainerStyle = isMyMessage 
+                ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:2px;align-items:flex-start;' 
+                : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:2px;align-items:flex-start;';
+                
+            // 마지막 메시지만 여백 추가
+            const marginStyle = isLast ? 'margin-bottom:10px;' : '';
+                
+            const wrapperStyle = isMyMessage 
+                ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' 
+                : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
+            
+            // 사용자 이름 (연속 메시지일 경우 표시 안 함)
+            const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor};${isContinuous ? 'display:none;' : ''}`;
+            
+            // 말풍선 스타일
+            const bubbleStyle = `position:relative;padding:10px 16px;border-radius:${bubbleRadius};word-break:break-word;max-width:100%;background-color:${bubbleColor};color:${textColor};`;
+            
+            // 시간 (마지막 메시지만 표시)
+            const timeStyle = `font-size:12px;color:#888;margin-top:3px;${isLast ? '' : 'display:none;'}`;
+            
+            // 메시지 포맷팅 - 참여자 목록 전달
+            const formattedMessage = this.formatMessageText(this.escapeHtml(chatMessage), state);
+            
+            // 말풍선 꼬리 위치와 모양 - 연속 메시지가 아닐 경우에만 꼬리 표시
+            let tailStyle = 'display:none;'; // 기본적으로 숨김
+            
+            if (!isContinuous) {
+                tailStyle = isMyMessage
+                    ? `position:absolute;width:0;height:0;top:0;right:-8px;border-style:solid;border-width:0 0 8px 8px;border-color:transparent transparent transparent ${bubbleColor};`
+                    : `position:absolute;width:0;height:0;top:0;left:-8px;border-style:solid;border-width:0 8px 8px 0;border-color:transparent ${bubbleColor} transparent transparent;`;
+            }
+            
+            // 내 메시지의 프로필 이미지 표시 여부 확인
+            const showMyImage = state.showMyProfile !== false;
+            
+            let html;
+            
+            if (isContinuous) {
+                // 연속 메시지: 프로필 영역 결정 (내 메시지 + 이미지 숨김 설정의 경우 제거)
+                if (isMyMessage && !showMyImage) {
+                    // 이미지 없이 메시지만 표시
+                    html = `<div style="${messageContainerStyle}${marginStyle}"><div style="${wrapperStyle}"><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
+                } else {
+                    // 일반적인 연속 메시지 (이미지 공간 보존)
+                    html = `<div style="${messageContainerStyle}${marginStyle}"><div style="width:40px;margin:0 10px;flex-shrink:0;"></div><div style="${wrapperStyle}"><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
+                }
+            } else {
+                // 첫 번째 메시지: 프로필 처리
+                if (isMyMessage && !showMyImage) {
+                    // 내 메시지 + 이미지 숨김: 프로필 영역 없음
+                    html = `<div style="${messageContainerStyle}${marginStyle}"><div style="${wrapperStyle}"><div style="${usernameStyle}">${this.escapeHtml(displayName)}</div><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
+                } else {
+                    // 일반 메시지 또는 내 메시지 + 이미지 표시
+                    // 이미지 URL 사용 (있는 경우)
+                    let profileImage = state.userProfileImages[username];
+                    let profileHTML = '';
+                    
+                    if (profileImage) {
+                        // 외부 이미지 URL (http로 시작하는 경우)
+                        if (profileImage.startsWith('http')) {
+                            profileHTML = `<img src="${this.escapeHtml(profileImage)}" alt="${this.escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
+                        } else {
+                            // 내부 이미지 (압축된 이미지는 원본 유지)
+                            profileHTML = `<img src="${profileImage}" alt="${this.escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
+                        }
+                    }
+                    
+                    // 프로필 이미지 영역
+                    const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
+                    const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
+                    
+                    html = `<div style="${messageContainerStyle}${marginStyle}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileHTML}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${this.escapeHtml(displayName)}</div><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
+                }
+            }
+            
+            // 각 메시지를 별도의 줄에 추가
+            exportMessages.push(html);
+        });
+    },
 
     /**
      * HTML 이스케이프 함수
@@ -291,6 +340,16 @@ const ExportManager = {
             });
         }
         
+        // 태그 강조 설정 확인
+        const highlightTags = state && state.hasOwnProperty('highlightTags') 
+            ? state.highlightTags 
+            : true; // 기본값은 true
+        
+        // 태그 강조가 꺼져 있으면 포맷팅 무시
+        if (!highlightTags) {
+            return text.replace(/\n/g, '<br>');
+        }
+        
         // 각 패턴에 대해 처리
         patterns.forEach(pattern => {
             processedText = processedText.replace(pattern, (match, tagContent) => {
@@ -337,7 +396,6 @@ const ExportManager = {
         return processedText.replace(/\n/g, '<br>');
     }
 };
-
 /**
  * HTML을 클립보드에 복사 - 티스토리 최적화 버전
  * @param {Object} state - 애플리케이션 상태
@@ -431,7 +489,14 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
             toggleLoading(true, '최종 변환 중...');
         }
         
-        let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('\n')}</div>`;
+        // 가독성을 버리고 용량을 줄이기 위해 1줄로 압축
+        let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('')}</div>`;
+        
+        // 줄바꿈, 불필요한 공백 제거하여 1줄로 압축
+        fullHtml = fullHtml.replace(/\s+/g, ' ')
+                          .replace(/> </g, '><')
+                          .replace(/\n/g, '')
+                          .trim();
         
         // 티스토리 백업을 위한 HTML 최적화 (이미지 처리)
         if (typeof ImageOptimizer !== 'undefined' && ImageOptimizer) {

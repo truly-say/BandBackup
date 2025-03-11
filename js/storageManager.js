@@ -137,6 +137,24 @@ const StorageManager = {
     },
     
     /**
+     * 내 메시지의 이미지 표시 설정 저장
+     * @param {boolean} showMyProfile - 내 메시지에 프로필 이미지 표시 여부
+     */
+    saveShowMyProfileSetting(showMyProfile) {
+        localStorage.setItem('showMyProfile', showMyProfile ? 'true' : 'false');
+    },
+    
+    /**
+     * 내 메시지의 이미지 표시 설정 불러오기
+     * @returns {boolean} 내 메시지에 프로필 이미지 표시 여부 (기본값: true)
+     */
+    loadShowMyProfileSetting() {
+        // 이전에 설정한 값이 없으면 기본값으로 true 반환
+        const savedSetting = localStorage.getItem('showMyProfile');
+        return savedSetting === null ? true : savedSetting === 'true';
+    },
+    
+    /**
      * 고급 설정 저장
      * @param {Object} settings - 고급 설정 객체
      */
@@ -155,6 +173,7 @@ const StorageManager = {
     loadAdvancedSettings() {
         const defaultSettings = {
             highlightTags: true,
+            showMyProfile: true,
             imageQuality: 0.4,    // 기본 이미지 품질 (0.4 = 40%)
             useImageCompression: true,
             maxImageSize: 100     // 기본 최대 이미지 크기 (100px)

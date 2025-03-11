@@ -714,64 +714,50 @@ textarea:focus {
     opacity: 0;
 }
 
-/* User Select */
-.user-select {
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    padding: 1.5rem;
-    border-radius: 16px;
-    margin: 2rem auto;
-    max-width: 900px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.user-select label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #1a1a1a;
-}
-
-.user-select h3 {
-    color: #4a90e2;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-}
-
-.user-select select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    background-color: #fafafa;
-    font-size: 1rem;
-    color: #2c3e50;
-    transition: all 0.2s ease;
-}
-
-.user-select select:focus {
-    border-color: #4a90e2;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-    background-color: #ffffff;
-}
-
 /* Theme Toggle */
 #themeToggle {
     position: fixed;
     bottom: 20px;
-    right: 40px;
+    right: 100px; /* 설정 버튼과 겹치지 않도록 위치 조정 */
     background-color: #4a90e2;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     color: white;
     border-radius: 50px;
     padding: 0.75rem 1.5rem;
+    z-index: 1000;
 }
 
 #themeToggle:hover {
     background-color: #357abd;
 }
+
+/* 설정 버튼 스타일 */
+.settings-button {
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 
 /* Stats Container */
 .stats-container {
@@ -950,6 +936,78 @@ textarea:focus {
     accent-color: #4a90e2;
 }
 
+/* 이미지 배지 스타일 */
+.image-badge {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.image-badge.internal {
+    background-color: #10b981;
+}
+
+.image-badge.external {
+    background-color: #3b82f6;
+}
+
+/* 프로필 선택 체크박스 */
+.profile-select-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 18px;
+    height: 18px;
+    display: none;
+    z-index: 2;
+}
+
+/* 선택 모드 메시지 */
+.selection-mode-message {
+    background-color: #ebf8ff;
+    border-left: 4px solid #4299e1;
+    padding: 10px 15px;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #2c5282;
+    border-radius: 4px;
+}
+
+/* 선택된 카드 스타일 */
+.selected-for-reset {
+    box-shadow: 0 0 0 2px #f56565;
+    transform: translateY(-2px);
+    background-color: #fff5f5;
+}
+
+/* 내 메시지 버튼 스타일 */
+.my-user-button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-user-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .header-text {
@@ -1057,11 +1115,20 @@ textarea:focus {
     }
     /* 테마 토글 버튼 위치 조정 */
     #themeToggle {
-        bottom: 10px;
-        right: 10px;
+        bottom: 15px;
+        right: 80px;
         padding: 8px 16px;
         font-size: 0.9rem;
     }
+    
+    .settings-button {
+        bottom: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+
     /* 스크롤바 최적화 */
     .chat-container::-webkit-scrollbar {
         width: 4px;
@@ -1211,6 +1278,21 @@ textarea:focus {
     .user-checkboxes {
         grid-template-columns: 1fr;
     }
+
+    #themeToggle {
+        bottom: 12px;
+        right: 70px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .settings-button {
+        bottom: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -1238,299 +1320,4 @@ textarea:focus {
     .update-content.show {
         padding: 1rem;
     }
-}
-
-
-/* /css/styles.css - 추가 스타일 */
-
-/* 탭 컨테이너 */
-.tabs-container {
-    display: flex;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 8px;
-    background-color: #f8fafc;
-}
-
-/* 이미지 탭 버튼 */
-/* 이미지 탭 버튼 */
-.image-tab {
-    padding: 5px 10px;
-    border: none;
-    background: #f8fafc;
-    color: #4a5568;
-    flex: 1;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.image-tab:hover {
-    background-color: #edf2f7;
-}
-
-.image-tab.active-tab {
-    border-bottom: 2px solid #4a90e2;
-    color: #4a90e2;
-    font-weight: bold;
-    background-color: #edf2f7;
-}
-
-/* 외부 URL 입력 필드 */
-.external-url-input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 8px;
-    transition: all 0.2s ease;
-    color: #2d3748;
-    background-color: #ffffff;
-}
-
-.external-url-input:focus {
-    border-color: #4a90e2;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-/* URL 적용 버튼 */
-.apply-url-button {
-    width: 100%;
-    padding: 8px;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.apply-url-button:hover {
-    background-color: #357abd;
-}
-
-/* 파일 입력 라벨 - 가독성 강화 */
-.file-input-label {
-    padding: 8px 12px;
-    background-color: #4a90e2;
-    color: white;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-}
-
-.file-input-label:hover {
-    background-color: #357abd;
-}
-
-/* 이미지 업로드 사이트 열기 버튼 */
-.open-site-button {
-    width: 100%;
-    padding: 8px;
-    background-color: #edf2f7;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.open-site-button:hover {
-    background-color: #e2e8f0;
-    color: #2d3748;
-}
-
-/* 도움말 텍스트 */
-.image-help-text {
-    font-size: 11px;
-    color: #4a5568;
-    margin-top: 8px;
-    text-align: center;
-    background-color: #f7fafc;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #edf2f7;
-}
-
-/* 사용자 프로필 카드 스타일 개선 */
-.user-profile-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 18px;
-    position: relative;
-    border: 1px solid #e2e8f0;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.user-profile-card:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-/* 표시 이름 입력 필드 가독성 개선 */
-.display-name-input {
-    padding: 8px 12px;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    font-size: 14px;
-    width: 100%;
-    text-align: center;
-    transition: all 0.2s ease;
-    color: #1a202c; /* 더 어두운 색상으로 변경 */
-    background-color: #ffffff;
-    font-weight: 500;
-}
-
-.display-name-input:focus {
-    border-color: #4a90e2;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-/* 원래 사용자명 스타일 개선 */
-.original-name {
-    color: #4a5568; /* 더 어두운 색상으로 변경 */
-    font-size: 12px;
-    font-weight: 500;
-    text-align: center;
-    margin-top: 4px;
-}
-
-/* 색상 선택기 스타일 개선 */
-.color-picker {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: 2px solid #e2e8f0;
-    border-radius: 50%;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin: 8px 0;
-}
-
-/* 이름 컨테이너 스타일 개선 */
-.name-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-top: 12px;
-    gap: 8px;
-}
-
-/* 체크박스 스타일 개선 */
-.profile-select-checkbox {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #4a90e2;
-    margin-right: 8px;
-}
-
-/* 선택 프로필 초기화 버튼 */
-.reset-selected-profiles {
-    padding: 8px 16px;
-    background-color: #f56565;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.reset-selected-profiles:hover {
-    background-color: #e53e3e;
-}
-
-.reset-selected-profiles i {
-    margin-right: 6px;
-}
-
-/* 내 메시지 버튼 스타일 개선 */
-.my-user-button {
-    width: 100%;
-    padding: 8px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.my-user-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
-
-/* 선택 모드 관련 스타일 */
-.profile-select-checkbox {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #4a90e2;
-}
-
-.selected-for-reset {
-    box-shadow: 0 0 0 2px #f56565;
-    transform: translateY(-2px);
-    background-color: #fff5f5;
-}
-
-.selection-mode-message {
-    background-color: #ebf8ff;
-    border-left: 4px solid #4299e1;
-    padding: 10px 15px;
-    margin: 10px 0;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #2c5282;
-    border-radius: 4px;
-}
-
-body.dark .selection-mode-message {
-    background-color: #2a4365;
-    border-left-color: #4299e1;
-    color: #e2e8f0;
-}
-
-body.dark .selected-for-reset {
-    box-shadow: 0 0 0 2px #f56565;
-    background-color: #3b2626;
-}
-
-/* 선택 프로필 초기화 버튼 - 활성화 모드 */
-#reset-selected-profiles.active {
-    background-color: #f56565;
-    color: white;
-}
-
-body.dark #reset-selected-profiles.active {
-    background-color: #e53e3e;
 }
