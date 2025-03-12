@@ -106,9 +106,9 @@ const ExportManager = {
 
             // 이미지 캐시 시스템 적용
             let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">
-                ${imageCacheHTML}
-                ${exportMessages.join('')}
-            </div>`;
+        ${this.generateImageCacheHTML()}
+        ${exportMessages.join('')}
+    </div>`;
 
             // 줄바꿈, 불필요한 공백 제거하여 1줄로 압축
             fullHtml = fullHtml.replace(/\s+/g, ' ')
@@ -162,9 +162,18 @@ const ExportManager = {
      * @returns {string} 이미지 캐시 HTML
      */
 
-    generateImageCacheHTML: function () {
-        // 이미지 캐싱을 임시로 비활성화하여 이미지 깨짐 문제 해결
-        return '';
+    generateImageCacheHTML: function() {
+        if (typeof ImageHandler === 'undefined' || !ImageHandler._imageCache) {
+            return '';
+        }
+    
+        const imageCacheHTML = Object.entries(ImageHandler._imageCache)
+            .map(([hash, imageUrl]) => 
+                `<img id="${hash}" src="${imageUrl}" style="display:none;">`
+            )
+            .join('');
+    
+        return `<div id="image-cache" style="display:none;">${imageCacheHTML}</div>`;
     },
 
     // 이미지 URL 캐싱 - 중복 이미지 효율화
@@ -188,12 +197,35 @@ const ExportManager = {
      * @param {Array} exportMessages - 결과 HTML을 저장할 배열
      * @param {Object} state - 애플리케이션 상태
      */
-     processMessageGroup: function (messageGroup, exportMessages, state) {
+    processMessageGroup: function (messageGroup, exportMessages, state) {
         messageGroup.forEach((groupMsg, groupIndex) => {
             const { message, index } = groupMsg;
             const { time, username, chatMessage } = message;
             const displayName = state.displayNames[username] || username;
             const isMyMessage = state.selectedUsers.has(username);
+    
+            let profileImageId = null;
+            let profileImageUrl = state.userProfileImages[message.username];
+            
+             // 해시 값을 그대로 사용
+             if (profileImageUrl && profileImageUrl.startsWith('i')) {
+                // 내보내기 시 해시 값 그대로 유지
+                const profileImageHtml = `<img src="${profileImageUrl}" alt="${message.username}">`;
+                // 나머지 로직에 profileImageHtml 사용
+            }
+            
+            if (state.userProfileImages[username]) {
+                try {
+                    // 이미지 최적화 및 캐싱
+                    if (typeof ImageHandler !== 'undefined' && ImageHandler) {
+                        profileImageId = ImageHandler.cacheImage(
+                            state.userProfileImages[username]
+                        );
+                    }
+                } catch (error) {
+                    console.error(`이미지 처리 중 오류: ${username}`, error);
+                }
+            }
 
             // 이스케이프 함수 사용
             const escapedDisplayName = this._escapeHtml(displayName);
@@ -217,6 +249,7 @@ const ExportManager = {
                 ? (state.darkMode ? '#e2e8f0' : '#333')
                 : (state.darkMode ? '#e2e8f0' : '#333');
 
+                
             // 말풍선 둥근 모서리 스타일 - 연속 메시지 여부와 위치에 따라 조정
             let bubbleRadius;
             if (isLast) {
@@ -271,7 +304,11 @@ const ExportManager = {
             // 내 메시지의 프로필 이미지 표시 여부 확인
             const showMyImage = state.showMyProfile !== false;
 
-             let profileHTML = '';
+            let profileHTML = profileImageId 
+            ? `<img src="#${profileImageId}" alt="${this._escapeHtml(displayName)}" 
+                style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`
+            : '';
+
             if (state.userProfileImages[username]) {
                 try {
                     const displayUrl = typeof ImageHandler !== 'undefined' && ImageHandler 

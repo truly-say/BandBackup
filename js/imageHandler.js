@@ -12,7 +12,7 @@ const ImageHandler = {
         profileImageSize: 250,    // 프로필 이미지 크기
         quality: 0.75,            // 이미지 품질
         compressImages: true,     // 이미지 압축 사용 여부
-        useWebP: false,           // WebP 형식 사용 (지원 시)
+        useWebP: true,           // WebP 형식 사용 (지원 시)
         forceSquare: true,        // 정사각형 강제 적용
         antialias: true           // 안티앨리어싱 적용
     },
@@ -457,7 +457,162 @@ const ImageHandler = {
             console.error('이미지 크기 계산 중 오류:', error);
             return 0;
         }
+    },
+
+    _imageCache: {},
+    
+     // 이미지의 해시값 생성
+    _generateHash(imageUrl) {
+        // 이미지 URL의 일부와 현재 타임스탬프를 결합
+        const timestamp = Date.now();
+        const urlPart = imageUrl.substring(0, 50); // URL의 일부만 사용
+        
+        // 더 복잡한 해시 생성
+        const hash = btoa(urlPart + timestamp)
+            .replace(/[^a-zA-Z0-9]/g, '') // 특수문자 제거
+            .substring(0, 10); // 10자로 제한
+        
+        return `img_${hash}`;
+    },
+
+    _generateShortHash(imageUrl) {
+        // 더 짧고 고유한 해시 생성
+        const hash = this._simpleHash(imageUrl);
+        return `i${hash.substr(0, 8)}`;
+    },
+    
+    _simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(36);
+    },
+
+    cacheImage(imageUrl) {
+        // 이미 캐시된 이미지 확인
+        for (const [hash, cachedUrl] of Object.entries(this._imageCache)) {
+            if (cachedUrl === imageUrl) {
+                return hash;
+            }
+        }
+
+        // 짧은 해시 생성
+        const hash = this._generateShortHash(imageUrl);
+        
+        // 캐시에 저장
+        this._imageCache[hash] = imageUrl;
+        
+        return hash;
+    },
+
+    getImageFromCache(hash) {
+        return this._imageCache[hash] || hash;
+    },
+    
+    /**
+     * 최적화된 이미지 캐싱 및 처리
+     * @param {string} imageUrl - 원본 이미지 URL
+     * @returns {Promise<string>} 최적화된 이미지 ID 또는 URL
+     */
+    async processAndCacheImage(imageUrl) {
+        // 이미 최적화된 이미지인지 확인
+        if (imageUrl.startsWith('img_')) {
+            return imageUrl;
+        }
+        
+        // 캐시에서 기존 이미지 확인
+        for (const [id, cachedUrl] of Object.entries(this._imageCache)) {
+            if (cachedUrl === imageUrl) {
+                return id;
+            }
+        }
+        
+        // 동기적 최적화
+        const canvas = document.createElement('canvas');
+        const img = new Image();
+        img.src = imageUrl;
+        
+        // 이미지 크기 및 품질 조정 (동기적 처리)
+        const size = Math.min(img.width, img.height);
+        canvas.width = this.settings.profileImageSize;
+        canvas.height = this.settings.profileImageSize;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = this.settings.antialias;
+        ctx.imageSmoothingQuality = 'high';
+        
+        const offsetX = (img.width - size) / 2;
+        const offsetY = (img.height - size) / 2;
+        
+        ctx.drawImage(
+            img, 
+            offsetX, offsetY, size, size, 
+            0, 0, canvas.width, canvas.height
+        );
+
+        // JPEG로 압축
+        const optimizedUrl = canvas.toDataURL('image/jpeg', this.settings.quality);
+        
+        // 새로운 고유 식별자 생성
+        const id = `img_${Object.keys(this._imageCache).length + 1}`;
+        this._imageCache[id] = optimizedUrl;
+        
+        return id;
+    },
+    
+    processAndCacheImageSync(imageUrl) {
+        // 이미 최적화된 이미지인지 확인
+        if (imageUrl.startsWith('img_')) {
+            return imageUrl;
+        }
+        
+        // 캐시에서 기존 이미지 확인
+        if (!this._imageCache) {
+            this._imageCache = {};
+        }
+        
+        for (const [id, cachedUrl] of Object.entries(this._imageCache)) {
+            if (cachedUrl === imageUrl) {
+                return id;
+            }
+        }
+        
+        // 동기적 최적화 (크기 조정)
+        const canvas = document.createElement('canvas');
+        const img = new Image();
+        img.src = imageUrl;
+        
+        // 동기적으로 이미지 크기 조정
+        const size = Math.min(img.width, img.height);
+        canvas.width = this.settings.profileImageSize;
+        canvas.height = this.settings.profileImageSize;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = this.settings.antialias;
+        ctx.imageSmoothingQuality = 'high';
+        
+        const offsetX = (img.width - size) / 2;
+        const offsetY = (img.height - size) / 2;
+        
+        ctx.drawImage(
+            img, 
+            offsetX, offsetY, size, size, 
+            0, 0, canvas.width, canvas.height
+        );
+
+        // JPEG로 압축
+        const optimizedUrl = canvas.toDataURL('image/jpeg', this.settings.quality);
+        
+        // 새로운 고유 식별자 생성
+        const id = `img_${Object.keys(this._imageCache).length + 1}`;
+        this._imageCache[id] = optimizedUrl;
+        
+        return id;
     }
+
 };
 
 // 모듈 초기화
