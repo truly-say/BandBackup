@@ -42,11 +42,6 @@ body {
     padding: 0;
 }
 
-/* Social Links - 제거됨 */
-.social-links {
-    display: none;
-}
-
 /* Main Container */
 .main-container {
     width: 100%;
@@ -138,7 +133,6 @@ body {
     position: relative; /* 말풍선 꼬리 위치 기준 */
 }
 
-
 /* 내 메시지 (오른쪽) 연속 메시지 모서리 조정 */
 .chat-message.mine.last .message-content {
     border-radius: 20px 4px 20px 20px; /* 오른쪽 상단 모서리를 약간 둥글게 */
@@ -170,15 +164,6 @@ body {
 .chat-message.other .message-content {
     background-color: #f1f1f1;
     color: #333;
-}
-
-/* 다크모드 말풍선 꼬리 색상 */
-body.dark .chat-message.mine .message-content::before {
-    border-bottom-color: #2d3647;
-}
-
-body.dark .chat-message.other .message-content::before {
-    border-bottom-color: #4c4f56;
 }
 
 /* @ 태그 스타일 */
@@ -485,112 +470,6 @@ body.dark .chat-message.other .message-content::before {
     border-radius: 50%;
 }
 
-.name-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    grid-column: 2;
-}
-
-.display-name-input {
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.original-name {
-    color: #666;
-    font-size: 12px;
-}
-
-/* 로딩 오버레이 스타일 */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.loading-content {
-    text-align: center;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top: 4px solid #ffffff;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-message {
-    margin-top: 15px;
-    color: white;
-    font-size: 16px;
-}
-
-/* Profile Preview and Delete */
-.profile-preview {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #ccc;
-    overflow: hidden;
-    grid-column: 1;
-}
-
-.profile-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.profile-delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    background: none;
-    color: #ff4444;
-    font-size: 18px;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.user-profile:hover .profile-delete-btn {
-    opacity: 1;
-}
-
-/* File Input Styles */
-.file-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.file-input-label:hover {
-    background-color: #e2e8f0;
-}
-
-input[type="file"] {
-    display: none;
-}
-
 /* Button Styles */
 button {
     padding: 0.75rem 1.5rem;
@@ -701,33 +580,51 @@ textarea:focus {
     opacity: 0;
     transition: opacity 0.3s ease, top 0.3s ease; /* bottom -> top 변경 */
     z-index: 9999;
-  }
+}
 
 #statusMessage.show-up {
-    bottom: 10px;
+    top: 10px;
     opacity: 1;
 }
 
-#statusMessage.hide-down {
-    bottom: -50px;
-    opacity: 0;
-}
-
-/* Theme Toggle */
-#themeToggle {
+/* 로딩 오버레이 스타일 */
+.loading-overlay {
     position: fixed;
-    bottom: 20px;
-    right: 100px; /* 설정 버튼과 겹치지 않도록 위치 조정 */
-    background-color: #4a90e2;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: white;
-    border-radius: 50px;
-    padding: 0.75rem 1.5rem;
-    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-#themeToggle:hover {
-    background-color: #357abd;
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #ffffff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+    margin-top: 15px;
+    color: white;
+    font-size: 16px;
 }
 
 /* 설정 버튼 스타일 */
@@ -757,144 +654,6 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-
-/* Stats Container */
-.stats-container {
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-}
-
-.user-stat {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #333;
-}
-
-/* Update Log */
-#update-log {
-    margin: 1.5rem auto;
-    border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.update-header {
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #76a9e0 0%, #4a90e2 100%);
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.update-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    padding: 0;
-}
-
-.update-content.show {
-    max-height: 500px;
-    padding: 1.5rem;
-}
-
-.update-content ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.update-content li {
-    margin: 0.75rem 0;
-    padding-left: 1.25rem;
-    position: relative;
-    color: #1a1a1a;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    word-break: keep-all;
-    word-wrap: break-word;
-}
-
-.update-content li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #4a90e2;
-    font-weight: bold;
-}
-
-/* Footer */
-#footer {
-    background-color: rgba(74, 144, 226, 0.05);
-    color: #4a90e2;
-    text-align: center;
-    padding: 1.5rem 0;
-    border-top: 1px solid rgba(74, 144, 226, 0.1);
-    margin-top: auto;
-    width: 100%;
-}
-
-#footer p {
-    margin: 0.5rem 0;
-    color: #357abd;
-    font-size: 0.9rem;
-}
-
-/* Footer 소셜 링크 */
-.footer-social-links {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 12px;
-}
-
-.footer-social-links a {
-    color: #4a90e2;
-    font-size: 22px;
-    transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.footer-social-links a:hover {
-    color: #357abd;
-    transform: translateY(-2px);
-}
-
-#separator{
-    border: none; /* border-top: none으로 설정 */
-    margin: 0;
-    background: transparent;
-}
-
-.update-header:hover {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-}
-
-.toggle-icon {
-    transition: transform 0.3s ease;
-}
-
-/* 지원 형식 정보 스타일 */
-.supported-formats-info {
-    margin: 0.5rem 0 1rem;
-    padding: 0.75rem;
-    background-color: #f1f7ff;
-    border-radius: 8px;
-    border-left: 4px solid #4a90e2;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.supported-formats-info strong {
-    color: #4a90e2;
-    margin-right: 0.25rem;
-}
-
 /* 버튼 컨테이너 스타일 */
 .button-container {
     display: flex;
@@ -908,64 +667,10 @@ textarea:focus {
     min-width: 120px;
 }
 
-/* 체크박스 스타일 개선 */
-.user-checkboxes {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.user-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: #f1f5f9;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.user-checkbox-label:hover {
-    background: #e2e8f0;
-}
-
-.user-checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #4a90e2;
-}
-
-/* 이미지 배지 스타일 */
-.image-badge {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    background-color: #4a90e2;
-    color: white;
-    font-size: 10px;
-    padding: 2px 5px;
-    border-radius: 10px;
+/* 태그된 사용자 스타일 */
+.tagged-user {
+    color: #0d5bd1;
     font-weight: bold;
-}
-
-.image-badge.internal {
-    background-color: #10b981;
-}
-
-.image-badge.external {
-    background-color: #3b82f6;
-}
-
-/* 프로필 선택 체크박스 */
-.profile-select-checkbox {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 18px;
-    height: 18px;
-    display: none;
-    z-index: 2;
 }
 
 /* 선택 모드 메시지 */
@@ -1013,103 +718,33 @@ textarea:focus {
     position: relative;
 }
 
-#input-text::before {
-    content: '텍스트를 입력하거나 .txt 파일을 여기에 끌어다 놓으세요';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #aaa;
-    font-size: 1rem;
-    pointer-events: none;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-#input-text:empty::before,
-#input-text[value=""]::before {
-    opacity: 1;
-}
-
 #input-text.drag-over {
     border: 2px dashed #4a90e2;
     background-color: rgba(74, 144, 226, 0.05);
 }
 
-/* 다크모드에서의 드래그 앤 드롭 스타일 */
-body.dark #input-text.drag-over {
-    border: 2px dashed #60a5fa;
-    background-color: rgba(96, 165, 250, 0.1);
-}
-
-/* 파일 드롭 정보 컨테이너 */
-.file-drop-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #f1f7ff;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    border-left: 3px solid #4a90e2;
-    color: #333;
-}
-
-.file-drop-info i {
+/* Footer */
+#footer {
+    background-color: rgba(74, 144, 226, 0.05);
     color: #4a90e2;
-    font-size: 1.1rem;
+    text-align: center;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(74, 144, 226, 0.1);
+    margin-top: auto;
+    width: 100%;
 }
 
-body.dark .file-drop-info {
-    background-color: rgba(96, 165, 250, 0.1);
-    color: #e2e8f0;
-    border-left: 3px solid #60a5fa;
-}
-
-body.dark .file-drop-info i {
-    color: #60a5fa;
+#footer p {
+    margin: 0.5rem 0;
+    color: #357abd;
+    font-size: 0.9rem;
 }
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .header-text {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-    }
-    
     .main-container {
+        padding: 1.5rem;
         margin: 0 1rem 1.5rem;
-    }
-    
-    .social-links {
-        padding: 0.5rem 1rem;
-    }
-     
-    .main-container {
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto 2rem;
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.98);
-        border-radius: 24px;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-    }
-    
-    /* 프로필 그리드 조정 */
-    .profile-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 15px;
-    }
-      
-    /* 채팅 메시지 레이아웃 최적화 */
-    .message-wrapper {
-        max-width: calc(80% - 30px);
-        /* 모바일에서는 더 넓게 */
-    }
-    body {
-        background: linear-gradient(180deg, #e6f3ff 80px, #ffffff 80px, #ffffff 100%);
     }
     
     #title {
@@ -1117,74 +752,27 @@ body.dark .file-drop-info i {
         margin-bottom: 0.2rem;
     }
     
+    .header-text {
+        font-size: 1rem;
+        margin: 0.2rem 0;
+    }
+    
     button {
         padding: 0.5rem 1rem;
         border-radius: 10px;
     }
-
-    .message-content {
-        padding: 10px 16px;
+    
+    .message-wrapper {
+        max-width: calc(80% - 30px);
     }
     
-    .profile-delete-btn {
-        width: 32px; /* 원하는 정사각형 크기 */
-        height: 32px; /* 버튼의 높이를 동일하게 */
-        font-size: 1rem; /* 글씨 크기 조정 */
-        padding: 0; /* 버튼 안쪽 여백 제거 */
-        display: flex; /* 중앙 정렬을 위한 플렉스 */
-        align-items: center; /* 세로 중앙 정렬 */
-        justify-content: center; /* 가로 중앙 정렬 */
-        border-radius: 50%; /* 필요 시 버튼을 원형으로 */
-    }
-    /* 프로필 섹션 최적화 */
-    .user-profile-card {
-        padding: 15px;
+    /* 프로필 그리드 조정 */
+    .profile-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
     }
     
-    .name-container {
-        flex-wrap: wrap;
-    }
-    
-    .display-name-input {
-        width: 100%;
-        margin-bottom: 5px;
-    }
-    /* 색상 선택기와 파일 업로드 최적화 */
-    .color-picker {
-        width: 24px;
-        height: 24px;
-    }
-    
-    .file-input-label {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    /* 텍스트 영역 최적화 */
-    textarea {
-        height: 150px;
-        font-size: 0.9rem;
-        padding: 0.75rem;
-    }
-    /* 편집 버튼 최적화 */
-    .edit-buttons {
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    
-    .edit-buttons button {
-        width: auto;
-        flex: 1;
-        min-width: 60px;
-        padding: 4px 8px;
-    }
-    /* 테마 토글 버튼 위치 조정 */
-    #themeToggle {
-        bottom: 15px;
-        right: 80px;
-        padding: 8px 16px;
-        font-size: 0.9rem;
-    }
-    
+    /* 설정 버튼 위치 조정 */
     .settings-button {
         bottom: 15px;
         right: 15px;
@@ -1192,131 +780,23 @@ body.dark .file-drop-info i {
         height: 36px;
         font-size: 16px;
     }
-
-    /* 스크롤바 최적화 */
-    .chat-container::-webkit-scrollbar {
-        width: 4px;
-    }
-    /* 업데이트 로그 최적화 */
-    #update-log {
-        padding: 1rem;
+    
+    /* 텍스트 영역 최적화 */
+    textarea {
+        height: 150px;
         font-size: 0.9rem;
-    }
-    /* 상태 메시지 최적화 */
-    #statusMessage {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-        max-width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .social-links {
-        position: static;
-        display: flex;
-        justify-content: flex-start;
-        gap: 15px;
-        padding: 0.5rem 2rem; /* 상하 여백 감소 */
-    }
-     
-    #header-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0.4rem 1rem 0;
-    }
-    
-    #title {
-        margin-bottom: 0.15rem;
-    }
-    
-    .social-links {
-        padding: 0.4rem 1rem;
-    }
-    
-    .header-text {
-        font-size: 1rem;
-        margin: 0.2rem 0;
-    }
-    
-    .main-container {
-        width: 100%;
-        max-width: 900px;
-        margin: 0 1rem 1.5rem;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 24px;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(74, 144, 226, 0.1);
-    }
-    
-    #update-log {
-        margin: 1.5rem 0;
-        border-radius: 16px;
-    }
-    
-    .chat-container.resizable {
-        resize: none;
-        width: 100%;
-    }
-
-    .button-container {
-        gap: 6px;
-    }
-    
-    .button-container button {
-        font-size: 0.85rem;
-        min-width: 80px;
-        padding: 0.5rem 0.75rem;
-    }
-    
-    /* 체크박스 그리드 조정 */
-    .user-checkboxes {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        padding: 0.75rem;
     }
 }
 
-/* 더 작은 모바일 화면을 위한 추가 최적화 */
 @media (max-width: 480px) {
-    body {
-        background: linear-gradient(180deg, #e6f3ff 60px, #ffffff 60px, #ffffff 100%);
-    }
-    
-    #header-container {
-        padding: 0.3rem 0.75rem 0;
+    .main-container {
+        padding: 1.25rem;
+        margin: 0 0.75rem 1rem;
     }
     
     #title {
         font-size: 1.75rem;
-        margin-bottom: 0.15rem;
-    }
-    
-    .header-text {
-        margin: 0.15rem 0;
-    }
-    
-    .main-container {
-        margin: 0 0.75rem 1rem;
-        padding: 1.25rem;
-    }
-    
-    .social-links {
-        padding: 0.3rem 0.75rem;
-    }
-    
-    .social-links a {
-        font-size: 20px;
-    }
-    
-    #update-log {
-        margin: 1rem 0;
-    }
-    
-    .update-header {
-        padding: 0.75rem 1rem;
-    }
-    
-    .update-content.show {
-        padding: 1rem;
     }
     
     .button-container {
@@ -1328,26 +808,9 @@ body.dark .file-drop-info i {
         width: 100%;
     }
     
-    .supported-formats-info {
-        font-size: 0.8rem;
-        padding: 0.5rem;
-    }
-    
     /* 프로필 그리드를 단일 컬럼으로 */
     .profile-grid {
         grid-template-columns: 1fr;
-    }
-    
-    /* 체크박스 목록도 단일 컬럼으로 */
-    .user-checkboxes {
-        grid-template-columns: 1fr;
-    }
-
-    #themeToggle {
-        bottom: 12px;
-        right: 70px;
-        padding: 6px 12px;
-        font-size: 0.85rem;
     }
     
     .settings-button {
@@ -1356,32 +819,5 @@ body.dark .file-drop-info i {
         width: 32px;
         height: 32px;
         font-size: 14px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    #header-container {
-        padding: 1rem 0.75rem 0.75rem;
-    }
-    
-    #title {
-        font-size: 1.75rem;
-    }
-    
-    .header-text {
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
-    
-    #update-log {
-        margin: 1rem;
-    }
-    
-    .update-header {
-        padding: 1rem;
-    }
-    
-    .update-content.show {
-        padding: 1rem;
     }
 }

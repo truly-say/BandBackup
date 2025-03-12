@@ -51,6 +51,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // 이벤트 리스너 설정
     setupEventListeners();
 
+    // 이미지 처리 모듈 초기화 (있는 경우)
+    if (typeof ImageHandler !== 'undefined' && ImageHandler) {
+        if (typeof ImageHandler.init === 'function') {
+            ImageHandler.init();
+        }
+    }
+
     // 테마 초기화
     if (typeof UIManager !== 'undefined' && UIManager) {
         UIManager.initializeTheme(state);
@@ -140,8 +147,8 @@ function setupEventListeners() {
             if (inputText) {
                 inputText.value = content;
 
-                // 자동으로 채팅 분석 실행 (선택적)
-                // handleAnalyze();
+                // 자동으로 채팅 분석 실행
+                handleAnalyze();
             }
 
             // 로딩 표시 제거
@@ -344,71 +351,91 @@ function handleAnalyze() {
         return;
     }
 
-    // 메시지 파싱
-    if (typeof MessageParser !== 'undefined' && MessageParser) {
-        console.log('MessageParser를 사용하여 메시지 파싱 중');
-        state.messages = MessageParser.parseMessages(chatData);
-    } else {
-        console.error('MessageParser가 로드되지 않았습니다');
-        // 간단한 파싱 기능 구현
-        state.messages = [];
-        const lines = chatData.split('\n');
-        const regex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
-
-        let currentMessage = null;
-        lines.forEach(line => {
-            const trimmedLine = line.trim();
-            if (!trimmedLine) return;
-
-            const match = trimmedLine.match(regex);
-            if (match) {
-                if (currentMessage) state.messages.push(currentMessage);
-                currentMessage = {
-                    time: match[1].trim(),
-                    username: match[2].trim(),
-                    chatMessage: match[3].trim()
-                };
-            } else if (currentMessage) {
-                currentMessage.chatMessage += '\n' + trimmedLine;
-            }
-        });
-
-        if (currentMessage) state.messages.push(currentMessage);
-    }
-
-    console.log(`파싱된 메시지 개수: ${state.messages.length}`);
-
-    // 유니크 유저네임 가져오기
-    const usernames = new Set(state.messages.map(msg => msg.username));
-    console.log(`고유 사용자 수: ${usernames.size}`);
-
-    // 최대 지원 사용자 수 검증
-    const MAX_USERS = 25;
-    if (usernames.size > MAX_USERS) {
-        alert(`대화 참여자가 ${usernames.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
-        userProfiles.innerHTML = '';
-        userProfiles.style.display = 'none';
-        return;
-    }
-
-    // 프로필 설정 UI 생성
-    if (typeof ProfileManager !== 'undefined' && ProfileManager && typeof ProfileManager.createProfileSettings === 'function') {
-        console.log('ProfileManager를 사용하여 프로필 설정 UI 생성 중');
-        ProfileManager.createProfileSettings(state, renderMessages);
-    } else {
-        console.error('ProfileManager가 로드되지 않았거나 createProfileSettings 함수가 없습니다');
-    }
-
-    // 메시지 렌더링
-    renderMessages();
-
-    // 상태 메시지 표시
+    // 로딩 표시
     if (typeof UIManager !== 'undefined' && UIManager) {
-        UIManager.showStatusMessage('채팅 분석 완료!', state.darkMode);
-    } else {
-        console.error('UIManager가 로드되지 않았습니다');
-        // 기본 알림 표시
-        alert('채팅 분석 완료!');
+        UIManager.toggleLoadingOverlay(true, '채팅 분석 중...');
+    }
+
+    try {
+        // 메시지 파싱
+        if (typeof MessageParser !== 'undefined' && MessageParser) {
+            console.log('MessageParser를 사용하여 메시지 파싱 중');
+            state.messages = MessageParser.parseMessages(chatData);
+        } else {
+            console.error('MessageParser가 로드되지 않았습니다');
+            // 간단한 파싱 기능 구현
+            state.messages = [];
+            const lines = chatData.split('\n');
+            const regex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
+
+            let currentMessage = null;
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) return;
+
+                const match = trimmedLine.match(regex);
+                if (match) {
+                    if (currentMessage) state.messages.push(currentMessage);
+                    currentMessage = {
+                        time: match[1].trim(),
+                        username: match[2].trim(),
+                        chatMessage: match[3].trim()
+                    };
+                } else if (currentMessage) {
+                    currentMessage.chatMessage += '\n' + trimmedLine;
+                }
+            });
+
+            if (currentMessage) state.messages.push(currentMessage);
+        }
+
+        console.log(`파싱된 메시지 개수: ${state.messages.length}`);
+
+        // 유니크 유저네임 가져오기
+        const usernames = new Set(state.messages.map(msg => msg.username));
+        console.log(`고유 사용자 수: ${usernames.size}`);
+
+        // 최대 지원 사용자 수 검증
+        const MAX_USERS = 25;
+        if (usernames.size > MAX_USERS) {
+            alert(`대화 참여자가 ${usernames.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
+            userProfiles.innerHTML = '';
+            userProfiles.style.display = 'none';
+            
+            // 로딩 표시 숨김
+            if (typeof UIManager !== 'undefined' && UIManager) {
+                UIManager.toggleLoadingOverlay(false);
+            }
+            return;
+        }
+
+        // 프로필 설정 UI 생성
+        if (typeof ProfileManager !== 'undefined' && ProfileManager && typeof ProfileManager.createProfileSettings === 'function') {
+            console.log('ProfileManager를 사용하여 프로필 설정 UI 생성 중');
+            ProfileManager.createProfileSettings(state, renderMessages);
+        } else {
+            console.error('ProfileManager가 로드되지 않았거나 createProfileSettings 함수가 없습니다');
+        }
+
+        // 메시지 렌더링
+        renderMessages();
+
+        // 상태 메시지 표시
+        if (typeof UIManager !== 'undefined' && UIManager) {
+            UIManager.toggleLoadingOverlay(false);
+            UIManager.showStatusMessage('채팅 분석 완료!', state.darkMode);
+        } else {
+            // 기본 알림 표시
+            alert('채팅 분석 완료!');
+        }
+    } catch (error) {
+        console.error('채팅 분석 중 오류 발생:', error);
+        alert('채팅 분석 중 오류가 발생했습니다: ' + error.message);
+        
+        // 로딩 표시 숨김
+        if (typeof UIManager !== 'undefined' && UIManager) {
+            UIManager.toggleLoadingOverlay(false);
+        }
     }
 
     console.log('handleAnalyze 함수 실행 완료');
@@ -433,37 +460,79 @@ function handleConvert() {
             return;
         }
 
-        // 메시지 파싱
-        if (typeof MessageParser !== 'undefined' && MessageParser) {
-            state.messages = MessageParser.parseMessages(chatData);
-        } else {
-            alert('MessageParser 모듈이 로드되지 않았습니다. 먼저 채팅 분석을 실행해주세요.');
+        // 로딩 표시
+        if (typeof UIManager !== 'undefined' && UIManager) {
+            UIManager.toggleLoadingOverlay(true, '채팅 분석 중...');
+        }
+
+        try {
+            // 메시지 파싱
+            if (typeof MessageParser !== 'undefined' && MessageParser) {
+                state.messages = MessageParser.parseMessages(chatData);
+            } else {
+                alert('MessageParser 모듈이 로드되지 않았습니다. 먼저 채팅 분석을 실행해주세요.');
+                
+                // 로딩 표시 숨김
+                if (typeof UIManager !== 'undefined' && UIManager) {
+                    UIManager.toggleLoadingOverlay(false);
+                }
+                return;
+            }
+        } catch (error) {
+            console.error('채팅 파싱 중 오류 발생:', error);
+            alert('채팅 파싱 중 오류가 발생했습니다: ' + error.message);
+            
+            // 로딩 표시 숨김
+            if (typeof UIManager !== 'undefined' && UIManager) {
+                UIManager.toggleLoadingOverlay(false);
+            }
             return;
         }
     }
     
-    // 참여자 수 검증
-    const uniqueUsers = new Set(state.messages.map(msg => msg.username));
-    if (uniqueUsers.size > 25) {
-        alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 25명까지만 지원됩니다.`);
-        return;
-    }
-
-    // 메시지 렌더링
-    renderMessages();
-    
-    // 프로필 설정 영역 숨기기
-    const userProfiles = document.getElementById('user-profiles');
-    if (userProfiles) {
-        userProfiles.style.opacity = '0';
-        userProfiles.style.display = 'none';
-    }
-    
-    // 상태 메시지 표시
+    // 로딩 표시
     if (typeof UIManager !== 'undefined' && UIManager) {
-        UIManager.showStatusMessage('채팅 변환 완료! 이제 HTML을 복사할 수 있습니다.', state.darkMode);
-    } else {
-        alert('채팅 변환 완료! 이제 HTML을 복사할 수 있습니다.');
+        UIManager.toggleLoadingOverlay(true, '채팅 변환 중...');
+    }
+    
+    try {
+        // 참여자 수 검증
+        const uniqueUsers = new Set(state.messages.map(msg => msg.username));
+        if (uniqueUsers.size > 25) {
+            alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 25명까지만 지원됩니다.`);
+            
+            // 로딩 표시 숨김
+            if (typeof UIManager !== 'undefined' && UIManager) {
+                UIManager.toggleLoadingOverlay(false);
+            }
+            return;
+        }
+
+        // 메시지 렌더링
+        renderMessages();
+        
+        // 프로필 설정 영역 숨기기
+        const userProfiles = document.getElementById('user-profiles');
+        if (userProfiles) {
+            userProfiles.style.opacity = '0';
+            userProfiles.style.display = 'none';
+        }
+        
+        // 로딩 표시 숨김
+        if (typeof UIManager !== 'undefined' && UIManager) {
+            UIManager.toggleLoadingOverlay(false);
+            UIManager.showStatusMessage('채팅 변환 완료! 이제 HTML을 복사할 수 있습니다.', state.darkMode);
+        } else {
+            alert('채팅 변환 완료! 이제 HTML을 복사할 수 있습니다.');
+        }
+    } catch (error) {
+        console.error('채팅 변환 중 오류 발생:', error);
+        alert('채팅 변환 중 오류가 발생했습니다: ' + error.message);
+        
+        // 로딩 표시 숨김
+        if (typeof UIManager !== 'undefined' && UIManager) {
+            UIManager.toggleLoadingOverlay(false);
+        }
     }
     
     console.log('handleConvert 함수 실행 완료');

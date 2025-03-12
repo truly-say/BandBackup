@@ -1,9 +1,9 @@
 // /js/profileManager.js - 프로필 관리 모듈
 
-/**
- * 프로필 관리자 모듈 - 유저 프로필 설정 및 관리
- */
 const ProfileManager = {
+    // 모듈 코드 유지
+    // 내장/외부 이미지 관련 코드만 제거
+
     /**
      * 모듈 초기화 상태
      */
@@ -125,148 +125,7 @@ const ProfileManager = {
 
         console.log('ProfileManager.createProfileSettings 완료');
     },
-
-    /**
-     * 선택된 프로필 초기화 함수
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
-    resetSelectedProfiles(state, renderMessages) {
-        // 선택된 체크박스 찾기
-        const selectedCheckboxes = document.querySelectorAll('.profile-select-checkbox:checked');
-        
-        if (selectedCheckboxes.length === 0) {
-            if (typeof UIManager !== 'undefined' && UIManager) {
-                UIManager.showStatusMessage('초기화할 프로필을 선택해주세요.', state.darkMode);
-            } else {
-                alert('초기화할 프로필을 선택해주세요.');
-            }
-            return;
-        }
-        
-        if (confirm(`선택한 ${selectedCheckboxes.length}개의 프로필을 초기화하시겠습니까?`)) {
-            let resetCount = 0;
-            selectedCheckboxes.forEach(checkbox => {
-                const card = checkbox.closest('.user-profile-card');
-                if (card) {
-                    const username = card.dataset.username;
-                    if (username) {
-                        // 프로필 초기화
-                        delete state.userProfileImages[username];
-                        delete state.userColors[username];
-                        state.displayNames[username] = username;
-
-                        // 내 메시지 상태는 유지
-                        const isMyMessage = state.selectedUsers.has(username);
-
-                        // UI 업데이트
-                        const preview = card.querySelector('.profile-preview');
-                        if (preview) preview.innerHTML = '';
-
-                        const displayInput = card.querySelector('.display-name-input');
-                        if (displayInput) displayInput.value = username;
-
-                        const colorInput = card.querySelector('.color-picker');
-                        if (colorInput) colorInput.value = '#000000';
-
-                        // 체크박스 초기화
-                        checkbox.checked = false;
-
-                        // 내 메시지 버튼 업데이트
-                        const myUserButton = card.querySelector('.my-user-button');
-                        if (myUserButton) {
-                            myUserButton.textContent = isMyMessage ? '내 메시지 해제' : '내 메시지로 설정';
-                            myUserButton.style.backgroundColor = isMyMessage ? '#f56565' : '#4a90e2';
-                        }
-
-                        resetCount++;
-                    }
-                }
-            });
-
-            // 변경사항 저장
-            if (typeof StorageManager !== 'undefined' && StorageManager) {
-                StorageManager.saveProfiles({
-                    displayNames: state.displayNames,
-                    userProfileImages: state.userProfileImages,
-                    userColors: state.userColors
-                }, state.selectedUsers);
-            }
-
-            // 메시지 다시 렌더링
-            if (typeof renderMessages === 'function') {
-                renderMessages();
-            }
-
-            // 완료 메시지
-            if (typeof UIManager !== 'undefined' && UIManager) {
-                UIManager.showStatusMessage(`${resetCount}개의 프로필이 초기화되었습니다.`, state.darkMode);
-            } else {
-                alert(`${resetCount}개의 프로필이 초기화되었습니다.`);
-            }
-        }
-    },
-
-    toggleProfileSelectionMode(enable, state, renderMessages) {
-        // 선택 모드 상태 업데이트
-        this.selectionMode = enable;
-        
-        const checkboxes = document.querySelectorAll('.profile-select-checkbox');
-        const cards = document.querySelectorAll('.user-profile-card');
-        
-        const selectProfilesBtn = document.getElementById('select-profiles');
-        const resetAllBtn = document.getElementById('reset-all-profiles');
-        const resetSelectedBtn = document.getElementById('reset-selected-profiles');
-        const cancelSelectionBtn = document.getElementById('cancel-selection');
-        
-        if (enable) {
-            // 선택 모드 활성화
-            checkboxes.forEach(checkbox => {
-                checkbox.style.display = 'block';
-            });
-            
-            // 버튼 상태 변경
-            if (selectProfilesBtn) selectProfilesBtn.style.display = 'none';
-            if (resetAllBtn) resetAllBtn.style.display = 'none';
-            if (resetSelectedBtn) resetSelectedBtn.style.display = 'block';
-            if (cancelSelectionBtn) cancelSelectionBtn.style.display = 'block';
-            
-            // 선택 모드 안내 메시지 표시
-            const message = document.createElement('div');
-            message.id = 'selection-mode-message';
-            message.className = 'selection-mode-message';
-            message.innerHTML = '✓ 초기화할 프로필을 선택한 후 <b>선택 초기화</b> 버튼을 클릭하세요.';
-            
-            // 프로필 액션 컨테이너 찾기
-            const actionsContainer = document.querySelector('.profile-actions');
-            if (actionsContainer) {
-                actionsContainer.parentNode.insertBefore(message, actionsContainer.nextSibling);
-            }
-        } else {
-            // 선택 모드 비활성화
-            checkboxes.forEach(checkbox => {
-                checkbox.style.display = 'none';
-                checkbox.checked = false;
-            });
-            
-            // 선택 표시 제거
-            cards.forEach(card => {
-                card.classList.remove('selected-for-reset');
-            });
-            
-            // 선택 모드 메시지 제거
-            const message = document.getElementById('selection-mode-message');
-            if (message) message.remove();
-            
-            // 버튼 상태 복원
-            if (selectProfilesBtn) selectProfilesBtn.style.display = 'block';
-            if (resetAllBtn) resetAllBtn.style.display = 'block';
-            if (resetSelectedBtn) resetSelectedBtn.style.display = 'none';
-            if (cancelSelectionBtn) cancelSelectionBtn.style.display = 'none';
-        }
-    },
-
-
+    
     /**
      * 프로필 입력 카드 생성
      * @param {string} username - 사용자명
@@ -322,31 +181,11 @@ const ProfileManager = {
         if (state.userProfileImages[username]) {
             // 이미지 URL 처리
             try {
-                // 외부 이미지 URL인지 확인
-                if (state.userProfileImages[username].startsWith('http')) {
+                if (typeof ImageHandler !== 'undefined' && ImageHandler) {
+                    const displayUrl = ImageHandler.decompressImageUrl(state.userProfileImages[username]);
                     const img = document.createElement('img');
-                    img.src = state.userProfileImages[username];
+                    img.src = displayUrl;
                     preview.appendChild(img);
-                    
-                    // 외부 이미지 배지 추가
-                    const badgeContainer = document.createElement('div');
-                    badgeContainer.className = 'image-badge';
-                    badgeContainer.textContent = '외부';
-                    preview.appendChild(badgeContainer);
-                } else {
-                    // 내부 이미지(Base64) 처리
-                    if (typeof ImageHandler !== 'undefined' && ImageHandler) {
-                        const displayUrl = ImageHandler.decompressImageUrl(state.userProfileImages[username]);
-                        const img = document.createElement('img');
-                        img.src = displayUrl;
-                        preview.appendChild(img);
-                        
-                        // 내장 이미지 배지 추가
-                        const badgeContainer = document.createElement('div');
-                        badgeContainer.className = 'image-badge internal';
-                        badgeContainer.textContent = '내장';
-                        preview.appendChild(badgeContainer);
-                    }
                 }
             } catch (error) {
                 console.error(`이미지 URL 처리 중 오류: ${username}`, error);
@@ -470,19 +309,6 @@ const ProfileManager = {
                             // 성공 시 이미지 데이터 저장
                             state.userProfileImages[username] = processedImageUrl;
                             
-                            // 내장 이미지 배지 추가
-                            const existingBadge = preview.querySelector('.image-badge');
-                            if (existingBadge) {
-                                existingBadge.textContent = '내장';
-                                existingBadge.classList.add('internal');
-                                existingBadge.classList.remove('external');
-                            } else {
-                                const badgeContainer = document.createElement('div');
-                                badgeContainer.className = 'image-badge internal';
-                                badgeContainer.textContent = '내장';
-                                preview.appendChild(badgeContainer);
-                            }
-                            
                             // 프로필 저장
                             if (typeof StorageManager !== 'undefined' && StorageManager) {
                                 StorageManager.saveProfiles({
@@ -555,39 +381,7 @@ const ProfileManager = {
                 div, 
                 preview, 
                 (processedImageUrl) => {
-                    // 외부 이미지 URL인지 확인 (웹 이미지 드래그)
-                    if (processedImageUrl.startsWith('http')) {
-                        state.userProfileImages[username] = processedImageUrl;
-                        
-                        // 외부 이미지 배지 추가
-                        const existingBadge = preview.querySelector('.image-badge');
-                        if (existingBadge) {
-                            existingBadge.textContent = '외부';
-                            existingBadge.classList.add('external');
-                            existingBadge.classList.remove('internal');
-                        } else {
-                            const badgeContainer = document.createElement('div');
-                            badgeContainer.className = 'image-badge external';
-                            badgeContainer.textContent = '외부';
-                            preview.appendChild(badgeContainer);
-                        }
-                    } else {
-                        // 내부 이미지
-                        state.userProfileImages[username] = processedImageUrl;
-                        
-                        // 내장 이미지 배지 추가
-                        const existingBadge = preview.querySelector('.image-badge');
-                        if (existingBadge) {
-                            existingBadge.textContent = '내장';
-                            existingBadge.classList.add('internal');
-                            existingBadge.classList.remove('external');
-                        } else {
-                            const badgeContainer = document.createElement('div');
-                            badgeContainer.className = 'image-badge internal';
-                            badgeContainer.textContent = '내장';
-                            preview.appendChild(badgeContainer);
-                        }
-                    }
+                    state.userProfileImages[username] = processedImageUrl;
                     
                     // 프로필 저장
                     if (typeof StorageManager !== 'undefined' && StorageManager) {

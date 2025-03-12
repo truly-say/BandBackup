@@ -70,28 +70,10 @@ body.dark #footer {
     border-top: 1px solid #333;
 }
 
-body.dark .footer-social-links a {
-    color: #60a5fa;
-}
-
-body.dark .footer-social-links a:hover {
-    color: #93c5fd;
-}
-
 body.dark .edit-textarea {
     background: #2d2d2d;
     border-color: #3498db;
     color: #e2e8f0;
-}
-
-/* 테마 토글 버튼과 설정 버튼 스타일 분리 */
-body.dark #themeToggle {
-    background-color: #3182ce;
-    color: white;
-}
-
-body.dark #themeToggle:hover {
-    background-color: #2c5282;
 }
 
 body.dark #settingsButton {
@@ -158,10 +140,6 @@ body.dark .user-profile-card.drag-over {
 body.dark .profile-preview {
     background-color: #4a5568;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-body.dark .drag-drop-info {
-    color: #a0aec0;
 }
 
 body.dark .display-name-input {
@@ -236,30 +214,7 @@ body.dark .is-my-message {
     background-color: rgba(96, 165, 250, 0.08);
 }
 
-body.dark .profile-grid {
-    gap: 16px;
-}
-
-body.dark .user-profiles {
-    background: #1e293b;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* 다크모드 체크박스 스타일 */
-body.dark .user-checkbox-label {
-    background: #2d3748;
-    color: #e2e8f0;
-}
-
-body.dark .user-checkbox-label:hover {
-    background: #374151;
-}
-
-body.dark .user-checkboxes {
-    gap: 8px;
-}
-
-/* 다크 모드에서 사용자 프로필 가독성 개선 */
+/* 다크모드에서 사용자 프로필 가독성 개선 */
 body.dark .user-profile-card {
     background: #2d3748;
     border-color: #4a5568;
@@ -284,103 +239,7 @@ body.dark .reset-selected-profiles:hover {
     background-color: #e53e3e;
 }
 
-/* 다크모드 탭 스타일 */
-body.dark .tabs-container {
-    background-color: #2d3748;
-    border-bottom-color: #4a5568;
-}
-
-body.dark .image-tab {
-    background: #2d3748;
-    color: #a0aec0;
-}
-
-body.dark .image-tab:hover {
-    background-color: #3a4a61;
-}
-
-body.dark .image-tab.active-tab {
-    color: #60a5fa;
-    border-bottom-color: #60a5fa;
-    background-color: #1a202c;
-}
-
-/* 외부 이미지 URL 입력 필드 - 다크모드 */
-body.dark .external-url-input {
-    background-color: #1a202c;
-    color: #e2e8f0;
-    border-color: #4a5568;
-}
-
-body.dark .external-url-input:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
-}
-
-/* 이미지 업로드 사이트 열기 버튼 - 다크모드 */
-body.dark .open-site-button {
-    background-color: #2d3748;
-    color: #e2e8f0;
-    border-color: #4a5568;
-}
-
-body.dark .open-site-button:hover {
-    background-color: #3a4a61;
-}
-
-/* 도움말 텍스트 - 다크모드 */
-body.dark .image-help-text {
-    color: #a0aec0;
-    background-color: #1a202c;
-    border-color: #2d3748;
-}
-
-/* 다크모드 말풍선 스타일 - 마지막 메시지 */
-body.dark .chat-message.other.last .message-content {
-    border-radius: 0 20px 20px 20px; /* 왼쪽 상단 모서리만 직각, 왼쪽 하단 모서리는 둥글게 */
-}
-
-body.dark .chat-message.mine.last .message-content {
-    border-radius: 20px 0 20px 20px; /* 오른쪽 상단 모서리만 직각, 오른쪽 하단 모서리는 둥글게 */
-}
-
-/* 설정 패널 - 다크모드 */
-body.dark .settings-panel {
-    background-color: #1e293b;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-}
-
-body.dark .settings-option {
-    border-bottom-color: #2d3748;
-}
-
-body.dark .settings-label {
-    color: #e2e8f0;
-}
-
-body.dark .settings-label i {
-    color: #60a5fa;
-}
-
-body.dark .settings-about {
-    color: #a0aec0;
-}
-
-/* 업데이트 로그 - 다크모드 */
-body.dark #update-log {
-    background: #1a1f2e;
-    border-color: #374151;
-}
-
-body.dark .update-header {
-    background: linear-gradient(135deg, #3b4d61 0%, #2d3748 100%);
-}
-
-body.dark .update-content li {
-    color: #e2e8f0;
-}
-
-/* 편집 버튼 - 다크모드 */
+/* 다크모드 편집 버튼 */
 body.dark .edit-buttons button {
     background-color: #3182ce;
 }
@@ -389,21 +248,48 @@ body.dark .edit-buttons button.delete-button {
     background-color: #e53e3e;
 }
 
-/* 프로필 선택 - 다크모드 */
-body.dark .profile-select-checkbox:checked {
-    accent-color: #3182ce;
-}
-
+/* 다크모드 선택 프로필 */
 body.dark .selected-for-reset {
     box-shadow: 0 0 0 2px #e53e3e;
     background-color: rgba(229, 62, 62, 0.1);
 }
 
-/* 내 메시지 버튼 - 다크모드 */
+/* 다크모드 내 메시지 버튼 */
 body.dark .my-user-button {
     background-color: #3182ce;
 }
 
 body.dark .my-user-button:hover {
     background-color: #2b6cb0;
+}
+
+/* 다크모드 드래그 앤 드롭 */
+body.dark #input-text.drag-over {
+    border: 2px dashed #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* 말풍선 꼬리 색상 */
+body.dark .chat-message.mine .message-content::before {
+    border-bottom-color: #2d3647;
+}
+
+body.dark .chat-message.other .message-content::before {
+    border-bottom-color: #4c4f56;
+}
+
+/* 다크모드 선택 모드 메시지 */
+body.dark .selection-mode-message {
+    background-color: rgba(66, 153, 225, 0.1);
+    border-left-color: #4299e1;
+    color: #a0aec0;
+}
+
+/* 설정 버튼 */
+body.dark .settings-button {
+    background-color: #3182ce;
+}
+
+body.dark .settings-button:hover {
+    background-color: #2c5282;
 }

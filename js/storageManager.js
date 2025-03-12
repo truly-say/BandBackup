@@ -174,7 +174,7 @@ const StorageManager = {
         const defaultSettings = {
             highlightTags: true,
             showMyProfile: true,
-            imageQuality: 0.4,    // 기본 이미지 품질 (0.4 = 40%)
+            imageQuality: 0.7,    // 기본 이미지 품질 (0.4 = 40%)
             useImageCompression: true,
             maxImageSize: 100     // 기본 최대 이미지 크기 (100px)
         };

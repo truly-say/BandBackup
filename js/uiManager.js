@@ -164,27 +164,24 @@ const UIManager = {
         // 연속 메시지 여부 확인 (명시적으로 전달받은 값 사용)
         const isTrueContinuousMessage = isContinuousMessage;
 
-        // 프로필 이미지 처리
-        let profileImage = state.userProfileImages[username];
-        let profileHTML = '';
+       // 프로필 이미지 처리
+// 프로필 이미지 처리
+let profileImage = state.userProfileImages[username];
+let profileHTML = '';
 
-        // 내 메시지의 프로필 이미지 표시 여부 확인
-        const showMyImage = state.showMyProfile !== false;
+// 내 메시지의 프로필 이미지 표시 여부 확인
+const showMyImage = state.showMyProfile !== false;
 
-        // 프로필 이미지 처리 로직
-        if (profileImage) {
-            // 외부 이미지 URL 처리
-            if (profileImage.startsWith('http://') || profileImage.startsWith('https://')) {
-                profileHTML = `<img src="${this._escapeHtml(profileImage)}" alt="${this._escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
-            }
-            // 내부 이미지 처리
-            else {
-                if (typeof ImageHandler !== 'undefined' && ImageHandler) {
-                    profileImage = ImageHandler.decompressImageUrl(profileImage);
-                }
-                profileHTML = `<img src="${profileImage}" alt="${this._escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
-            }
-        }
+// 프로필 이미지 처리 로직
+if (profileImage) {
+    try {
+        // 외부 라이브러리 의존성 최소화
+        profileHTML = `<img src="${profileImage}" alt="${this._escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
+    } catch (error) {
+        console.error('이미지 URL 처리 중 오류:', error);
+        profileHTML = ''; // 오류 시 빈 HTML
+    }
+}
 
         const isDarkMode = state.darkMode;
         const userColor = isDarkMode ? '#e2e8f0' : (state.userColors[username] || '#000');
