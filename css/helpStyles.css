@@ -1,56 +1,82 @@
 /* /css/helpStyles.css - 도움말 시스템 스타일 */
 
-/* 도움말 아이콘 기본 스타일 */
-.help-icon {
-    display: inline-flex;
+/* 글로벌 도움말 버튼 스타일 */
+.help-button {
+    position: fixed;
+    bottom: 80px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: rgba(74, 144, 226, 0.1);
-    color: #4a90e2;
-    font-size: 12px;
-    cursor: pointer;
-    margin: 0 5px;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
     transition: all 0.2s ease;
 }
 
-.help-icon:hover {
-    background-color: rgba(74, 144, 226, 0.2);
-    transform: scale(1.1);
+.help-button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 도움말 아이콘 위치 조정 */
-#input-text + .help-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.button-container button + .help-icon {
-    margin-left: -25px;
-    margin-right: 10px;
-    z-index: 1;
-}
-
-.user-profiles .help-icon {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-}
-
-#chat-container .help-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1;
-}
-
-#themeToggle + .help-icon {
+/* 도움말 메뉴 스타일 */
+.help-menu {
     position: fixed;
-    right: 80px;
-    bottom: 20px;
+    width: 250px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    z-index: 9990;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.help-menu-item {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+}
+
+.help-menu-item:hover {
+    background-color: #f7f9fc;
+}
+
+.help-menu-item:last-child {
+    border-bottom: none;
+    border-radius: 0 0 10px 10px;
+}
+
+.help-menu-item:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.help-menu-item i {
+    margin-right: 8px;
+    color: #4a90e2;
+}
+
+/* 메뉴 오버레이 */
+.help-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9985;
 }
 
 /* 도움말 모달 스타일 */
@@ -158,13 +184,33 @@
 }
 
 /* 다크 모드 스타일 */
-body.dark .help-icon {
-    background-color: rgba(96, 165, 250, 0.1);
-    color: #60a5fa;
+body.dark .help-button {
+    background-color: #3182ce;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-body.dark .help-icon:hover {
-    background-color: rgba(96, 165, 250, 0.2);
+body.dark .help-button:hover {
+    background-color: #2c5282;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .help-menu {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .help-menu-item {
+    color: #e2e8f0;
+    border-bottom: 1px solid #2d3748;
+}
+
+body.dark .help-menu-item:hover {
+    background-color: #2d3748;
+}
+
+body.dark .help-menu-item i {
+    color: #60a5fa;
 }
 
 body.dark #help-modal-container {
@@ -206,31 +252,89 @@ body.dark .help-modal-body .help-note {
     border-left-color: #60a5fa;
 }
 
-/* 모바일 대응 */
+/* 설정 패널 내 도움말 버튼 스타일 */
+.settings-help-button {
+    padding: 4px 10px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-help-button:hover {
+    background-color: #357abd;
+}
+
+body.dark .settings-help-button {
+    background-color: #3182ce;
+    color: white;
+}
+
+body.dark .settings-help-button:hover {
+    background-color: #2c5282;
+}
+
+/* 모바일 대응 스타일 */
 @media (max-width: 768px) {
+    .help-button {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        bottom: 70px;
+        right: 40px; /* 수정: 모바일에서도 위치 고정 */
+    }
+    
+    /* 메뉴가 화면을 넘어가지 않도록 위치 조정 */
+    .help-menu {
+        width: 220px;
+        right: 40px !important; /* 강제 적용으로 JS에서 설정한 위치보다 우선 적용 */
+        bottom: 115px !important; /* 버튼 위에 바로 표시 - 설정 패널과 겹치지 않게 조정 */
+        transform: none !important; /* 기존 변형 제거 */
+    }
+    
+    .help-menu-item {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
     .help-modal-content {
         width: 95%;
+    }
+    
+    .help-modal-header {
+        padding: 12px 16px;
     }
     
     .help-modal-body {
         padding: 15px;
     }
-    
-    #themeToggle + .help-icon {
-        right: 70px;
-        bottom: 15px;
-    }
 }
 
 @media (max-width: 480px) {
-    .help-icon {
-        width: 16px;
-        height: 16px;
-        font-size: 10px;
+    .help-button {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        bottom: 60px;
+        right: 40px; /* 수정: 더 작은 화면에서도 오른쪽 위치 고정 */
+    }
+    
+    .help-menu {
+        width: 200px;
+        right: 40px !important; /* 수정: 오른쪽 위치 고정 */
+        bottom: 100px !important; /* 버튼 위 위치 */
+    }
+    
+    .help-menu-item {
+        padding: 8px 12px;
+        font-size: 12px;
     }
     
     .help-modal-header {
-        padding: 12px 15px;
+        padding: 10px 14px;
     }
     
     .help-modal-body {
@@ -243,10 +347,5 @@ body.dark .help-modal-body .help-note {
     
     .help-modal-body h4 {
         font-size: 14px;
-    }
-    
-    #themeToggle + .help-icon {
-        right: 60px;
-        bottom: 12px;
     }
 }

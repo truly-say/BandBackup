@@ -113,6 +113,22 @@ input:checked + .settings-slider:before {
     transform: translateX(16px);
 }
 
+/* 도움말 버튼 스타일 */
+.settings-help-button {
+    padding: 4px 10px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-help-button:hover {
+    background-color: #357abd;
+}
+
 /* 구분선 */
 .settings-divider {
     height: 1px;
@@ -176,6 +192,15 @@ body.dark input:checked + .settings-slider {
     background-color: #3182ce;
 }
 
+body.dark .settings-help-button {
+    background-color: #3182ce;
+    color: white;
+}
+
+body.dark .settings-help-button:hover {
+    background-color: #2c5282;
+}
+
 body.dark .settings-divider {
     background-color: #2d3748;
 }
@@ -191,12 +216,14 @@ body.dark .settings-about {
         height: 36px;
         font-size: 16px;
         bottom: 15px;
-        right: 15px;
+        right: 40px; /* 수정: 일관된 오른쪽 배치 유지 */
     }
     
     .settings-panel {
         width: 220px;
         padding: 12px;
+        bottom: 60px !important; /* 수정: 패널 위치 고정 */
+        right: 40px !important;  /* 수정: 패널 오른쪽 정렬 */
     }
     
     .settings-label {
@@ -210,12 +237,14 @@ body.dark .settings-about {
         height: 32px;
         font-size: 14px;
         bottom: 10px;
-        right: 10px;
+        right: 40px; /* 수정: 일관된 위치 유지 */
     }
     
     .settings-panel {
         width: 200px;
         padding: 10px;
+        bottom: 50px !important; /* 수정: 패널 위치 조정 */
+        right: 40px !important;  /* 수정: 패널 오른쪽 정렬 */
     }
     
     .settings-label {

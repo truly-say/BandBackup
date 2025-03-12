@@ -24,7 +24,8 @@
     <div class="main-container">
         <textarea id="input-text" placeholder="①밴드에서 내보낸 채팅을 붙여넣은 뒤 분석을 누르면 프로필 사진 설정을 할 수 있습니다.
 ②반드시 변환하기를 눌러야 html 복사가 가능합니다.
-            
+
+밴드에서 내보낸 텍스트 파일(.txt)을 해당 입력창에 끌어다 놓아도 분석이 가능합니다.
 대화하는 인원수가 25명을 넘길 시 작동하지 않습니다."></textarea>
         <div class="button-container">
             <button id="analyze-btn"><i class="fas fa-search"></i> ① 채팅 분석</button>
@@ -32,23 +33,10 @@
             <button id="copy-btn"><i class="fas fa-copy"></i> ③ HTML 복사</button>
             <button id="clear-btn"><i class="fas fa-trash"></i> 초기화</button>
         </div>
-        <div id="update-log">
-            <div class="update-header" onclick="toggleUpdateLog()">
-                <span class="toggle-icon">▼</span>
-                <strong>업데이트 내역</strong>
-            </div>
-            <div class="update-content">
-                <ul>
-                    <li>25.03.11: 설정 패널 통합, 다크 모드 개선, 코드 최적화</li>
-                    <li>25.03.10: 메시지 편집 기능 추가 및 버그 수정</li>
-                    <li>25.03.09: 연속 메시지 처리 개선, 이미지 최적화 강화</li>
-                </ul>
-            </div>
-        </div>
         <div id="user-profiles" class="user-profiles" style="display: none;">
             <div class="profile-header">
                 <h3>채팅 참여자 프로필 설정</h3>
-                <p class="profile-info">체크박스를 선택하면 해당 사용자의 메시지가 내 메시지로 표시됩니다. (복수 선택 가능)</p>
+                <p class="profile-info">'내 메시지로 설정' 버튼을 클릭하면 사용자의 메시지가 내 메시지로 표시됩니다. (복수 선택 가능)</p>
                 <div class="profile-actions">
                     <button id="reset-all-profiles" class="action-button">전체 프로필 초기화</button>
                     <button id="uncheck-all" class="action-button">모든 체크 해제</button>
@@ -62,6 +50,8 @@
         <div class="chat-container" id="chat-container"></div>
     </div>
     
+    <!-- 통합 도움말 버튼 (자바스크립트로 추가됨) -->
+    
     <!-- 설정 버튼 (다크 모드 전환 통합) -->
     <button id="settingsButton" class="settings-button"><i class="fas fa-cog"></i></button>
     
@@ -69,7 +59,6 @@
     
     <footer id="footer">
         <p>본 웹사이트는 '선청고등학교' 커뮤의 채팅 백업을 위해 만들어졌습니다.</p>
-        <p>해당 사이트는 @C2H5OH_snow이 제작했습니다.</p>
     </footer>
 
     <!-- 통합된 압축 모듈 -->

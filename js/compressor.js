@@ -1,9 +1,5 @@
 // /js/compressor.js - 통합 압축 및 이미지 URL 최적화 모듈
 
-/**
- * LZ-String 라이브러리 - 데이터 압축용
- * https://github.com/pieroxy/lz-string/
- */
 const LZString = function() {
     // 라이브러리 코드는 최소화된 버전을 사용
     function o(o, r) {

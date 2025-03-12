@@ -8,12 +8,13 @@
 
 /* Body */
 body {
-    font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
     background: linear-gradient(180deg, #eef4fc 100px, #ffffff 100px, #ffffff 100%);
     color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Header Section */
@@ -56,6 +57,7 @@ body {
     border-radius: 24px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(74, 144, 226, 0.1);
+    flex: 1;
 }
 
 /* Chat Container */
@@ -137,26 +139,23 @@ body {
 }
 
 
-/* 말풍선 모서리 스타일 - 기본 스타일 */
-/* 내 메시지 (오른쪽) 모서리 조정 - 기본 */
-.chat-message.mine .message-content {
-    border-radius: 20px 0 0 20px; /* 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게 */
-}
-
-/* 상대방 메시지 (왼쪽) 모서리 조정 - 기본 */
-.chat-message.other .message-content {
-    border-radius: 0 20px 20px 0; /* 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게 */
-}
-
-/* 마지막 메시지 모서리 스타일 */
-/* 내 메시지 (오른쪽) 마지막 메시지 */
+/* 내 메시지 (오른쪽) 연속 메시지 모서리 조정 */
 .chat-message.mine.last .message-content {
-    border-radius: 20px 0 20px 20px; /* 오른쪽 상단 모서리만 직각, 오른쪽 하단 모서리는 둥글게 */
+    border-radius: 20px 4px 20px 20px; /* 오른쪽 상단 모서리를 약간 둥글게 */
 }
 
-/* 상대방 메시지 (왼쪽) 마지막 메시지 */
+/* 상대방 메시지 (왼쪽) 연속 메시지 모서리 조정 */
 .chat-message.other.last .message-content {
-    border-radius: 0 20px 20px 20px; /* 왼쪽 상단 모서리만 직각, 왼쪽 하단 모서리는 둥글게 */
+    border-radius: 4px 20px 20px 20px; /* 왼쪽 상단 모서리를 약간 둥글게 */
+}
+
+/* 첫 번째 연속 메시지의 모서리 */
+.chat-message.mine .message-content {
+    border-radius: 20px 4px 4px 20px; /* 오른쪽 상단, 오른쪽 하단 모서리 약간 둥글게 */
+}
+
+.chat-message.other .message-content {
+    border-radius: 4px 20px 20px 4px; /* 왼쪽 상단, 왼쪽 하단 모서리 약간 둥글게 */
 }
 
 .message-content:hover {
@@ -837,7 +836,8 @@ textarea:focus {
     text-align: center;
     padding: 1.5rem 0;
     border-top: 1px solid rgba(74, 144, 226, 0.1);
-    margin-top: 30px;
+    margin-top: auto;
+    width: 100%;
 }
 
 #footer p {
@@ -1006,6 +1006,70 @@ textarea:focus {
 .my-user-button:hover {
     opacity: 0.9;
     transform: translateY(-1px);
+}
+
+/* 드래그 앤 드롭 스타일 */
+#input-text {
+    position: relative;
+}
+
+#input-text::before {
+    content: '텍스트를 입력하거나 .txt 파일을 여기에 끌어다 놓으세요';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #aaa;
+    font-size: 1rem;
+    pointer-events: none;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#input-text:empty::before,
+#input-text[value=""]::before {
+    opacity: 1;
+}
+
+#input-text.drag-over {
+    border: 2px dashed #4a90e2;
+    background-color: rgba(74, 144, 226, 0.05);
+}
+
+/* 다크모드에서의 드래그 앤 드롭 스타일 */
+body.dark #input-text.drag-over {
+    border: 2px dashed #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* 파일 드롭 정보 컨테이너 */
+.file-drop-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f1f7ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    border-left: 3px solid #4a90e2;
+    color: #333;
+}
+
+.file-drop-info i {
+    color: #4a90e2;
+    font-size: 1.1rem;
+}
+
+body.dark .file-drop-info {
+    background-color: rgba(96, 165, 250, 0.1);
+    color: #e2e8f0;
+    border-left: 3px solid #60a5fa;
+}
+
+body.dark .file-drop-info i {
+    color: #60a5fa;
 }
 
 /* 반응형 디자인 */

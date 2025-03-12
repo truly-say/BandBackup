@@ -10,18 +10,18 @@ const ExportManager = {
      * @param {Function} showStatus - 상태 메시지 표시 함수
      * @param {Function} toggleLoading - 로딩 표시 토글 함수
      */
-    copyHtmlToClipboard: async function(state, showStatus, toggleLoading) {
+    copyHtmlToClipboard: async function (state, showStatus, toggleLoading) {
         const chatContainer = document.getElementById('chat-container');
         if (!chatContainer || !chatContainer.innerHTML) {
             alert('먼저 채팅을 변환해주세요!');
             return;
         }
-        
+
         // 이미 처리 중이면 중복 실행 방지
         if (state.isProcessing) {
             return;
         }
-        
+
         // 참여자 수 검증
         const MAX_USERS = 25; // 최대 지원 사용자 수
         const uniqueUsers = new Set(state.messages.map(msg => msg.username));
@@ -29,45 +29,45 @@ const ExportManager = {
             alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
             return;
         }
-        
+
         // 처리 중 상태 표시
         state.isProcessing = true;
         if (typeof toggleLoading === 'function') {
             toggleLoading(true, '채팅 내용을 복사 중입니다...');
         }
-        
+
         try {
             // 비율 유지 이미지 최적화 적용 (내보내기 전)
             if (typeof AspectRatioOptimizer !== 'undefined') {
                 if (typeof showStatus === 'function') {
                     showStatus('이미지 최적화 중...', state.darkMode);
                 }
-                
+
                 // 모든 사용자 이미지 최적화
                 await AspectRatioOptimizer.optimizeAllUserImages(state);
             }
-            
+
             // HTML 생성
             if (typeof showStatus === 'function') {
                 showStatus('HTML 생성 중...', state.darkMode);
             }
             const exportMessages = [];
-            
+
             // 메시지 그룹화와 처리
             let currentGroupUsername = null;
             let messageGroup = [];
-            
+
             // 모든 메시지 처리
             for (let i = 0; i < state.messages.length; i++) {
                 const message = state.messages[i];
                 const { username } = message;
-                
+
                 if (username !== currentGroupUsername) {
                     // 새 그룹 시작 - 이전 그룹 처리
                     if (messageGroup.length > 0) {
                         this.processMessageGroup(messageGroup, exportMessages, state);
                     }
-                    
+
                     // 새 그룹 시작
                     currentGroupUsername = username;
                     messageGroup = [{ message, index: i }];
@@ -75,32 +75,32 @@ const ExportManager = {
                     // 같은 그룹에 메시지 추가
                     messageGroup.push({ message, index: i });
                 }
-                
+
                 // 대량 메시지 처리 시 진행 상황 표시 (100개 단위)
                 if (i % 100 === 0 && i > 0 && typeof showStatus === 'function') {
                     showStatus(`메시지 처리 중... (${i}/${state.messages.length})`, state.darkMode);
                 }
             }
-            
+
             // 마지막 그룹 처리
             if (messageGroup.length > 0) {
                 this.processMessageGroup(messageGroup, exportMessages, state);
             }
-            
+
             // 최종 HTML 생성 - 가독성을 버리고 용량을 절약하기 위해 1줄로 압축
             let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('')}</div>`;
-            
+
             // 줄바꿈, 불필요한 공백 제거하여 1줄로 압축
             fullHtml = fullHtml.replace(/\s+/g, ' ')
-                              .replace(/> </g, '><')
-                              .replace(/\n/g, '')
-                              .trim();
-            
+                .replace(/> </g, '><')
+                .replace(/\n/g, '')
+                .trim();
+
             // 압축된 이미지 URL을 복원 (HTML 복사 시에만)
             if (typeof UrlCompressor !== 'undefined' && UrlCompressor) {
                 fullHtml = UrlCompressor.decompressAllImages(fullHtml);
             }
-            
+
             // 클립보드에 복사
             await navigator.clipboard.writeText(fullHtml);
             if (typeof showStatus === 'function') {
@@ -110,7 +110,7 @@ const ExportManager = {
             }
         } catch (error) {
             console.error('복사 중 오류 발생:', error);
-            
+
             // 대체 복사 방법 시도
             try {
                 const exportContainer = document.createElement('textarea');
@@ -143,101 +143,102 @@ const ExportManager = {
      * @param {Array} exportMessages - 결과 HTML을 저장할 배열
      * @param {Object} state - 애플리케이션 상태
      */
-    processMessageGroup: function(messageGroup, exportMessages, state) {
+    processMessageGroup: function (messageGroup, exportMessages, state) {
         // 동일 시간 메시지인지 확인하는 함수
         const isSameTimeFrame = (time1, time2) => {
             if (!time1 || !time2) return false;
-            
+
             // 간단한 문자열 비교 (기본)
             return time1 === time2;
         };
-        
+
         messageGroup.forEach((groupMsg, groupIndex) => {
             const { message, index } = groupMsg;
             const { time, username, chatMessage } = message;
             const displayName = state.displayNames[username] || username;
             const isMyMessage = state.selectedUsers.has(username);
-            
+
             const isFirst = groupIndex === 0;
             const isLast = groupIndex === messageGroup.length - 1;
-            
+
             // 연속 메시지 여부 (첫 번째 메시지가 아닌 경우)
             let isContinuous = !isFirst;
-            
+
             // 동일 사용자, 동일 시간인지 확인
             if (isContinuous && groupIndex > 0) {
                 const prevMessage = messageGroup[groupIndex - 1].message;
                 isContinuous = isSameTimeFrame(prevMessage.time, time);
             }
-            
+
             // 사용자 색상
             const userColor = state.userColors[username] || '#000000';
-            
+
             // 메시지 스타일 설정
-            const bubbleColor = isMyMessage 
+            const bubbleColor = isMyMessage
                 ? (state.darkMode ? '#2d3647' : '#d8f4e7')
                 : (state.darkMode ? '#4c4f56' : '#f1f1f1');
-    
+
             const textColor = isMyMessage
                 ? (state.darkMode ? '#e2e8f0' : '#333')
                 : (state.darkMode ? '#e2e8f0' : '#333');
-            
+
+            // 말풍선 둥근 모서리 스타일 - 연속 메시지 여부와 위치에 따라 조정
             // 말풍선 둥근 모서리 스타일 - 연속 메시지 여부와 위치에 따라 조정
             let bubbleRadius;
             if (isLast) {
                 // 마지막 메시지 (연속 또는 단일 메시지에 상관없이)
                 bubbleRadius = isMyMessage
-                    ? '20px 0 20px 20px'  // 오른쪽 상단 모서리만 직각, 오른쪽 하단 모서리는 둥글게
-                    : '0 20px 20px 20px'; // 왼쪽 상단 모서리만 직각, 왼쪽 하단 모서리는 둥글게
+                    ? '20px 4px 20px 20px'  // 오른쪽 상단 모서리를 살짝 둥글게
+                    : '4px 20px 20px 20px'; // 왼쪽 상단 모서리를 살짝 둥글게
             } else if (isContinuous) {
                 // 연속된 메시지 중 중간 메시지
                 bubbleRadius = isMyMessage
-                    ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
-                    : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
+                    ? '20px 4px 4px 20px'  // 오른쪽 상단+하단 모서리 살짝 둥글게
+                    : '4px 20px 20px 4px'; // 왼쪽 상단+하단 모서리 살짝 둥글게
             } else {
                 // 연속 메시지의 첫 번째 메시지 (마지막이 아닌)
                 bubbleRadius = isMyMessage
-                    ? '20px 0 0 20px'  // 오른쪽 상단+하단 모서리 직각, 왼쪽 모서리 둥글게
-                    : '0 20px 20px 0'; // 왼쪽 상단+하단 모서리 직각, 오른쪽 모서리 둥글게
+                    ? '20px 4px 4px 20px'  // 오른쪽 상단+하단 모서리 살짝 둥글게
+                    : '4px 20px 20px 4px'; // 왼쪽 상단+하단 모서리 살짝 둥글게
             }
-                    
-            const messageContainerStyle = isMyMessage 
-                ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:2px;align-items:flex-start;' 
+
+            const messageContainerStyle = isMyMessage
+                ? 'display:flex;flex-direction:row-reverse;justify-content:flex-start;width:100%;margin-bottom:2px;align-items:flex-start;'
                 : 'display:flex;flex-direction:row;justify-content:flex-start;margin-bottom:2px;align-items:flex-start;';
-                
+
             // 마지막 메시지만 여백 추가
             const marginStyle = isLast ? 'margin-bottom:10px;' : '';
-                
-            const wrapperStyle = isMyMessage 
-                ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;' 
+
+            const wrapperStyle = isMyMessage
+                ? 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-end;'
                 : 'display:flex;flex-direction:column;max-width:calc(60% - 50px);align-items:flex-start;';
-            
+
             // 사용자 이름 (연속 메시지일 경우 표시 안 함)
             const usernameStyle = `font-weight:bold;margin-bottom:5px;color:${userColor};${isContinuous ? 'display:none;' : ''}`;
-            
+
             // 말풍선 스타일
             const bubbleStyle = `position:relative;padding:10px 16px;border-radius:${bubbleRadius};word-break:break-word;max-width:100%;background-color:${bubbleColor};color:${textColor};`;
-            
+
             // 시간 (마지막 메시지만 표시)
             const timeStyle = `font-size:12px;color:#888;margin-top:3px;${isLast ? '' : 'display:none;'}`;
-            
+
             // 메시지 포맷팅 - 참여자 목록 전달
             const formattedMessage = this.formatMessageText(this.escapeHtml(chatMessage), state);
-            
+
             // 말풍선 꼬리 위치와 모양 - 연속 메시지가 아닐 경우에만 꼬리 표시
             let tailStyle = 'display:none;'; // 기본적으로 숨김
-            
+
             if (!isContinuous) {
                 tailStyle = isMyMessage
                     ? `position:absolute;width:0;height:0;top:0;right:-8px;border-style:solid;border-width:0 0 8px 8px;border-color:transparent transparent transparent ${bubbleColor};`
                     : `position:absolute;width:0;height:0;top:0;left:-8px;border-style:solid;border-width:0 8px 8px 0;border-color:transparent ${bubbleColor} transparent transparent;`;
             }
-            
+
             // 내 메시지의 프로필 이미지 표시 여부 확인
             const showMyImage = state.showMyProfile !== false;
-            
+
             let html;
-            
+
             if (isContinuous) {
                 // 연속 메시지: 프로필 영역 결정 (내 메시지 + 이미지 숨김 설정의 경우 제거)
                 if (isMyMessage && !showMyImage) {
@@ -257,7 +258,7 @@ const ExportManager = {
                     // 이미지 URL 사용 (있는 경우)
                     let profileImage = state.userProfileImages[username];
                     let profileHTML = '';
-                    
+
                     if (profileImage) {
                         // 외부 이미지 URL (http로 시작하는 경우)
                         if (profileImage.startsWith('http')) {
@@ -267,15 +268,15 @@ const ExportManager = {
                             profileHTML = `<img src="${profileImage}" alt="${this.escapeHtml(displayName)}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;">`;
                         }
                     }
-                    
+
                     // 프로필 이미지 영역
                     const profileStyle = 'width:40px;height:40px;margin:0 10px;flex-shrink:0;';
                     const pictureStyle = 'width:100%;height:100%;border-radius:50%;background:#ccc;overflow:hidden;position:relative;aspect-ratio:1/1;';
-                    
+
                     html = `<div style="${messageContainerStyle}${marginStyle}"><div style="${profileStyle}"><div style="${pictureStyle}">${profileHTML}</div></div><div style="${wrapperStyle}"><div style="${usernameStyle}">${this.escapeHtml(displayName)}</div><div style="${bubbleStyle}"><div style="${tailStyle}"></div>${formattedMessage}</div><div style="${timeStyle}">${this.escapeHtml(time)}</div></div></div>`;
                 }
             }
-            
+
             // 각 메시지를 별도의 줄에 추가
             exportMessages.push(html);
         });
@@ -286,50 +287,50 @@ const ExportManager = {
      * @param {string} str - 이스케이프할 문자열
      * @returns {string} 이스케이프된 문자열
      */
-    escapeHtml: function(str) {
+    escapeHtml: function (str) {
         if (!str) return '';
         return str.replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     },
-    
+
     /**
      * 메시지 텍스트 포맷팅 함수 - 개선된 @태그 처리
      * @param {string} text - 포맷팅할 텍스트
      * @param {Object} state - 애플리케이션 상태 (참여자 목록 접근용)
      * @returns {string} 포맷팅된 HTML
      */
-    formatMessageText: function(text, state = null) {
+    formatMessageText: function (text, state = null) {
         // MessageParser가 있으면 그것을 활용
         if (typeof MessageParser !== 'undefined' && MessageParser) {
             return MessageParser.formatMessageText(text, state);
         }
-        
+
         if (!text) return '';
-        
+
         // 자체 구현 (MessageParser 없을 경우)
         // 정규식 패턴들
         const patterns = [
             // 패턴 1: @로 시작하고 공백이나 특수문자로 끝나는 패턴 (일반 사용자명)
             /@([^\s:.,!?;()\[\]{}<>"']+)/g,
-            
+
             // 패턴 2: 대괄호가 포함된 패턴 (@[숫자] 이름 형식)
             /@(\[\d+(?:\/\d+)?\]\s*[^\s:.,!?;()\[\]{}<>"']*)/g,
-            
+
             // 패턴 3: 숫자 패턴 (@숫자 숫자 문자 이름 형식) 
             /@(\d+\s+\d+\s*[•]\s*[^\s:.,!?;()\[\]{}<>"']+)/g,
-            
+
             // 패턴 4: 슬래시 패턴 (@숫자/숫자 이름 형식)
             /@(\d+\/\d+\s+[^\s:.,!?;()\[\]{}<>"']+)/g,
-            
+
             // 패턴 5: 특수 키워드
             /@(SYSTEM|BOT|ADMIN|Manager)/g
         ];
-        
+
         let processedText = text;
-        
+
         // 채팅 참여자 목록 (가능한 경우)
         let participants = new Set();
         if (state && state.messages) {
@@ -339,17 +340,17 @@ const ExportManager = {
                 }
             });
         }
-        
+
         // 태그 강조 설정 확인
-        const highlightTags = state && state.hasOwnProperty('highlightTags') 
-            ? state.highlightTags 
+        const highlightTags = state && state.hasOwnProperty('highlightTags')
+            ? state.highlightTags
             : true; // 기본값은 true
-        
+
         // 태그 강조가 꺼져 있으면 포맷팅 무시
         if (!highlightTags) {
             return text.replace(/\n/g, '<br>');
         }
-        
+
         // 각 패턴에 대해 처리
         patterns.forEach(pattern => {
             processedText = processedText.replace(pattern, (match, tagContent) => {
@@ -357,7 +358,7 @@ const ExportManager = {
                 return `<span style="color:#0d5bd1;font-weight:bold;">${match}</span>`;
             });
         });
-        
+
         // 참여자 목록 기반 처리 (더 정교한 방식)
         if (participants.size > 0) {
             // '@' 뒤에 나오는 모든 것을 찾는 넓은 패턴
@@ -366,15 +367,15 @@ const ExportManager = {
                 if (match.includes('<span')) {
                     return match;
                 }
-                
+
                 // 공백이나 특수문자로 잘라내기
                 const trimmedName = potentialName.split(/[\s:.,!?;()\[\]{}<>"']/)[0];
-                
+
                 // 참여자 목록에 있는지 확인
                 if (trimmedName && participants.has(trimmedName)) {
                     return `<span style="color:#0d5bd1;font-weight:bold;">@${trimmedName}</span>${potentialName.substring(trimmedName.length)}`;
                 }
-                
+
                 // 대략적인 일치 확인
                 for (const participant of participants) {
                     if (potentialName.includes(participant)) {
@@ -382,16 +383,16 @@ const ExportManager = {
                         return `<span style="color:#0d5bd1;font-weight:bold;">@${participant}</span>${parts.slice(1).join(participant)}`;
                     }
                 }
-                
+
                 // 기본 형식 처리
                 if (trimmedName) {
                     return `<span style="color:#0d5bd1;font-weight:bold;">@${trimmedName}</span>${potentialName.substring(trimmedName.length)}`;
                 }
-                
+
                 return match; // 변경 없음
             });
         }
-        
+
         // 줄바꿈 처리
         return processedText.replace(/\n/g, '<br>');
     }
@@ -402,18 +403,18 @@ const ExportManager = {
  * @param {Function} showStatus - 상태 메시지 표시 함수
  * @param {Function} toggleLoading - 로딩 표시 토글 함수
  */
-ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, toggleLoading) {
+ExportManager.copyHtmlToClipboardOptimized = async function (state, showStatus, toggleLoading) {
     const chatContainer = document.getElementById('chat-container');
     if (!chatContainer || !chatContainer.innerHTML) {
         alert('먼저 채팅을 변환해주세요!');
         return;
     }
-    
+
     // 이미 처리 중이면 중복 실행 방지
     if (state.isProcessing) {
         return;
     }
-    
+
     // 참여자 수 검증
     const MAX_USERS = 25; // 최대 지원 사용자 수
     const uniqueUsers = new Set(state.messages.map(msg => msg.username));
@@ -421,20 +422,20 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
         alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
         return;
     }
-    
+
     // 처리 중 상태 표시
     state.isProcessing = true;
     if (typeof toggleLoading === 'function') {
         toggleLoading(true, '채팅 내용을 복사 중입니다...');
     }
-    
+
     try {
         // 간소화된 이미지 최적화 적용 (내보내기 전)
         if (typeof OptimizedImageProcessor !== 'undefined') {
             if (typeof showStatus === 'function') {
                 showStatus('이미지 최적화 중...', state.darkMode);
             }
-            
+
             // 모든 사용자 이미지 최적화
             for (const [username, imageUrl] of Object.entries(state.userProfileImages)) {
                 if (!imageUrl) continue;
@@ -442,29 +443,29 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
                 state.userProfileImages[username] = await OptimizedImageProcessor.optimizeImage(imageUrl, isImportant);
             }
         }
-        
+
         // HTML 생성
         if (typeof showStatus === 'function') {
             showStatus('HTML 생성 중...', state.darkMode);
         }
-        
+
         const exportMessages = [];
-        
+
         // 메시지 그룹화와 처리
         let currentGroupUsername = null;
         let messageGroup = [];
-        
+
         // 모든 메시지 처리
         for (let i = 0; i < state.messages.length; i++) {
             const message = state.messages[i];
             const { username } = message;
-            
+
             if (username !== currentGroupUsername) {
                 // 새 그룹 시작 - 이전 그룹 처리
                 if (messageGroup.length > 0) {
                     this.processMessageGroup(messageGroup, exportMessages, state);
                 }
-                
+
                 // 새 그룹 시작
                 currentGroupUsername = username;
                 messageGroup = [{ message, index: i }];
@@ -472,32 +473,32 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
                 // 같은 그룹에 메시지 추가
                 messageGroup.push({ message, index: i });
             }
-            
+
             // 대량 메시지 처리 시 진행 상황 표시 (100개 단위)
             if (i % 100 === 0 && i > 0 && typeof showStatus === 'function') {
                 showStatus(`메시지 처리 중... (${i}/${state.messages.length})`, state.darkMode);
             }
         }
-        
+
         // 마지막 그룹 처리
         if (messageGroup.length > 0) {
             this.processMessageGroup(messageGroup, exportMessages, state);
         }
-        
+
         // 3. 최종 HTML 생성 및 최적화
         if (typeof toggleLoading === 'function') {
             toggleLoading(true, '최종 변환 중...');
         }
-        
+
         // 가독성을 버리고 용량을 줄이기 위해 1줄로 압축
         let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-family:Arial,sans-serif;">${exportMessages.join('')}</div>`;
-        
+
         // 줄바꿈, 불필요한 공백 제거하여 1줄로 압축
         fullHtml = fullHtml.replace(/\s+/g, ' ')
-                          .replace(/> </g, '><')
-                          .replace(/\n/g, '')
-                          .trim();
-        
+            .replace(/> </g, '><')
+            .replace(/\n/g, '')
+            .trim();
+
         // 티스토리 백업을 위한 HTML 최적화 (이미지 처리)
         if (typeof ImageOptimizer !== 'undefined' && ImageOptimizer) {
             if (typeof showStatus === 'function') {
@@ -509,10 +510,10 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
         else if (typeof UrlCompressor !== 'undefined' && UrlCompressor) {
             fullHtml = UrlCompressor.decompressAllImages(fullHtml);
         }
-        
+
         // 4. 클립보드에 복사
         await navigator.clipboard.writeText(fullHtml);
-        
+
         if (typeof showStatus === 'function') {
             showStatus('티스토리 최적화 완료! 클립보드에 복사되었습니다.', state.darkMode);
         } else {
@@ -520,7 +521,7 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
         }
     } catch (error) {
         console.error('티스토리 최적화 중 오류 발생:', error);
-        
+
         // 대체 복사 방법 시도
         try {
             const exportContainer = document.createElement('textarea');
@@ -529,7 +530,7 @@ ExportManager.copyHtmlToClipboardOptimized = async function(state, showStatus, t
             exportContainer.select();
             document.execCommand('copy');
             document.body.removeChild(exportContainer);
-            
+
             if (typeof showStatus === 'function') {
                 showStatus('기본 방식으로 복사되었습니다. (최적화 실패)', state.darkMode);
             } else {

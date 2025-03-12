@@ -185,7 +185,7 @@ const SettingsPanel = {
         aboutOption.className = 'settings-about';
         aboutOption.innerHTML = `
             <div class="settings-about-info">
-                <i class="fas fa-info-circle"></i> 버전 정보: v1.3.3
+                <i class="fas fa-info-circle"></i> 버전 정보: v1.0.3
             </div>
             <div class="settings-about-credits">
                 @C2H5OH_snow
@@ -267,6 +267,24 @@ const SettingsPanel = {
         
         // 패널 표시/숨김
         if (this.isOpen) {
+            // 패널 위치 조정 - 버튼 위치 기준으로 계산
+            const buttonRect = settingsButton.getBoundingClientRect();
+            settingsPanel.style.position = 'fixed';
+            settingsPanel.style.bottom = (window.innerHeight - buttonRect.top + 10) + 'px';
+            
+            // 설정 패널을 더 왼쪽에 표시하여 도움말과 겹치지 않게 함
+            const panelWidth = 250; // 패널 기본 너비
+            const offset = 25;     // 오프셋 증가
+        
+        // 화면 크기에 따라 패널 위치 조정
+        if (window.innerWidth <= 480) {
+            // 작은 화면에서는 패널을 더 오른쪽으로 이동
+            settingsPanel.style.right = (window.innerWidth - buttonRect.right + buttonRect.width + offset) + 'px';
+        } else {
+            // 큰 화면에서는 패널을 더 오른쪽으로 이동
+            settingsPanel.style.right = (window.innerWidth - buttonRect.right + buttonRect.width + offset) + 'px';
+        }
+            
             // 패널 표시 애니메이션
             settingsPanel.style.display = 'block';
             setTimeout(() => {
