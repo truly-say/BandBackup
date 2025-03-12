@@ -1,14 +1,7 @@
 // /js/messageParser.js - 밴드 채팅 메시지 파싱 및 포맷팅 관련 모듈
 
-/**
- * 메시지 파서 모듈 - 채팅 메시지 파싱 및 포맷팅
- */
 const MessageParser = {
-    /**
-     * HTML 이스케이프 함수 - 특수 문자를 HTML 엔티티로 변환
-     * @param {string} str - 이스케이프할 문자열
-     * @returns {string} 이스케이프된 문자열
-     */
+    // 밴드 채팅 메시지 파싱 및 포맷팅
     escapeHtml(str) {
         if (!str) return '';
         return str.replace(/&/g, '&amp;')
@@ -18,12 +11,7 @@ const MessageParser = {
                 .replace(/'/g, '&#039;');
     },
 
-    /**
-     * 메시지 텍스트 포맷팅 함수 - @ 태그 처리 및 줄바꿈 변환 (개선된 태그 강조 알고리즘 포함)
-     * @param {string} text - 포맷팅할 메시지 텍스트
-     * @param {Object} [state] - 애플리케이션 상태 (참여자 목록 접근용)
-     * @returns {string} 포맷팅된 메시지 HTML
-     */
+    // 메시지 텍스트 포맷팅
     formatMessageText(text, state = null) {
         if (!text) return '';
         
@@ -152,12 +140,7 @@ const MessageParser = {
         return processedText.replace(/\n/g, '<br>');
     },
 
-    /**
-     * 시간 포맷 비교 함수 - 같은 시간대 메시지인지 확인
-     * @param {string} time1 - 첫 번째 시간 문자열
-     * @param {string} time2 - 두 번째 시간 문자열
-     * @returns {boolean} 같은 시간대이면 true, 아니면 false
-     */
+    // 시간 형식이 같은지 확인
     isSameTimeFrame(time1, time2) {
         if (!time1 || !time2) return false;
         
@@ -188,11 +171,7 @@ const MessageParser = {
         return true;
     },
 
-    /**
-     * 메시지 텍스트를 파싱하여 구조화된 객체로 변환
-     * @param {string} chatData - 밴드에서 내보낸 채팅 텍스트
-     * @returns {Array} 파싱된 메시지 객체 배열
-     */
+    // 밴드 채팅 데이터 파싱
     parseMessages(chatData) {
         // 밴드 채팅 형식 정규식
         const messageRegex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
@@ -233,12 +212,7 @@ const MessageParser = {
         return messages;
     },
 
-    /**
-     * 메시지에서 @태그된 사용자명 추출
-     * @param {string} text - 메시지 텍스트
-     * @param {Array} participants - 채팅 참여자 목록 (선택 사항)
-     * @returns {Array} 태그된 사용자명 배열
-     */
+    // 태그된 사용자 추출
     extractTaggedUsers(text, participants = []) {
         if (!text) return [];
         
@@ -312,11 +286,7 @@ const MessageParser = {
         return [...new Set(tags)]; // 중복 제거
     },
 
-    /**
-     * 안전한 ID 생성 함수 - 특수문자 제거
-     * @param {string} text - 원본 텍스트
-     * @returns {string} 안전한 ID 문자열
-     */
+    // 안전한 ID 생성
     safeId(text) {
         return text.replace(/[^a-z0-9]/gi, '_');
     }

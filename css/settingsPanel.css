@@ -158,6 +158,61 @@ input:checked + .settings-slider:before {
     opacity: 0.8;
 }
 
+/* /css/settingsPanel.css */
+
+/* 글자 크기 조절 콘텐츠 영역 */
+.font-size-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* 글자 크기 레이블 */
+.font-size-label {
+    display: block;
+    font-size: 14px;
+    color: #333333;
+    margin-bottom: 8px;
+}
+
+body.dark .font-size-label {
+    color: #e2e8f0;
+}
+
+/* 글자 크기 컨트롤 컨테이너 */
+.font-size-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+/* 글자 크기 입력 필드 */
+.font-size-input {
+    width: 60px;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 기본값 버튼 */
+.font-size-default-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.font-size-default-button:hover {
+    background-color: #cbd5e0;
+}
+
 /* 다크 모드 스타일 */
 body.dark .settings-button {
     background-color: #3182ce;

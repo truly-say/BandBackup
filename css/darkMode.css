@@ -105,20 +105,9 @@ body.dark .chat-time {
     color: #9ca3af;
 }
 
-/* 다크모드 말풍선 스타일 */
-body.dark .chat-message.other .message-content {
-    background-color: #4c4f56;
-    color: #e2e8f0;
-}
-
-body.dark .chat-message.mine .message-content {
-    background-color: #2d3647; /* 어두운 테마용 말풍선 색상 */
-    color: #e2e8f0;
-}
-
 /* 다크모드 @태그 스타일 */
 body.dark .tagged-user {
-    color: #60a5fa;
+    color: #9dc9ff;
 }
 
 /* 다크모드 프로필 카드 스타일 */

@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 state.showMyProfile = advancedSettings.showMyProfile;
             }
         }
+
+        const savedFontSize = localStorage.getItem('chatFontSize');
+        if (savedFontSize) {
+            state.fontSize = parseInt(savedFontSize, 10);
+        }
     }
 
     // 이벤트 리스너 설정
@@ -78,9 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('앱 초기화 완료');
 });
 
-/**
- * 이벤트 리스너 설정 함수
- */
+// 이벤트 리스너 설정 함수
 function setupEventListeners() {
     console.log('이벤트 리스너 설정 중');
 
@@ -126,10 +129,7 @@ function setupEventListeners() {
         });
     }
 
-    /**
-     * 텍스트 파일 내용을 읽어 입력창에 채우는 함수
-     * @param {File} file - 드롭된 텍스트 파일
-     */
+ // 파일 입력 필드
     function handleTextFile(file) {
         // 로딩 표시 (있다면)
         if (typeof UIManager !== 'undefined' && UIManager) {
@@ -215,9 +215,7 @@ function setupEventListeners() {
     console.log('이벤트 리스너 설정 완료');
 }
 
-/**
- * 메시지 렌더링 함수
- */
+// 메시지 렌더링 함수
 function renderMessages() {
     console.log('메시지 렌더링 시작');
 
@@ -227,10 +225,10 @@ function renderMessages() {
     }
 
     const chatContainer = document.getElementById('chat-container');
-    if (!chatContainer) {
-        console.error('chat-container 요소를 찾을 수 없습니다');
-        return;
+    if (chatContainer) {
+        chatContainer.style.fontSize = (state.fontSize || 16) + 'px';
     }
+    
 
     // 이전 스크롤 위치 저장
     const previousScrollTop = chatContainer.scrollTop;
@@ -327,9 +325,7 @@ function renderMessages() {
     console.log('메시지 렌더링 완료');
 }
 
-/**
- * 채팅 분석 처리 함수
- */
+// 채팅 분석 처리 함수
 function handleAnalyze() {
     console.log('handleAnalyze 함수 실행 시작');
 
@@ -441,9 +437,7 @@ function handleAnalyze() {
     console.log('handleAnalyze 함수 실행 완료');
 }
 
-/**
- * 채팅 변환 처리 함수
- */
+// 채팅 변환 처리 함수
 function handleConvert() {
     console.log('handleConvert 함수 실행 시작');
     
@@ -538,9 +532,7 @@ function handleConvert() {
     console.log('handleConvert 함수 실행 완료');
 }
 
-/**
- * HTML 복사 처리 함수
- */
+// HTML 복사 처리 함수
 function handleCopy() {
     console.log('handleCopy 함수 실행 시작');
 
@@ -570,9 +562,7 @@ function handleCopy() {
     console.log('handleCopy 함수 실행 완료');
 }
 
-/**
- * 초기화 처리 함수
- */
+// 초기화 처리 함수
 function handleClear() {
     console.log('handleClear 함수 실행 시작');
 

@@ -1,8 +1,6 @@
 // /js/helpTooltip.js - 통합 도움말 시스템
 
-/**
- * 도움말 시스템 - 통합 도움말 및 모달 창 제공
- */
+// 도움말 시스템 객체
 const HelpSystem = {
     // 초기화 완료 여부 플래그
     initialized: false,
@@ -144,8 +142,9 @@ const HelpSystem = {
             <h3>업데이트 내역 및 버전 정보</h3>
             <p>업데이트 내역과 버전 정보를 확인할 수 있습니다</p>
             
-            <h4>v1.0.4 최신 업데이트(25.03.12):</h4>
+            <h4>v1.1.0 최신 업데이트(25.03.13):</h4>
             <ul>
+                <li>채팅 내 이미지 삽입 방식 변경</li>
                 <li>통합 도움말 시스템 구현 - 모든 도움말에 한 곳에서 접근 가능</li>
                 <li>디자인 개선 및 가독성 향상</li>
                 <li>다크 모드에서 채팅 색상이 변하지 않던 현상 수정</li>
@@ -166,10 +165,7 @@ const HelpSystem = {
         }
     ],
     
-    /**
-     * 도움말 초기화 (페이지 로드 시 호출)
-     * @param {boolean} isDarkMode - 다크모드 여부
-     */
+    // 초기화 함수
     init: function(isDarkMode = false) {
         // 이미 초기화되었으면 중복 초기화 방지
         if (this.initialized) {
@@ -192,17 +188,13 @@ const HelpSystem = {
         console.log('통합 도움말 시스템이 초기화되었습니다.');
     },
     
-    /**
-     * 기존 도움말 아이콘 제거
-     */
+    // 기존 도움말 아이콘 제거
     removeExistingHelpIcons: function() {
         const helpIcons = document.querySelectorAll('.help-icon');
         helpIcons.forEach(icon => icon.remove());
     },
     
-    /**
-     * 글로벌 도움말 버튼 추가
-     */
+    // 글로벌 도움말 버튼 추가
     addGlobalHelpButton: function() {
         // 기존 버튼 확인 (중복 방지)
         const existingButton = document.getElementById('global-help-button');
@@ -238,10 +230,7 @@ const HelpSystem = {
         document.body.appendChild(helpButton);
     },
     
-    /**
-     * 도움말 메뉴 표시
-     * @param {HTMLElement} button - 도움말 버튼 요소
-     */
+    // 도움말 메뉴 표시
     showHelpMenu: function(button) {
         // 기존 메뉴 제거
         const existingMenu = document.getElementById('help-menu');
@@ -325,9 +314,7 @@ const HelpSystem = {
         }, 10);
     },
     
-    /**
-     * 도움말 메뉴 숨기기
-     */
+    // 도움말 메뉴 숨기기
     hideHelpMenu: function() {
         const menuContainer = document.getElementById('help-menu');
         const overlay = document.querySelector('.help-menu-overlay');
@@ -353,10 +340,7 @@ const HelpSystem = {
         }
     },
 
-    /**
-     * 도움말 모달 컨테이너 생성
-     * @param {boolean} isDarkMode - 다크모드 여부
-     */
+    // 도움말 모달
     createModalContainer: function(isDarkMode) {
         // 기존 컨테이너가 있으면 제거
         const existingContainer = document.getElementById('help-modal-container');
@@ -398,10 +382,7 @@ const HelpSystem = {
         document.body.appendChild(modalContainer);
     },
     
-    /**
-     * 테마 변경 시 도움말 스타일 업데이트
-     * @param {boolean} isDarkMode - 다크모드 여부
-     */
+    // 다크 모드 테마 업데이트
     updateHelpTheme: function(isDarkMode) {
         // 글로벌 도움말 버튼 스타일 업데이트
         const helpButton = document.getElementById('global-help-button');
@@ -454,11 +435,7 @@ const HelpSystem = {
         }
     },
     
-    /**
-     * 도움말 모달 표시
-     * @param {string} title - 모달 제목
-     * @param {string} content - 모달 내용 (HTML)
-     */
+    // 도움말 모달 표시
     showHelpModal: function(title, content) {
         const modalContainer = document.getElementById('help-modal-container');
         if (!modalContainer) {
@@ -608,9 +585,7 @@ const HelpSystem = {
         );
     },
     
-    /**
-     * 도움말 모달 숨기기
-     */
+    // 도움말 모달 숨기기
     hideHelpModal: function() {
         const modalContainer = document.getElementById('help-modal-container');
         if (!modalContainer) return;

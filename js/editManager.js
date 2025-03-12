@@ -1,18 +1,10 @@
 // /js/editManager.js - 메시지 편집 관리 모듈
 
-/**
- * 메시지 편집 관리자 모듈 - 채팅 메시지 수정, 삭제 기능
- */
 const EditManager = {
     // 현재 편집 중인 메시지 인덱스
     editingIndex: null,
     
-    /**
-     * 메시지 편집 시작 함수
-     * @param {number} index - 편집할 메시지 인덱스
-     * @param {Object} state - 애플리케이션 상태 객체
-     * @param {Function} renderMessages - 메시지 다시 렌더링 함수
-     */
+    // 편집 시작 함수
     startEdit: function(index, state, renderMessages) {
         console.log(`메시지 편집 시작: 인덱스 ${index}`);
         
@@ -155,10 +147,7 @@ const EditManager = {
         textarea.focus();
     },
     
-    /**
-     * 편집 취소 함수
-     * @param {Function} renderMessages - 메시지 다시 렌더링 함수
-     */
+    // 편집 취소 함수
     cancelEdit: function(renderMessages) {
         if (this.editingIndex !== null) {
             this.editingIndex = null;
@@ -166,10 +155,7 @@ const EditManager = {
         }
     },
     
-    /**
-     * 현재 편집 중인 메시지 확인
-     * @returns {number|null} 편집 중인 메시지 인덱스 또는 null
-     */
+    // 현재 편집 중인 메시지 
     getEditingIndex: function() {
         return this.editingIndex;
     }

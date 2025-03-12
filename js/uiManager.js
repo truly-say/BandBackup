@@ -1,14 +1,8 @@
 // /js/uiManager.js - 통합 UI 생성 및 관리 모듈
 
-/**
- * UI 관리자 모듈 - 사용자 인터페이스 생성, 관리, 테마 처리
- */
+// UI 관리자 
 const UIManager = {
-    /**
-     * 상태 메시지 표시
-     * @param {string} message - 표시할 메시지
-     * @param {boolean} isDarkMode - 다크모드 여부
-     */
+    // 상태 메시지 표시 
     showStatusMessage(message, isDarkMode) {
         const statusMessage = document.getElementById('statusMessage');
         if (!statusMessage) return;
@@ -37,11 +31,7 @@ const UIManager = {
         }, 2000);
     },
 
-    /**
-     * 로딩 오버레이 표시/숨김
-     * @param {boolean} show - 표시 여부
-     * @param {string} message - 표시할 메시지
-     */
+    // 로딩 오버레이 표시/숨김
     toggleLoadingOverlay(show, message = '처리 중...') {
         // 기존 오버레이 찾기
         let overlay = document.getElementById('loading-overlay');
@@ -92,13 +82,7 @@ const UIManager = {
         }
     },
 
-    /**
-     * 동일한 시간대와 사용자의 메시지인지 확인하는 함수
-     * @param {Object} message - 현재 메시지
-     * @param {number} index - 현재 메시지 인덱스
-     * @param {Object} state - 애플리케이션 상태
-     * @returns {boolean} 동일한 시간과 사용자인지 여부
-     */
+    // 동일 사용자 및 시간 메시지 연속 여부 확인
     isSameTimeAndUser(message, index, state) {
         // 첫 번째 메시지는 연속 메시지가 아님
         if (index <= 0) return false;
@@ -147,15 +131,7 @@ const UIManager = {
         return true;
     },
 
-    /**
-     * 단일 채팅 메시지 HTML 생성
-     * @param {Object} message - 메시지 객체
-     * @param {number} index - 메시지 인덱스
-     * @param {Object} state - 애플리케이션 상태
-     * @param {boolean} isContinuousMessage - 연속된 메시지 여부
-     * @param {boolean} isLastMessage - 그룹에서 마지막 메시지 여부
-     * @returns {string} 메시지 HTML
-     */
+    // 단일 메시지 HTML 생성
     createMessageHTML(message, index, state, isContinuousMessage = false, isLastMessage = true) {
         const { time, username, chatMessage } = message;
         const displayName = state.displayNames[username] || username;
@@ -336,12 +312,7 @@ if (profileImage) {
         return messageHtml;
     },
 
-    /**
-     * HTML 이스케이프 함수 - 특수 문자를 HTML 엔티티로 변환
-     * @param {string} str - 이스케이프할 문자열
-     * @returns {string} 이스케이프된 문자열
-     * @private
-     */
+    // 특수문자 HTML 이스케이프 함수
     _escapeHtml(str) {
         if (!str) return '';
         return str.replace(/&/g, '&amp;')
@@ -351,14 +322,7 @@ if (profileImage) {
             .replace(/'/g, '&#039;');
     },
 
-    /**
-     * 간단한 메시지 텍스트 포맷팅 함수 - @ 태그 처리 및 줄바꿈 변환
-     * MessageParser가 없을 때 폴백으로 사용
-     * @param {string} text - 포맷팅할 메시지 텍스트
-     * @param {Object} [state] - 애플리케이션 상태 (참여자 목록 접근용)
-     * @returns {string} 포맷팅된 메시지 HTML
-     * @private
-     */
+    // 메시지 텍스트 포맷팅 함수
     _formatMessageText(text, state = null) {
         if (!text) return '';
 
@@ -369,15 +333,7 @@ if (profileImage) {
         return text.replace(/\n/g, '<br>');
     },
 
-    /**
-     * 테마 관련 기능 (ThemeManager와 통합)
-     */
-
-    /**
-     * 테마 전환 함수
-     * @param {Object} state - 애플리케이션 상태 객체
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+// 테마 관련 UI 처리 함수
     toggleTheme(state, renderMessages) {
         const body = document.body;
 
@@ -421,10 +377,7 @@ if (profileImage) {
         this._dispatchThemeChangeEvent(state.darkMode);
     },
 
-    /**
-     * 테마 초기화 함수
-     * @param {Object} state - 애플리케이션 상태 객체
-     */
+    // 초기 테마 설정 함수
     initializeTheme(state) {
         const body = document.body;
         const statusMessage = document.getElementById('statusMessage');
@@ -452,9 +405,7 @@ if (profileImage) {
         this._dispatchThemeChangeEvent(state.darkMode);
     },
 
-    /**
-     * 업데이트 로그 토글 함수
-     */
+    // 업데이트 로그 토글 함수
     toggleUpdateLog() {
         const content = document.querySelector('.update-content');
         const icon = document.querySelector('.toggle-icon');
@@ -472,9 +423,7 @@ if (profileImage) {
         }
     },
 
-    /**
-     * 업데이트 로그 토글 초기화 함수
-     */
+    // 업데이트 로그 토글 초기화 함수
     initUpdateLogToggle() {
         const content = document.querySelector('.update-content');
         const icon = document.querySelector('.toggle-icon');
@@ -493,11 +442,7 @@ if (profileImage) {
         }
     },
 
-    /**
-     * 테마 변경 이벤트 발생 함수
-     * @param {boolean} isDarkMode - 다크모드 여부
-     * @private
-     */
+    // 테마 변경 이벤트 발생 함수
     _dispatchThemeChangeEvent(isDarkMode) {
         // 테마 변경 이벤트 발생
         const event = new CustomEvent('themeChanged', {

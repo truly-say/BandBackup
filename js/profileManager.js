@@ -4,21 +4,11 @@ const ProfileManager = {
     // 모듈 코드 유지
     // 내장/외부 이미지 관련 코드만 제거
 
-    /**
-     * 모듈 초기화 상태
-     */
     initialized: false,
-    
-    /**
-     * 선택 모드 상태
-     */
+
     selectionMode: false,
 
-    /**
-     * 프로필 설정 UI 생성
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+    // 프로필 설정 UI 생성
     createProfileSettings(state, renderMessages) {
         console.log('ProfileManager.createProfileSettings 시작');
 
@@ -101,7 +91,7 @@ const ProfileManager = {
         const selectProfilesBtn = document.getElementById('select-profiles');
         const resetSelectedBtn = document.getElementById('reset-selected-profiles');
         const cancelSelectionBtn = document.getElementById('cancel-selection');
-        
+
         if (selectProfilesBtn) {
             selectProfilesBtn.addEventListener('click', () => {
                 console.log('선택 프로필 초기화 버튼 클릭됨');
@@ -125,20 +115,14 @@ const ProfileManager = {
 
         console.log('ProfileManager.createProfileSettings 완료');
     },
-    
-    /**
-     * 프로필 입력 카드 생성
-     * @param {string} username - 사용자명
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} onProfileReset - 프로필 초기화 콜백
-     * @returns {HTMLElement} 프로필 카드 요소
-     */
+
+    // 프로필 입력 카드 생성
     createProfileInput(username, state, onProfileReset) {
         if (!username) {
             console.error('사용자명이 제공되지 않았습니다');
             return null;
         }
-        
+
         const div = document.createElement('div');
         div.className = 'user-profile-card';
         div.dataset.username = username;
@@ -149,13 +133,13 @@ const ProfileManager = {
         selectCheckbox.className = 'profile-select-checkbox';
         selectCheckbox.title = '선택하여 초기화';
         selectCheckbox.style.display = 'none'; // 초기에는 숨김
-        
+
         // 체크박스를 카드의 왼쪽 상단에 위치시키기
         selectCheckbox.style.position = 'absolute';
         selectCheckbox.style.top = '8px';
         selectCheckbox.style.left = '8px';
         selectCheckbox.style.zIndex = '2';
-        
+
         // 체크박스 이벤트 - 선택 시 카드 시각적 표시
         selectCheckbox.addEventListener('change', () => {
             if (selectCheckbox.checked) {
@@ -164,7 +148,7 @@ const ProfileManager = {
                 div.classList.remove('selected-for-reset');
             }
         });
-        
+
         div.appendChild(selectCheckbox);
 
         // "내 메시지" 여부 (체크박스 대신 버튼 사용)
@@ -172,11 +156,11 @@ const ProfileManager = {
         if (isMyMessage) {
             div.classList.add('is-my-message');
         }
-        
+
         // 프로필 사진 미리보기
         const preview = document.createElement('div');
         preview.className = 'profile-preview';
-        
+
         // 저장된 이미지가 있다면 표시
         if (state.userProfileImages[username]) {
             // 이미지 URL 처리
@@ -221,11 +205,11 @@ const ProfileManager = {
         myUserButton.textContent = isMyMessage ? '내 메시지 해제' : '내 메시지로 설정';
         myUserButton.style.backgroundColor = isMyMessage ? '#f56565' : '#4a90e2';
         myUserButton.style.color = 'white';
-        
+
         // 내 사용자 버튼 클릭 이벤트
         myUserButton.addEventListener('click', () => {
             const isCurrentlySelected = state.selectedUsers.has(username);
-            
+
             if (isCurrentlySelected) {
                 state.selectedUsers.delete(username);
                 div.classList.remove('is-my-message');
@@ -237,7 +221,7 @@ const ProfileManager = {
                 myUserButton.textContent = '내 메시지 해제';
                 myUserButton.style.backgroundColor = '#f56565';
             }
-            
+
             // 선택 상태 저장
             if (typeof StorageManager !== 'undefined' && StorageManager) {
                 StorageManager.saveProfiles({
@@ -246,7 +230,7 @@ const ProfileManager = {
                     userColors: state.userColors
                 }, state.selectedUsers);
             }
-            
+
             // 메시지 다시 렌더링
             if (typeof renderMessages === 'function') {
                 renderMessages();
@@ -256,10 +240,10 @@ const ProfileManager = {
         });
 
         // 파일 입력 - 안전한 ID 사용
-        const safeID = (typeof MessageParser !== 'undefined' && MessageParser) 
-            ? MessageParser.safeId(username) 
+        const safeID = (typeof MessageParser !== 'undefined' && MessageParser)
+            ? MessageParser.safeId(username)
             : username.replace(/[^a-z0-9]/gi, '_');
-            
+
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/jpeg,image/jpg,image/png,image/webp';
@@ -299,16 +283,16 @@ const ProfileManager = {
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files.length > 0) {
                 const file = e.target.files[0];
-                
+
                 // 이미지 처리를 ImageHandler에 위임
                 if (typeof ImageHandler !== 'undefined' && ImageHandler) {
                     ImageHandler.processUploadedImage(
-                        file, 
-                        preview, 
+                        file,
+                        preview,
                         (processedImageUrl) => {
                             // 성공 시 이미지 데이터 저장
                             state.userProfileImages[username] = processedImageUrl;
-                            
+
                             // 프로필 저장
                             if (typeof StorageManager !== 'undefined' && StorageManager) {
                                 StorageManager.saveProfiles({
@@ -317,7 +301,7 @@ const ProfileManager = {
                                     userColors: state.userColors
                                 }, state.selectedUsers);
                             }
-                            
+
                             // 메시지 다시 렌더링
                             if (typeof renderMessages === 'function') {
                                 renderMessages();
@@ -329,11 +313,11 @@ const ProfileManager = {
                 }
             }
         });
-        
+
         // 이벤트 리스너 - 표시 이름 변경
         displayInput.addEventListener('change', () => {
             state.displayNames[username] = displayInput.value;
-            
+
             // 프로필 저장
             if (typeof StorageManager !== 'undefined' && StorageManager) {
                 StorageManager.saveProfiles({
@@ -342,7 +326,7 @@ const ProfileManager = {
                     userColors: state.userColors
                 }, state.selectedUsers);
             }
-            
+
             // 메시지 다시 렌더링
             if (typeof renderMessages === 'function') {
                 renderMessages();
@@ -354,7 +338,7 @@ const ProfileManager = {
         // 이벤트 리스너 - 색상 변경
         colorInput.addEventListener('change', () => {
             state.userColors[username] = colorInput.value;
-            
+
             // 프로필 저장
             if (typeof StorageManager !== 'undefined' && StorageManager) {
                 StorageManager.saveProfiles({
@@ -363,7 +347,7 @@ const ProfileManager = {
                     userColors: state.userColors
                 }, state.selectedUsers);
             }
-            
+
             // 메시지 다시 렌더링
             if (typeof renderMessages === 'function') {
                 renderMessages();
@@ -374,15 +358,15 @@ const ProfileManager = {
 
         // 프로필 카드 조립
         div.append(imageContainer, nameContainer, resetBtn);
-        
+
         // 드래그 앤 드롭 설정
         if (typeof ImageHandler !== 'undefined' && ImageHandler) {
             ImageHandler.setupDragAndDrop(
-                div, 
-                preview, 
+                div,
+                preview,
                 (processedImageUrl) => {
                     state.userProfileImages[username] = processedImageUrl;
-                    
+
                     // 프로필 저장
                     if (typeof StorageManager !== 'undefined' && StorageManager) {
                         StorageManager.saveProfiles({
@@ -391,7 +375,7 @@ const ProfileManager = {
                             userColors: state.userColors
                         }, state.selectedUsers);
                     }
-                    
+
                     // 메시지 다시 렌더링
                     if (typeof renderMessages === 'function') {
                         renderMessages();
@@ -401,23 +385,13 @@ const ProfileManager = {
                 }
             );
         }
-        
+
         return div;
     },
 
-    /**
-     * 선택된 프로필 초기화 함수 - 선택 모드 토글
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+    // 선택된 프로필 초기화 함수
     resetSelectedProfiles(state, renderMessages) {
-        // 선택 모드 상태 확인 - 토글 기능 개선
-        if (!this.selectionMode) {
-            // 선택 모드 활성화
-            this.toggleProfileSelectionMode(true, state, renderMessages);
-            return;
-        }
-        
+        // 변경된 부분 시작
         // 선택된 체크박스 찾기
         const selectedCheckboxes = document.querySelectorAll('.profile-select-checkbox:checked');
         
@@ -429,6 +403,7 @@ const ProfileManager = {
             }
             return;
         }
+        // 변경된 부분 끝
         
         if (confirm(`선택한 ${selectedCheckboxes.length}개의 프로필을 초기화하시겠습니까?`)) {
             let resetCount = 0;
@@ -441,35 +416,35 @@ const ProfileManager = {
                         delete state.userProfileImages[username];
                         delete state.userColors[username];
                         state.displayNames[username] = username;
-
+    
                         // 내 메시지 상태는 유지
                         const isMyMessage = state.selectedUsers.has(username);
-
+    
                         // UI 업데이트
                         const preview = card.querySelector('.profile-preview');
                         if (preview) preview.innerHTML = '';
-
+    
                         const displayInput = card.querySelector('.display-name-input');
                         if (displayInput) displayInput.value = username;
-
+    
                         const colorInput = card.querySelector('.color-picker');
                         if (colorInput) colorInput.value = '#000000';
-
+    
                         // 체크박스 초기화
                         checkbox.checked = false;
-
+    
                         // 내 메시지 버튼 업데이트
                         const myUserButton = card.querySelector('.my-user-button');
                         if (myUserButton) {
                             myUserButton.textContent = isMyMessage ? '내 메시지 해제' : '내 메시지로 설정';
                             myUserButton.style.backgroundColor = isMyMessage ? '#f56565' : '#4a90e2';
                         }
-
+    
                         resetCount++;
                     }
                 }
             });
-
+    
             // 변경사항 저장
             if (typeof StorageManager !== 'undefined' && StorageManager) {
                 StorageManager.saveProfiles({
@@ -478,31 +453,48 @@ const ProfileManager = {
                     userColors: state.userColors
                 }, state.selectedUsers);
             }
-
+    
             // 메시지 다시 렌더링
             if (typeof renderMessages === 'function') {
                 renderMessages();
             }
-            
-            // 선택 모드 비활성화
-            this.toggleProfileSelectionMode(false, state, renderMessages);
-
+    
             // 완료 메시지
             if (typeof UIManager !== 'undefined' && UIManager) {
                 UIManager.showStatusMessage(`${resetCount}개의 프로필이 초기화되었습니다.`, state.darkMode);
             } else {
                 alert(`${resetCount}개의 프로필이 초기화되었습니다.`);
             }
+            
+            // 추가된 부분 시작
+            // 선택 모드 비활성화
+            this.toggleProfileSelectionMode(false, state, renderMessages);
+            // 추가된 부분 끝
         }
     },
 
+    toggleProfileSelectionMode(enable, state, renderMessages) {
+        const selectButtons = document.getElementById('select-profiles');
+        const resetSelectedButton = document.getElementById('reset-selected-profiles');
+        const cancelSelectionButton = document.getElementById('cancel-selection');
+        
+        const checkboxes = document.querySelectorAll('.profile-select-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = enable ? 'block' : 'none';
+            checkbox.checked = false;
+        });
+        
+        const cards = document.querySelectorAll('.user-profile-card');
+        cards.forEach(card => {
+            card.classList.remove('selected-for-reset');
+        });
+        
+        selectButtons.style.display = enable ? 'none' : 'block';
+        resetSelectedButton.style.display = enable ? 'block' : 'none';
+        cancelSelectionButton.style.display = enable ? 'block' : 'none';
+    },
 
-    /**
-     * 프로필 초기화 함수
-     * @param {string} username - 초기화할 사용자명
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+    // 프로필 초기화 함수 
     resetProfile(username, state, renderMessages) {
         console.log(`프로필 초기화: ${username}`);
 
@@ -574,11 +566,7 @@ const ProfileManager = {
         }
     },
 
-    /**
-     * 모든 사용자 프로필 초기화 함수
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+    // 모든 프로필 초기화 함수
     resetAllProfiles(state, renderMessages) {
         console.log('모든 프로필 초기화 시도');
 
@@ -657,11 +645,7 @@ const ProfileManager = {
         }
     },
 
-    /**
-     * 모든 체크박스 해제 함수
-     * @param {Object} state - 애플리케이션 상태
-     * @param {Function} renderMessages - 메시지 렌더링 함수
-     */
+    // 모든 체크박스 해제 함수
     uncheckAllProfiles(state, renderMessages) {
         console.log('모든 체크 해제 시도');
 

@@ -255,9 +255,7 @@ const Base85 = {
   }
 };
 
-/**
-* 통합 압축 모듈 - 이미지 URL 압축 및 데이터 최적화
-*/
+// 이미지 URL 압축 및 해제 모듈
 const Compressor = {
 
   compressImageUrl: function(imageDataUrl) {
@@ -280,11 +278,8 @@ const Compressor = {
         return imageDataUrl;
     }
 },
-  /**
-   * 이미지 URL 압축 (Base85 사용) - 더 효율적인 압축
-   * @param {string} imageDataUrl - 이미지 Data URL
-   * @returns {string} 압축된 URL
-   */
+  
+// 이미지 URL 압축 및 해제 모듈
   decompressImageUrl: function(compressedImageUrl) {
     if (!compressedImageUrl) return compressedImageUrl;
     
@@ -307,12 +302,8 @@ const Compressor = {
         return compressedImageUrl;
     }
 },
-  
-  /**
-   * 압축된 이미지 URL 복원
-   * @param {string} compressedImageUrl - 압축된 이미지 URL
-   * @returns {string} 원본 이미지 Data URL
-   */
+
+  // 이미지 URL 압축 및 해제 모듈
   decompressImageUrl: function(compressedImageUrl) {
     if (!compressedImageUrl) {
       return compressedImageUrl;
@@ -365,11 +356,7 @@ const Compressor = {
     }
   },
   
-  /**
-   * 모든 이미지 압축해제 (내보내기용)
-   * @param {string} html - 압축된 이미지가 포함된 HTML
-   * @returns {string} 압축 해제된 이미지가 포함된 HTML
-   */
+  // HTML 내 이미지 압축 해제
   decompressAllImages: function(html) {
     if (!html) return html;
     
@@ -413,11 +400,7 @@ const Compressor = {
     }
   },
   
-  /**
-   * 이미지의 Data URL 크기 계산 (KB 단위)
-   * @param {string} dataUrl - 이미지 Data URL
-   * @returns {number} 크기 (KB)
-   */
+  // 이미지 URL 압축 여부 확인
   getDataUrlSize: function(dataUrl) {
     if (!dataUrl) return 0;
     // Base64 부분만 추출

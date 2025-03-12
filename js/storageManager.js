@@ -1,17 +1,9 @@
 // /js/storageManager.js - 로컬 스토리지 관리 모듈
 
-/**
- * 스토리지 관리자 모듈 - 로컬 스토리지 데이터 저장 및 불러오기
- */
 const StorageManager = {
-    /**
-     * 프로필 정보를 로컬 스토리지에 저장
-     * @param {Object} profiles - 저장할 프로필 정보 객체
-     * @param {Object} profiles.displayNames - 사용자 표시 이름
-     * @param {Object} profiles.userProfileImages - 사용자 프로필 이미지
-     * @param {Object} profiles.userColors - 사용자 색상
-     * @param {Set} selectedUsers - 내 메시지로 표시할 사용자들
-     */
+
+    // 프로필 정보를 로컬 스토리지에 저장
+     
     saveProfiles(profiles, selectedUsers) {
         try {
             localStorage.setItem('chatProfiles', JSON.stringify({
@@ -19,6 +11,7 @@ const StorageManager = {
                 userProfileImages: profiles.userProfileImages,
                 userColors: profiles.userColors
             }));
+
             
             localStorage.setItem('selectedUsers', JSON.stringify(Array.from(selectedUsers)));
         } catch (error) {
@@ -26,10 +19,6 @@ const StorageManager = {
         }
     },
 
-    /**
-     * 저장된 프로필 정보를 로컬 스토리지에서 불러오기
-     * @returns {Object} 불러온 프로필 정보와 선택된 사용자
-     */
     loadProfiles() {
         const result = {
             displayNames: {},
@@ -58,10 +47,6 @@ const StorageManager = {
         return result;
     },
 
-    /**
-     * 이미지 설정 저장
-     * @param {Object} settings - 이미지 설정 객체
-     */
     saveImageSettings(settings) {
         try {
             localStorage.setItem('imageSettings', JSON.stringify(settings));
@@ -70,10 +55,6 @@ const StorageManager = {
         }
     },
 
-    /**
-     * 이미지 설정 불러오기
-     * @returns {Object|null} 저장된 이미지 설정 객체 또는 null
-     */
     loadImageSettings() {
         try {
             const savedSettings = localStorage.getItem('imageSettings');
@@ -86,78 +67,42 @@ const StorageManager = {
         return null;
     },
 
-    /**
-     * 테마 설정 저장
-     * @param {boolean} isDarkMode - 다크모드 여부
-     */
     saveThemePreference(isDarkMode) {
         localStorage.setItem('theme-preference', isDarkMode ? 'dark' : 'light');
     },
 
-    /**
-     * 테마 설정 불러오기
-     * @returns {boolean} 다크모드 여부
-     */
     loadThemePreference() {
         return localStorage.getItem('theme-preference') === 'dark';
     },
 
-    /**
-     * 업데이트 로그 상태 저장
-     * @param {boolean} isOpen - 열려있는지 여부
-     */
     saveUpdateLogState(isOpen) {
         localStorage.setItem('updateLogOpen', isOpen);
     },
 
-    /**
-     * 업데이트 로그 상태 불러오기
-     * @returns {boolean} 열려있는지 여부
-     */
     loadUpdateLogState() {
         return localStorage.getItem('updateLogOpen') === 'true';
     },
     
-    /**
-     * 태그 강조 설정 저장
-     * @param {boolean} highlightTags - 태그 강조 활성화 여부
-     */
     saveTagHighlightSetting(highlightTags) {
         localStorage.setItem('highlightTags', highlightTags ? 'true' : 'false');
     },
     
-    /**
-     * 태그 강조 설정 불러오기
-     * @returns {boolean} 태그 강조 활성화 여부 (기본값: true)
-     */
     loadTagHighlightSetting() {
         // 이전에 설정한 값이 없으면 기본값으로 true 반환
         const savedSetting = localStorage.getItem('highlightTags');
         return savedSetting === null ? true : savedSetting === 'true';
     },
     
-    /**
-     * 내 메시지의 이미지 표시 설정 저장
-     * @param {boolean} showMyProfile - 내 메시지에 프로필 이미지 표시 여부
-     */
     saveShowMyProfileSetting(showMyProfile) {
         localStorage.setItem('showMyProfile', showMyProfile ? 'true' : 'false');
     },
     
-    /**
-     * 내 메시지의 이미지 표시 설정 불러오기
-     * @returns {boolean} 내 메시지에 프로필 이미지 표시 여부 (기본값: true)
-     */
     loadShowMyProfileSetting() {
         // 이전에 설정한 값이 없으면 기본값으로 true 반환
         const savedSetting = localStorage.getItem('showMyProfile');
         return savedSetting === null ? true : savedSetting === 'true';
     },
     
-    /**
-     * 고급 설정 저장
-     * @param {Object} settings - 고급 설정 객체
-     */
     saveAdvancedSettings(settings) {
         try {
             localStorage.setItem('advancedSettings', JSON.stringify(settings));
@@ -166,17 +111,13 @@ const StorageManager = {
         }
     },
     
-    /**
-     * 고급 설정 불러오기
-     * @returns {Object} 고급 설정 객체 (기본값 포함)
-     */
     loadAdvancedSettings() {
         const defaultSettings = {
             highlightTags: true,
             showMyProfile: true,
-            imageQuality: 0.6,    // 기본 이미지 품질 (0.4 = 40%)
+            imageQuality: 0.6,   
             useImageCompression: true,
-            maxImageSize: 150     // 기본 최대 이미지 크기 (100px)
+            maxImageSize: 150     
         };
         
         try {
