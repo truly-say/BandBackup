@@ -714,6 +714,51 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
+/* 다운로드 드롭다운 메뉴에 대한 CSS */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1000;
+    min-width: 160px;
+    border-radius: 4px;
+    padding: 5px 0;
+    right: 0;
+    top: 100%;
+    margin-top: 5px;
+  }
+  
+  body.dark .dropdown-menu {
+    background-color: #1e293b;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+  }
+  
+  .dropdown-item {
+    display: block;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+  }
+  
+  body.dark .dropdown-item {
+    color: #e2e8f0;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  body.dark .dropdown-item:hover {
+    background-color: #2d3748;
+  }
+  
+  .dropdown-menu.show {
+    display: block !important;
+  }
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .main-container {
@@ -760,6 +805,14 @@ textarea:focus {
         height: 150px;
         font-size: 0.9rem;
         padding: 0.75rem;
+    }
+
+    .dropdown-container {
+        width: 100%;
+    }
+    
+    .dropdown-menu {
+        width: 100%;
     }
 }
 

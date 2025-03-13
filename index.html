@@ -31,8 +31,17 @@
             <button id="analyze-btn"><i class="fas fa-search"></i> ① 채팅 분석</button>
             <button id="convert-btn"><i class="fas fa-sync-alt"></i> ② 변환하기</button>
             <button id="copy-btn"><i class="fas fa-copy"></i> ③ HTML 복사</button>
+            <button id="download-btn"><i class="fas fa-download"></i> 다운로드 <i class="fas fa-caret-down"
+                    style="position:absolute;right:10px;top:50%;transform:translateY(-50%);"></i></button>
             <button id="clear-btn"><i class="fas fa-trash"></i> 초기화</button>
         </div>
+
+        <!-- 다운로드 옵션 메뉴 -->
+        <div id="download-options" class="dropdown-menu" style="display:none;">
+            <a id="download-html" class="dropdown-item"><i class="fas fa-file-code"></i> HTML로 저장</a>
+            <a id="download-txt" class="dropdown-item"><i class="fas fa-file-alt"></i> TXT로 저장</a>
+        </div>
+        
         <div id="user-profiles" class="user-profiles" style="display: none;">
             <div class="profile-header">
                 <h3>채팅 참여자 프로필 설정</h3>
@@ -49,36 +58,36 @@
         </div>
         <div class="chat-container" id="chat-container"></div>
     </div>
-    
+
     <!-- 통합 도움말 버튼 (자바스크립트로 추가됨) -->
-    
+
     <!-- 설정 버튼 (다크 모드 전환 통합) -->
     <button id="settingsButton" class="settings-button"><i class="fas fa-cog"></i></button>
-    
+
     <div id="statusMessage" class="status-message" style="display: none;">다크 모드로 전환되었습니다</div>
-    
+
     <footer id="footer">
         <p>본 웹사이트는 '선청고등학교' 커뮤의 채팅 백업을 위해 만들어졌습니다.</p>
     </footer>
 
-     <!-- 압축 및 유틸리티 모듈 (순서 중요) -->
-     <script src="js/compressor.js"></script>
-     <script src="js/storageManager.js"></script>
-     <script src="js/messageParser.js"></script>
-     
-     <!-- UI 및 처리 모듈 -->
-     <script src="js/uiManager.js"></script>
-     <script src="js/imageHandler.js"></script>
-     <script src="js/profileManager.js"></script>
-     <script src="js/exportManager.js"></script>
-     <script src="js/editManager.js"></script>
-     
-     <!-- 도움말 및 설정 -->
-     <script src="js/helpTooltip.js"></script>
-     <script src="js/settingsPanel.js"></script>
-     
-     <!-- 메인 앱 -->
-     <script src="js/app.js"></script>
+    <!-- 압축 및 유틸리티 모듈 (순서 중요) -->
+    <script src="js/compressor.js"></script>
+    <script src="js/storageManager.js"></script>
+    <script src="js/messageParser.js"></script>
+
+    <!-- UI 및 처리 모듈 -->
+    <script src="js/uiManager.js"></script>
+    <script src="js/imageHandler.js"></script>
+    <script src="js/profileManager.js"></script>
+    <script src="js/exportManager.js"></script>
+    <script src="js/editManager.js"></script>
+
+    <!-- 도움말 및 설정 -->
+    <script src="js/helpTooltip.js"></script>
+    <script src="js/settingsPanel.js"></script>
+
+    <!-- 메인 앱 -->
+    <script src="js/app.js"></script>
 </body>
 
 </html>
