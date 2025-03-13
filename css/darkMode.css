@@ -282,3 +282,12 @@ body.dark .settings-button {
 body.dark .settings-button:hover {
     background-color: #2c5282;
 }
+
+body.dark .clear-cache-button {
+    background-color: #e53e3e;
+    color: #ffffff;
+}
+
+body.dark .clear-cache-button:hover {
+    background-color: #c53030;
+}

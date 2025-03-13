@@ -546,6 +546,17 @@ class DataManager {
     }
   }
   
+  resetAllApplicationData() {
+    try {
+      // 모든 로컬 스토리지 항목 제거
+      localStorage.clear();
+      
+      console.log('모든 애플리케이션 데이터와 캐시가 초기화되었습니다.');
+    } catch (error) {
+      console.error('데이터 초기화 중 오류:', error);
+    }
+  }
+  
   /**
    * 고급 설정 불러오기
    * @returns {Object} - 고급 설정 객체
@@ -689,5 +700,7 @@ class DataManager {
       console.error('데이터 가져오기 중 오류:', error);
       return false;
     }
+
+    
   }
 }

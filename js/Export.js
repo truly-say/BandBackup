@@ -110,10 +110,13 @@ class ExportManager {
       this._updateStatus('HTML 파일 생성 중...');
       const htmlContent = await this._generateFullHtmlDocument();
       
+      // 채팅 시간 범위 추출
+      const timeRange = this._getChatTimeRange();
+      
       // HTML 파일 생성 및 다운로드
       this._downloadFile(
         htmlContent, 
-        '밴드채팅백업_' + this._getTimestamp() + '.html', 
+        `채팅백업_${timeRange}.html`, 
         'text/html'
       );
       
@@ -121,7 +124,7 @@ class ExportManager {
       this._updateStatus('채팅 내용이 HTML 파일로 저장되었습니다!');
     } catch (error) {
       console.error('HTML 파일 저장 중 오류 발생:', error);
-      alert('오류가 발생했습니다: ' + error.message);
+      alert('HTML 다운로드 중 오류가 발생했습니다: ' + error.message);
     } finally {
       // 처리 중 상태 해제
       this._hideLoadingStatus();
@@ -131,13 +134,14 @@ class ExportManager {
   
   /**
    * TXT 파일 다운로드
-   * - 채팅을 TXT 형식으로 저장
+   * - 클립보드 복사와 동일한 방식으로 TXT 파일로 저장
    * @returns {Promise<void>}
    */
   async downloadTxtFile() {
     try {
-      if (!this.app.state.messages || this.app.state.messages.length === 0) {
-        alert('먼저 채팅을 분석 및 변환해주세요!');
+      const chatContainer = document.getElementById('chat-container');
+      if (!chatContainer || !chatContainer.innerHTML) {
+        alert('먼저 채팅을 변환해주세요!');
         return;
       }
       
@@ -147,17 +151,33 @@ class ExportManager {
         return;
       }
       
+      // 참여자 수 검증
+      const MAX_USERS = this.app.MAX_USERS;
+      const uniqueUsers = new Set(this.app.state.messages.map(msg => msg.username));
+      if (uniqueUsers.size >= MAX_USERS + 1) {
+        alert(`대화 참여자가 ${uniqueUsers.size}명입니다. 최대 ${MAX_USERS}명까지만 지원됩니다.`);
+        return;
+      }
+      
       // 처리 중 상태 표시
       this.app.state.isProcessing = true;
       this._showLoadingStatus('TXT 파일로 저장 중...');
       
-      // TXT 형식으로 변환
-      const txtContent = await this._generateTextContent();
+      // 이미지 최적화 적용 (내보내기 전)
+      this._updateStatus('이미지 최적화 중...');
+      await this._optimizeImages();
       
-      // TXT 파일 생성 및 다운로드
+      // HTML 생성 - 클립보드 복사와 동일한 방식 사용
+      this._updateStatus('HTML 생성 중...');
+      const fullHtml = await this._generateExportHtml(true); // 압축된 HTML
+      
+      // 채팅 시간 범위 추출
+      const timeRange = this._getChatTimeRange();
+      
+      // TXT 파일 생성 및 다운로드 (HTML 내용을 그대로 저장)
       this._downloadFile(
-        txtContent, 
-        '밴드채팅백업_' + this._getTimestamp() + '.txt', 
+        fullHtml, 
+        `채팅백업_${timeRange}.txt`, 
         'text/plain;charset=utf-8'
       );
       
@@ -165,7 +185,7 @@ class ExportManager {
       this._updateStatus('채팅 내용이 TXT 파일로 저장되었습니다!');
     } catch (error) {
       console.error('TXT 파일 저장 중 오류 발생:', error);
-      alert('오류가 발생했습니다: ' + error.message);
+      alert('TXT 다운로드 중 오류가 발생했습니다: ' + error.message);
     } finally {
       // 처리 중 상태 해제
       this._hideLoadingStatus();
@@ -192,33 +212,110 @@ class ExportManager {
   }
   
   /**
+   * 채팅 시간 범위 추출
+   * @returns {string} - "시작시간-종료시간" 형식의 문자열
+   * @private
+   */
+  _getChatTimeRange() {
+    try {
+      if (!this.app.state.messages || this.app.state.messages.length === 0) {
+        return this._getTimestamp(); // 메시지가 없으면 현재 시간만 반환
+      }
+      
+      // 첫 번째 메시지와 마지막 메시지 가져오기
+      const firstMessage = this.app.state.messages[0];
+      const lastMessage = this.app.state.messages[this.app.state.messages.length - 1];
+      
+      // 시간 문자열에서 날짜 및 시간 추출
+      const firstTime = this._extractFormattedTime(firstMessage.time);
+      const lastTime = this._extractFormattedTime(lastMessage.time);
+      
+      return `${firstTime}-${lastTime}`;
+    } catch (error) {
+      console.error('채팅 시간 범위 추출 중 오류:', error);
+      return this._getTimestamp(); // 오류 시 현재 시간만 반환
+    }
+  }
+  
+  /**
+   * 시간 문자열에서 포맷된 시간 추출
+   * @param {string} timeString - "2023년 3월 15일 오전 12:25" 형식의 시간 문자열
+   * @returns {string} - "202303150025" 형식의 시간 문자열
+   * @private
+   */
+  _extractFormattedTime(timeString) {
+    try {
+      // 시간 형식: "2023년 3월 15일 오전 12:25"
+      const match = timeString.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\s*(오전|오후)\s*(\d{1,2}):(\d{2})/);
+      
+      if (!match) {
+        return '';
+      }
+      
+      const year = match[1];
+      const month = match[2].padStart(2, '0');
+      const day = match[3].padStart(2, '0');
+      
+      let hour = parseInt(match[5], 10);
+      const isPM = match[4] === '오후' && hour !== 12;
+      const isAM = match[4] === '오전' && hour === 12;
+      
+      if (isPM) {
+        hour += 12;
+      } else if (isAM) {
+        hour = 0;
+      }
+      
+      const hourStr = hour.toString().padStart(2, '0');
+      const minute = match[6].padStart(2, '0');
+      
+      // 202303150025 형식으로 반환
+      return `${year}${month}${day}${hourStr}${minute}`;
+    } catch (error) {
+      console.error('시간 추출 중 오류:', error);
+      return '';
+    }
+  }
+  
+  /**
    * 내보내기용 HTML 생성
    * @param {boolean} minify - HTML 최소화 여부
    * @returns {Promise<string>} - 생성된 HTML
    * @private
    */
   async _generateExportHtml(minify = false) {
-    // 사용자 이미지 맵 생성 (CSS 클래스 최적화)
-    const userImageMap = await this._createUserImageMap();
+    // 현재 테마 모드 저장
+    const originalDarkMode = this.app.state.darkMode;
     
-    // CSS 스타일 생성
-    const cssStyles = this._generateCssStyles(userImageMap);
+    // 내보내기 시에는 항상 라이트 모드 색상 사용
+    this.app.state.darkMode = false;
     
-    // 메시지 HTML 생성
-    const exportMessages = await this._generateMessageHtml(userImageMap);
-    
-    // 폰트 사이즈가 적용된 HTML 생성
-    let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-size:${this.app.state.fontSize || 16}px;">${cssStyles}${exportMessages.join('')}</div>`;
-    
-    // HTML 압축 (선택적)
-    if (minify) {
-      fullHtml = this._minifyHtml(fullHtml);
+    try {
+      // 사용자 이미지 맵 생성 (CSS 클래스 최적화)
+      const userImageMap = await this._createUserImageMap();
+      
+      // CSS 스타일 생성
+      const cssStyles = this._generateCssStyles(userImageMap);
+      
+      // 메시지 HTML 생성
+      const exportMessages = await this._generateMessageHtml(userImageMap);
+      
+      // 폰트 사이즈가 적용된 HTML 생성
+      let fullHtml = `<div style="max-width:900px;margin:0 auto;padding:20px;font-size:${this.app.state.fontSize || 16}px;">${cssStyles}${exportMessages.join('')}</div>`;
+      
+      // HTML 압축 (선택적)
+      if (minify) {
+        fullHtml = this._minifyHtml(fullHtml);
+      }
+      
+      // 압축된 이미지 URL을 복원
+      fullHtml = this._decompressAllImageUrls(fullHtml);
+      
+      return fullHtml;
+    } finally {
+      // 원래 테마 모드로 복원
+      this.app.state.darkMode = originalDarkMode;
     }
-    
-    // 압축된 이미지 URL을 복원
-    fullHtml = this._decompressAllImageUrls(fullHtml);
-    
-    return fullHtml;
   }
   
   /**
@@ -266,53 +363,6 @@ class ExportManager {
     
     // 합치기
     return htmlHeader + contentHtml + htmlFooter;
-  }
-  
-  /**
-   * TXT 내용 생성
-   * @returns {Promise<string>} - 생성된 TXT 내용
-   * @private
-   */
-  async _generateTextContent() {
-    let txtContent = '';
-    const dateNow = this._getTimestamp();
-    txtContent += `# 밴드 채팅 백업 (${dateNow})\n\n`;
-    
-    const BATCH_SIZE = this.exportOptions.processBatchSize;
-    const totalMessages = this.app.state.messages.length;
-    
-    // 배치 처리로 대용량 채팅 처리 최적화
-    for (let batchStart = 0; batchStart < totalMessages; batchStart += BATCH_SIZE) {
-      const batchEnd = Math.min(batchStart + BATCH_SIZE, totalMessages);
-      
-      // 진행 상황 업데이트
-      if (batchStart > 0) {
-        this._updateStatus(`메시지 처리 중... (${batchStart}/${totalMessages})`);
-      }
-      
-      // 현재 배치 처리
-      for (let i = batchStart; i < batchEnd; i++) {
-        const { time, username, chatMessage } = this.app.state.messages[i];
-        const displayName = this.app.state.displayNames[username] || username;
-        
-        // TXT 형식으로 포맷팅 (원본 밴드 형식과 유사하게)
-        txtContent += `${time}: ${displayName}: ${chatMessage}\n`;
-      }
-      
-      // 비동기 작업 양보 (UI 응답성 유지)
-      await this._yieldToMain();
-    }
-    
-    return txtContent;
-  }
-  
-  /**
-   * 메인 스레드에 제어권 양보 (비동기 작업 최적화)
-   * @returns {Promise<void>}
-   * @private
-   */
-  _yieldToMain() {
-    return new Promise(resolve => setTimeout(resolve, 0));
   }
   
   /**
@@ -476,14 +526,10 @@ class ExportManager {
       const isLast = groupIndex === messageGroup.length - 1;
       const isContinuous = !isFirst;
       
-      // 테마에 따른 색상 설정
-      const userColor = this.app.state.darkMode ? '#e2e8f0' : (this.app.state.userColors[username] || '#000000');
-      const bubbleColor = isMyMessage
-        ? (this.app.state.darkMode ? '#2d3647' : '#d8f4e7')
-        : (this.app.state.darkMode ? '#4c4f56' : '#f1f1f1');
-      const textColor = isMyMessage
-        ? (this.app.state.darkMode ? '#e2e8f0' : '#333')
-        : (this.app.state.darkMode ? '#e2e8f0' : '#333');
+      // 항상 라이트 모드 색상 사용 (설정과 무관)
+      const userColor = this.app.state.userColors[username] || '#000000';
+      const bubbleColor = isMyMessage ? '#d8f4e7' : '#f1f1f1';
+      const textColor = '#333';
       
       // 말풍선 둥근 모서리 스타일 계산
       let bubbleRadius;
@@ -521,8 +567,8 @@ class ExportManager {
       let tailStyle = 'display:none;';
       if (!isContinuous) {
         tailStyle = isMyMessage
-          ? `position:absolute;width:0;height:0;top:0;right:-8px;border-style:solid;border-width:0 0 8px 8px;border-color:transparent transparent transparent ${bubbleColor};`
-          : `position:absolute;width:0;height:0;top:0;left:-8px;border-style:solid;border-width:0 8px 8px 0;border-color:transparent ${bubbleColor} transparent transparent;`;
+          ? `position:absolute;width:0;height:0;top:0;right:-12px;border-style:solid;border-width:0 0 14px 14px;border-color:transparent transparent transparent ${bubbleColor};`
+          : `position:absolute;width:0;height:0;top:0;left:-12px;border-style:solid;border-width:0 14px 14px 0;border-color:transparent ${bubbleColor} transparent transparent;`;
       }
       
       // 내 메시지의 프로필 이미지 표시 여부
@@ -730,7 +776,7 @@ class ExportManager {
    */
   _downloadFile(content, filename, mimeType) {
     try {
-      // Blob 생성
+      // 다운로드용 Blob 생성
       const blob = new Blob([content], { type: mimeType });
       const url = URL.createObjectURL(blob);
       
@@ -785,11 +831,27 @@ class ExportManager {
   }
   
   /**
+   * 메인 스레드에 제어권 양보 (비동기 작업 최적화)
+   * @returns {Promise<void>}
+   * @private
+   */
+  _yieldToMain() {
+    return new Promise(resolve => setTimeout(resolve, 0));
+  }
+  
+  /**
    * 현재 타임스탬프 생성
    * @returns {string} - YYYY-MM-DD 형식의 날짜
    * @private
    */
   _getTimestamp() {
-    return new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hour = now.getHours().toString().padStart(2, '0');
+    const minute = now.getMinutes().toString().padStart(2, '0');
+    
+    return `${year}${month}${day}${hour}${minute}`;
   }
 }
