@@ -1,3 +1,5 @@
+// /js/Data.js
+
 /**
  * 밴드 채팅 백업 도구 - 데이터 관리 클래스
  * 
@@ -13,7 +15,12 @@ class DataManager {
     this.app = app;
     
     // 정규식 캐싱 - 성능 향상
-    this._messageRegex = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
+    // 형식 1: 콜론(:) 구분자 사용 - 2025년 12월 8일 오후 10:54:고라니:채팅1
+    this._messageRegexColon = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9])):([^:]+):(.+)$/;
+    
+    // 형식 2: 공백 구분자 사용 - 2025년 12월 8일 오후 10:54 고라니 채팅1
+    this._messageRegexSpace = /^(\d{4}년\s*(?:0?[1-9]|1[0-2])월\s*(?:0?[1-9]|[12][0-9]|3[01])일\s*(?:오전|오후)\s*(?:0?[1-9]|1[0-2]):(?:[0-5][0-9]))\s+([^\s]+)\s+(.+)$/;
+    
     this._tagPatternsCache = null;
     
     // 기본 설정
@@ -69,8 +76,14 @@ class DataManager {
             continue;
           }
           
-          // 정규 표현식 매칭 시도
-          const match = trimmedLine.match(this._messageRegex);
+          // 두 가지 형식 모두 시도
+          let match = trimmedLine.match(this._messageRegexColon);
+          let formatType = 'colon';
+          
+          if (!match) {
+            match = trimmedLine.match(this._messageRegexSpace);
+            formatType = 'space';
+          }
           
           if (match) {
             // 이전 메시지가 있으면 저장
@@ -82,7 +95,8 @@ class DataManager {
             currentMessage = {
               time: match[1].trim(),
               username: match[2].trim(),
-              chatMessage: match[3].trim()
+              chatMessage: match[3].trim(),
+              _formatType: formatType // 디버깅용 (선택사항)
             };
           } else if (currentMessage) {
             // 이전 메시지의 연속된 줄
@@ -672,16 +686,16 @@ class DataManager {
         if (importData.settings.hasOwnProperty('showMyProfile')) {
           this.app.state.showMyProfile = importData.settings.showMyProfile;
         }
-        
+
         if (importData.settings.hasOwnProperty('fontSize')) {
           this.app.state.fontSize = importData.settings.fontSize;
         }
-        
+
         if (importData.settings.hasOwnProperty('darkMode')) {
           this.app.state.darkMode = importData.settings.darkMode;
         }
       }
-      
+
       // 설정 저장
       this.saveProfiles(
         this.app.state.displayNames,
@@ -690,17 +704,15 @@ class DataManager {
         this.app.state.selectedUsers,
         { fontSize: this.app.state.fontSize }
       );
-      
+
       this.saveTagHighlightSetting(this.app.state.highlightTags);
       this.saveShowMyProfileSetting(this.app.state.showMyProfile);
       this.saveThemePreference(this.app.state.darkMode);
-      
+
       return true;
     } catch (error) {
       console.error('데이터 가져오기 중 오류:', error);
       return false;
     }
-
-    
   }
 }
