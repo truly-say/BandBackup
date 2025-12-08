@@ -606,7 +606,7 @@ class DataManager {
     try {
       // 내보낼 데이터 구성
       const exportData = {
-        version: '1.1.0',
+        version: '1.1.2',
         timestamp: Date.now(),
         messages: this.app.state.messages || [],
         profiles: {
@@ -641,17 +641,18 @@ class DataManager {
    * @returns {boolean} - 성공 여부
    */
   importAllData(importData) {
-    try {
-      // 데이터 유효성 검사
-      if (!importData || typeof importData !== 'object' || !importData.version) {
-        console.error('유효하지 않은 가져오기 데이터');
-        return false;
-      }
-      
-      // 버전 호환성 확인
-      if (importData.version !== '1.1.0') {
-        console.warn(`다른 버전(${importData.version})의 데이터, 일부 기능이 제한될 수 있습니다`);
-      }
+  try {
+    // 데이터 유효성 검사
+    if (!importData || typeof importData !== 'object' || !importData.version) {
+      console.error('유효하지 않은 가져오기 데이터');
+      return false;
+    }
+    
+    // 버전 호환성 확인 
+    const currentVersion = '1.1.2';
+    if (importData.version !== currentVersion && !importData.version.startsWith('1.1.')) {
+      console.warn(`다른 버전(${importData.version})의 데이터, 일부 기능이 제한될 수 있습니다`);
+    }
       
       // 메시지 데이터 가져오기
       if (Array.isArray(importData.messages)) {

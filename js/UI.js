@@ -1701,7 +1701,7 @@ _cleanupEditState() {
     aboutOption.className = 'settings-about';
     aboutOption.innerHTML = `
       <div class="settings-about-info">
-        <i class="fas fa-info-circle"></i> 버전 정보: v1.1.1
+        <i class="fas fa-info-circle"></i> 버전 정보: v1.1.2
       </div>
       <div class="settings-about-credits">
         @C2H5OH_snow
