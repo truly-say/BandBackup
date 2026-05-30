@@ -1,0 +1,293 @@
+/* /css/darkMode.css - 다크 모드 스타일 */
+
+#statusMessage {
+    position: fixed;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease, top 0.3s ease;
+    z-index: 9999;
+}
+
+body.dark #statusMessage {
+    background-color: rgba(30, 41, 59, 0.9);
+    color: #e2e8f0;
+}
+
+body:not(.dark) #statusMessage {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333333;
+}
+
+body.dark {
+    background: linear-gradient(180deg, #111827 100px, #1a1f2e 100px, #1a1f2e 100%);
+    color: #e2e8f0;
+}
+
+body.dark .main-container {
+    background: rgba(26, 31, 46, 0.98);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+body.dark #title,
+body.dark .header-text {
+    color: #60a5fa;
+}
+
+body.dark textarea {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+body.dark .chat-container::-webkit-scrollbar-thumb {
+    background: #666;
+}
+
+body.dark .chat-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+body.dark #statusMessage {
+    background: rgba(30, 41, 59, 0.9);
+}
+
+body.dark #footer {
+    background-color: #1a1a1a;
+    color: #a0aec0;
+    border-top: 1px solid #333;
+}
+
+body.dark .edit-textarea {
+    background: #2d2d2d;
+    border-color: #3498db;
+    color: #e2e8f0;
+}
+
+body.dark #settingsButton {
+    background-color: #4a5568;
+    color: white;
+}
+
+body.dark #settingsButton:hover {
+    background-color: #2d3748;
+}
+
+body.dark button {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark button:hover {
+    background-color: #4a5568;
+}
+
+/* 다크모드 메시지 스타일 - 밴드 스타일 */
+body.dark .chat-message .username {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
+body.dark .chat-time {
+    color: #9ca3af;
+}
+
+/* 다크모드 @태그 스타일 */
+body.dark .tagged-user {
+    color: #9dc9ff;
+}
+
+/* 다크모드 프로필 카드 스타일 */
+body.dark .user-profile-card {
+    background: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .user-profile-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .user-profile-card.drag-over {
+    border: 2px dashed #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+body.dark .profile-preview {
+    background-color: #4a5568;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .display-name-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e2e8f0;
+}
+
+body.dark .display-name-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+}
+
+body.dark .file-input-label {
+    background-color: #3b82f6;
+    color: #e2e8f0;
+}
+
+body.dark .file-input-label:hover {
+    background-color: #2563eb;
+}
+
+body.dark .original-name {
+    color: #9ca3af;
+}
+
+body.dark .profile-reset-btn {
+    background: #374151;
+    color: #9ca3af;
+}
+
+/* 다크모드에서 프로필 설정 영역 */
+body.dark .user-profiles {
+    background: #1e293b;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .profile-header {
+    border-bottom-color: #374151;
+}
+
+body.dark .profile-header h3 {
+    color: #60a5fa;
+}
+
+body.dark .profile-info {
+    color: #e2e8f0;
+}
+
+body.dark .upload-info {
+    color: #9ca3af;
+}
+
+body.dark .action-button {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+}
+
+body.dark .action-button:hover {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+/* 다크모드 체크박스 스타일 */
+body.dark .my-message-checkbox {
+    accent-color: #60a5fa;
+}
+
+body.dark .is-my-message {
+    border-color: #60a5fa;
+    background-color: rgba(96, 165, 250, 0.08);
+}
+
+/* 다크모드에서 사용자 프로필 가독성 개선 */
+body.dark .user-profile-card {
+    background: #2d3748;
+    border-color: #4a5568;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .original-name {
+    color: #a0aec0;
+}
+
+body.dark .file-input-label {
+    background-color: #3b82f6;
+    color: #e2e8f0;
+}
+
+body.dark .reset-selected-profiles {
+    background-color: #f56565;
+    color: #e2e8f0;
+}
+
+body.dark .reset-selected-profiles:hover {
+    background-color: #e53e3e;
+}
+
+/* 다크모드 편집 버튼 */
+body.dark .edit-buttons button {
+    background-color: #3182ce;
+}
+
+body.dark .edit-buttons button.delete-button {
+    background-color: #e53e3e;
+}
+
+/* 다크모드 선택 프로필 */
+body.dark .selected-for-reset {
+    box-shadow: 0 0 0 2px #e53e3e;
+    background-color: rgba(229, 62, 62, 0.1);
+}
+
+/* 다크모드 내 메시지 버튼 */
+body.dark .my-user-button {
+    background-color: #3182ce;
+}
+
+body.dark .my-user-button:hover {
+    background-color: #2b6cb0;
+}
+
+/* 다크모드 드래그 앤 드롭 */
+body.dark #input-text.drag-over {
+    border: 2px dashed #60a5fa;
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* 말풍선 꼬리 색상 */
+body.dark .chat-message.mine .message-content::before {
+    border-bottom-color: #2d3647;
+}
+
+body.dark .chat-message.other .message-content::before {
+    border-bottom-color: #4c4f56;
+}
+
+/* 다크모드 선택 모드 메시지 */
+body.dark .selection-mode-message {
+    background-color: rgba(66, 153, 225, 0.1);
+    border-left-color: #4299e1;
+    color: #a0aec0;
+}
+
+/* 설정 버튼 */
+body.dark .settings-button {
+    background-color: #3182ce;
+}
+
+body.dark .settings-button:hover {
+    background-color: #2c5282;
+}
+
+body.dark .clear-cache-button {
+    background-color: #e53e3e;
+    color: #ffffff;
+}
+
+body.dark .clear-cache-button:hover {
+    background-color: #c53030;
+}
