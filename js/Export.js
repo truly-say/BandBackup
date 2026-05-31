@@ -247,7 +247,10 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 
       // ── desc ──────────────────────────────────────────────────
       if (msg.isDesc) {
-        const content = msg.rawHtml || escHtml(msg.chatMessage);
+        let content = msg.rawHtml || escHtml(msg.chatMessage);
+        if (msg.attachedImage) {
+          content += `<div style="margin-top:6px;text-align:center"><img src="${escHtml(msg.attachedImage)}" style="max-width:100%;max-height:300px;border-radius:6px;display:inline-block" alt=""></div>`;
+        }
         lines.push(`<div class="r20-msg r20-desc">${content}</div>`);
         continue;
       }
@@ -280,6 +283,9 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
           url => `<a href="${url}" target="_blank" rel="noopener" class="r20-link">${url}</a>`
         );
         content = content.replace(/\n/g, '<br>');
+      }
+      if (msg.attachedImage) {
+        content += `<div style="margin-top:6px"><img src="${escHtml(msg.attachedImage)}" style="max-width:240px;max-height:240px;border-radius:6px;display:block" alt=""></div>`;
       }
 
       const isRoll = msg.msgType === 'roll' || msg.msgType === 'roll-unknown' || msg.msgType === 'inline-roll';
