@@ -56,9 +56,14 @@ class Roll20Parser {
 
         const speaker = byEl  ? byEl.textContent.replace(/:$/, '').trim() : lastSpeaker;
         const time    = tsEl  ? tsEl.textContent.trim()                   : lastTime;
-        const avatar  = imgEl ? imgEl.getAttribute('src')                 : lastAvatar;
 
-        if (speaker) { lastSpeaker = speaker; lastTime = time; lastAvatar = avatar; }
+        // byEl이 있는 메시지에서만 avatar 갱신 — 연속 메시지 imgEl 혼입 방지
+        if (byEl && speaker) {
+          lastSpeaker = speaker;
+          lastTime    = time;
+          lastAvatar  = imgEl ? imgEl.getAttribute('src') : null;
+        }
+        const avatar = lastAvatar;
 
         // CoC 공격 템플릿 (기준치/굴림/판정/피해)
         const cocAttackTable = div.querySelector('.sheet-rolltemplate-coc-attack-1');
@@ -202,7 +207,7 @@ class Roll20Parser {
       else if (label === 'rolled') rolled = val;
       else if (label === 'result') {
         resultText = valEl.textContent.trim();
-        resultBg   = this._extractBgColor(valEl);
+        resultBg   = bg.match(/background:\s*([^;]+)/)?.[1]?.trim() || '';
         isCrit     = !!valEl.querySelector('[data-i18n="extreme"], [data-i18n="critical"]');
       }
       else if (label === 'dam') damage = val;
@@ -210,7 +215,11 @@ class Roll20Parser {
 
     if (!rolled) return null;
 
-    const finalBg = this._normalizeBgColor(resultBg);
+    const bgMap = {
+      'lime':'#22c55e','lightgreen':'#4ade80','darkgreen':'#15803d',
+      'green':'#16a34a','crimson':'#dc2626','#bebebe':'#9ca3af',
+    };
+    const finalBg = bgMap[resultBg] || resultBg || '#888';
 
     return `<div class="r20-roll">
   <div class="r20-roll-caption">${this._esc(caption)}</div>
@@ -239,14 +248,19 @@ class Roll20Parser {
       else if (label.includes('굴림'))  rolled     = val;
       else if (label.includes('판정결과')) {
         resultText = val;
-        resultBg   = this._extractBgColor(valEl);
+        resultBg   = bg.match(/background:\s*([^;]+)/)?.[1]?.trim() || '#888';
         isCrit     = !!valEl.querySelector('[data-i18n="critical"], [data-i18n="extreme"]');
       }
     }
 
     if (!rolled && !resultText) return null;
 
-    const finalBg = this._normalizeBgColor(resultBg);
+    const bgMap = {
+      'lime': '#22c55e', 'lightgreen': '#4ade80',
+      'darkgreen': '#15803d', 'green': '#16a34a',
+      'crimson': '#dc2626', '#bebebe': '#9ca3af',
+    };
+    const finalBg = bgMap[resultBg] || resultBg;
 
     return `<div class="r20-roll">
   <div class="r20-roll-caption">${this._esc(caption)}</div>
@@ -314,52 +328,10 @@ class Roll20Parser {
     return out;
   }
 
-  // ── 배경색 추출 ─────────────────────────────────────────────
-  // style 속성 → 클래스명 → 자식 span 순서로 시도
-  _extractBgColor(el) {
-    if (!el) return '';
-
-    // 1) style 속성에서 background 또는 background-color
-    const style = el.getAttribute('style') || '';
-    const fromStyle = style.match(/background(?:-color)?\s*:\s*([^;!]+)/i)?.[1]?.trim();
-    if (fromStyle) return fromStyle;
-
-    // 2) 자식 요소 중 style에 background 있는 것
-    for (const child of el.querySelectorAll('[style]')) {
-      const cs = child.getAttribute('style') || '';
-      const m = cs.match(/background(?:-color)?\s*:\s*([^;!]+)/i)?.[1]?.trim();
-      if (m) return m;
-    }
-
-    // 3) 클래스명으로 추정 (green/red/lime 등 포함하는 클래스)
-    const cls = (el.className || '') + ' ' + [...el.querySelectorAll('[class]')].map(e=>e.className).join(' ');
-    if (/\b(green|lime|success)\b/i.test(cls)) return 'green';
-    if (/\b(red|crimson|fail|failure)\b/i.test(cls)) return 'crimson';
-    if (/\b(orange|warn)\b/i.test(cls)) return 'orange';
-
-    return '';
-  }
-
-  // CSS 색상 이름 → hex 정규화, 알 수 없으면 원본 통과
-  _normalizeBgColor(color) {
-    if (!color) return '#6b7280'; // 알 수 없음 → 중립 회색
-    const map = {
-      'lime': '#22c55e', 'lightgreen': '#4ade80',
-      'darkgreen': '#15803d', 'green': '#16a34a',
-      'crimson': '#dc2626', 'red': '#ef4444',
-      'orange': '#f97316', 'darkorange': '#ea580c',
-      'gold': '#eab308', 'yellow': '#facc15',
-      '#bebebe': '#9ca3af', 'silver': '#9ca3af', 'gray': '#6b7280', 'grey': '#6b7280',
-      'black': '#1a1a1a',
-    };
-    const key = color.toLowerCase().trim();
-    return map[key] || color;
-  }
-
   // ── 허용된 CSS 속성만 통과 ──────────────────────────────────
   _sanitizeStyle(style) {
     if (!style) return '';
-    const allowed = ['color','font-size','font-weight','font-style',
+    const allowed = ['color','font-weight','font-style',
                      'background','background-color','background-image',
                      'text-decoration','text-align','letter-spacing',
                      'padding','border-radius','display','border',

@@ -7,6 +7,7 @@ class ChatBackupApp {
     this.state = {
       messages: [],
       userProfileImages: {},
+      userColors: {},
       userBubbleColors: {},
       userNameColors: {},
       hiddenUsers: new Set(),
@@ -59,6 +60,7 @@ class ChatBackupApp {
     const profiles = await this.dataManager.loadProfiles();
     Object.assign(this.state, {
       displayNames:  profiles.displayNames,
+      userColors:    profiles.userColors,
       selectedUsers: profiles.selectedUsers,
     });
 
@@ -299,6 +301,36 @@ class ChatBackupApp {
       this.state.messages = messages;
       this.state.detectedPlatform = platform;
 
+      // 롤20: avatarUrl → fetch → Blob → IndexedDB 저장
+      // 각 username에 대해 중복 없이 한 번만, 완료 후 렌더링 갱신
+      if (platform === 'roll20') {
+        const avatarJobs = [];
+        const seen = new Set();
+        for (const msg of messages) {
+          if (!msg.avatarUrl || !msg.username || seen.has(msg.username)) continue;
+          seen.add(msg.username);
+          // 이미 IndexedDB에서 불러온 이미지가 있으면 덮어쓰지 않음
+          if (this.state.userProfileImages[msg.username]) continue;
+          const url = msg.avatarUrl, uname = msg.username;
+          avatarJobs.push((async () => {
+            try {
+              const resp = await fetch(url);
+              if (!resp.ok) return;
+              const blob = await resp.blob();
+              const objectUrl = await this.mediaManager.setProfileImage(uname, blob);
+              if (objectUrl) this.state.userProfileImages[uname] = objectUrl;
+            } catch { /* CORS 등 실패 시 무시 */ }
+          })());
+        }
+        // 모든 fetch 완료 후 렌더링 갱신 (비동기, 메인 렌더링 블로킹 없음)
+        if (avatarJobs.length) {
+          Promise.allSettled(avatarJobs).then(() => {
+            this.uiManager.renderProfileCards();
+            this.uiManager.renderMessages();
+          });
+        }
+      }
+
       // 플랫폼 알약 자동 선택
       this._updatePlatformPill(platform);
       this.uiManager.updateDetectBadge(platform, messages.length);
@@ -358,7 +390,6 @@ class ChatBackupApp {
     if (!container) return;
 
     // .r20-desc / .r20-pill 은 container 자체가 편집 대상
-    // .r20-chat 안의 .r20-body 는 body 전체가 편집 대상 (data-edit-body 속성)
     let msgEl;
     if (container.classList.contains('r20-desc') || container.classList.contains('r20-pill')) {
       msgEl = container;

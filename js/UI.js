@@ -171,7 +171,7 @@ class UIManager {
     if (msg.isDesc) {
       let content = msg.rawHtml || this._esc(msg.chatMessage).replace(/\n/g,'<br>');
       if (msg.attachedImage) {
-        content += `<div class="bubble-img-wrap"><img class="bubble-img" src="${this._esc(msg.attachedImage)}" alt=""></div>`;
+        content += `<div class="bubble-img-wrap--center"><img class="bubble-img" src="${this._esc(msg.attachedImage)}" alt=""></div>`;
       }
       return `<div class="r20-msg r20-desc" data-index="${i}" onclick="window.chatApp.startEdit(${i})">${content}</div>`;
     }
@@ -188,7 +188,7 @@ class UIManager {
       if (msg.attachedImage) {
         content += `<div class="bubble-img-wrap"><img class="bubble-img" src="${this._esc(msg.attachedImage)}" alt=""></div>`;
       }
-      return `<div class="r20-msg r20-chat" data-index="${i}" onclick="window.chatApp.startEdit(${i})">
+      return `<div class="r20-msg r20-chat r20-roll-msg" data-index="${i}" onclick="window.chatApp.startEdit(${i})">
   ${avatarHtml}
   <div class="r20-body" data-edit-body>
     <div class="r20-name">${this._esc(displayName)}</div>
@@ -212,23 +212,23 @@ class UIManager {
       content += `<div class="bubble-img-wrap"><img class="bubble-img" src="${this._esc(msg.attachedImage)}" alt=""></div>`;
     }
 
-    if (isFirstInGroup) {
-      const avatarHtml = this._r20Avatar(profileUrl);
-      return `<div class="r20-msg r20-chat${isMe ? ' r20-mine' : ''}" data-index="${i}" onclick="window.chatApp.startEdit(${i})"${rowStyle}>
-  ${avatarHtml}
+    // 이름: 대화내용 인라인, 배경색 기준 대비색 적용
+    const avatarHtml = this._r20Avatar(profileUrl);
+    const contrastFg = rowBg ? this._contrastColor(rowBg) : null;
+    const nameHtml = isFirstInGroup
+      ? `<span class="r20-name-inline"${contrastFg ? ` style="color:${contrastFg}"` : ''}>${this._esc(displayName)}: </span>`
+      : '';
+    const textStyle = contrastFg ? ` style="color:${contrastFg}"` : '';
+    const contCls = isFirstInGroup ? '' : ' r20-cont';
+    const leftEl  = isFirstInGroup
+      ? avatarHtml
+      : '<div class="r20-avatar r20-avatar-spacer"></div>';
+    return `<div class="r20-msg r20-chat${contCls}${isMe ? ' r20-mine' : ''}" data-index="${i}" onclick="window.chatApp.startEdit(${i})"${rowStyle}>
+  ${leftEl}
   <div class="r20-body" data-edit-body>
-    <div class="r20-name">${this._esc(displayName)}</div>
-    <div class="r20-text">${content}</div>
+    <div class="r20-text"${textStyle}>${nameHtml}${content}</div>
   </div>
 </div>`;
-    } else {
-      return `<div class="r20-msg r20-chat r20-cont${isMe ? ' r20-mine' : ''}" data-index="${i}" onclick="window.chatApp.startEdit(${i})"${rowStyle}>
-  <div class="r20-avatar r20-avatar-spacer"></div>
-  <div class="r20-body" data-edit-body>
-    <div class="r20-text">${content}</div>
-  </div>
-</div>`;
-    }
   }
 
   _r20Avatar(profileUrl) {
@@ -269,7 +269,6 @@ class UIManager {
     const nameHtml = isFirst
       ? `<div class="msg-name"${nameStyle}>${this._esc(displayName)}</div>` : '';
 
-    // 내용 — rawHtml이 있으면 그대로 사용 (Roll20 roll/desc)
     let content;
     if (msg.rawHtml) {
       content = msg.rawHtml;
@@ -278,7 +277,6 @@ class UIManager {
       if (this.app.state.highlightTags) {
         content = content.replace(/@([^\s<]+)/g, '<span class="mention">@$1</span>');
       }
-      // URL → 클릭 가능 링크
       content = content.replace(
         /(https?:\/\/[^\s<>"'\u3131-\u318E\uAC00-\uD7A3]+[^\s<>"'\u3131-\u318E\uAC00-\uD7A3.,;:!?()[\]{}])/g,
         url => `<a href="${url}" target="_blank" rel="noopener" class="chat-link">${url}</a>`
@@ -543,6 +541,11 @@ class UIManager {
     this.renderMessages();
   }
 
+  _openImageUpload(username) {
+    const input = document.getElementById(`file-${this.app.dataManager.safeId(username)}`);
+    if (input) input.click();
+  }
+
   async _handleImageUpload(username, file) {
     try {
       this.toggleLoading(true, '이미지 처리 중...');
@@ -783,12 +786,13 @@ class UIManager {
     const msg = this.app.state.messages[index];
     if (!msg) { console.warn('createEditInterface: 메시지 없음', index); return; }
 
-    // desc/pill은 container 자체, r20-body(data-edit-body)는 body 전체가 편집 대상
     const isContainerEdit = bubbleEl.classList.contains('r20-desc') ||
                             bubbleEl.classList.contains('r20-pill') ||
                             bubbleEl.hasAttribute('data-edit-body');
     const wrap = document.createElement('div');
     wrap.className = 'edit-wrap';
+    // 편집 wrap 클릭이 부모 .r20-chat onclick으로 버블링되면 startEdit이 재호출됨을 방지
+    wrap.addEventListener('click', e => e.stopPropagation());
 
     // 꾸미기 패널 "CSS 편집" 체크 → app.state에서 읽음 (즉시 반영)
     // ta 생성 전에 먼저 판단해야 초기값이 맞게 들어감
@@ -848,17 +852,20 @@ class UIManager {
     });
 
     const imgBtn = document.createElement('button');
+    imgBtn.type = 'button';
     imgBtn.className = 'edit-btn edit-img-btn';
     imgBtn.innerHTML = '<i class="fas fa-image"></i>';
     imgBtn.title = '이미지 첨부';
     imgBtn.addEventListener('click', () => imgInput.click());
 
     const delBtn = document.createElement('button');
+    delBtn.type = 'button';
     delBtn.className = 'edit-btn edit-del-btn';
     delBtn.textContent = '삭제';
     delBtn.addEventListener('click', () => this.app.deleteMessage(index));
 
     const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
     cancelBtn.className = 'edit-btn';
     cancelBtn.textContent = '취소';
     cancelBtn.addEventListener('click', () => this.app.cancelEdit());
@@ -868,6 +875,7 @@ class UIManager {
     cssToggleWrap.style.display = 'none';
 
     const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
     saveBtn.className = 'edit-btn primary';
     saveBtn.textContent = '저장';
     saveBtn.addEventListener('click', () => {
@@ -930,6 +938,7 @@ class UIManager {
   _saveProfiles() {
     this.app.dataManager.saveProfiles(
       this.app.state.displayNames,
+      this.app.state.userColors,
       this.app.state.selectedUsers
     );
     this.app.dataManager.saveSetting('bubbleColors', this.app.state.userBubbleColors || {});

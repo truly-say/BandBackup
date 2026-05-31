@@ -24,16 +24,24 @@ class ExportManager {
     const imageMap = {};
     if (this.app.mediaManager) {
       for (const username of Object.keys(userProfileImages)) {
-        if (!chatUsernames.has(username)) continue; // 이번 채팅방 참여자만
+        if (!chatUsernames.has(username)) continue;
         const dataUrl = await this.app.mediaManager.getBlobAsDataUrl(username);
         if (dataUrl) imageMap[username] = dataUrl;
       }
     }
     const escHtml = s => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-    // 아바타 CSS: 사용자별 클래스로 data URI 한 번만 정의
+    // CSS 변수 기반 스타일 (다크모드 포함)
+    // 아바타 CSS: username → 숫자 인덱스 기반 클래스 (한글 충돌 방지)
+    const userIndexMap = {};
+    let userIndexCounter = 0;
+    const getAvCls = (username) => {
+      if (userIndexMap[username] === undefined) userIndexMap[username] = userIndexCounter++;
+      return 'av-' + userIndexMap[username];
+    };
+    const getAvIdx = getAvCls; // _buildHtml 내부 별칭
     const avatarCss = Object.entries(imageMap).map(([username, dataUrl]) => {
-      const cls = 'av-' + username.replace(/[^a-z0-9]/gi, '_');
+      const cls = getAvCls(username);
       return `.${cls}{background-image:url("${dataUrl}");background-size:cover;background-position:center;background-color:transparent}`;
     }).join('\n');
 
@@ -85,7 +93,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
           : '';
 
         const imgSrc = imageMap[message.username];
-        const avClsMain = 'av-' + (message.username || '').replace(/[^a-z0-9]/gi, '_');
+        const avClsMain = getAvIdx(message.username || '');
         const avatarContent = imgSrc
           ? ''  // CSS background으로 처리
           : `<span>${escHtml(this._avatarChar(displayName))}</span>`;
@@ -156,7 +164,7 @@ ${lines.join('\n')}
   // ── Roll20 전용 HTML 빌더 ────────────────────────────────────
   async _buildHtmlR20(forClipboard = false) {
     const { messages, displayNames, selectedUsers,
-            userProfileImages, userBubbleColors, fontSize } = this.app.state;
+            userProfileImages, userBubbleColors, fontSize, avatarShape } = this.app.state;
 
     const escHtml = s => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
@@ -175,40 +183,49 @@ ${lines.join('\n')}
     const visibleMessages = messages.filter(m => !hiddenUsers.has(m.username));
     if (!visibleMessages.length) throw new Error('표시할 메시지가 없습니다.');
 
-    // 아바타 CSS: 사용자별 클래스로 data URI 한 번만 정의
+    // 아바타 CSS: username → 숫자 인덱스 기반 클래스 (한글 충돌 방지)
+    const userIndexMap = {};
+    let userIndexCounter = 0;
+    const getAvCls = (username) => {
+      if (userIndexMap[username] === undefined) userIndexMap[username] = userIndexCounter++;
+      return 'av-' + userIndexMap[username];
+    };
     const avatarCss = Object.entries(imageMap).map(([username, dataUrl]) => {
-      const cls = 'av-' + username.replace(/[^a-z0-9]/gi, '_');
-      return `.${cls}{background-image:url("${dataUrl}");background-size:cover;background-position:center}`;
+      const cls = getAvCls(username);
+      return `.${cls}{background-image:url("${dataUrl}");background-size:cover;background-position:center;background-color:transparent}`;
     }).join('\n');
 
+    const avatarRadius = avatarShape === 'circle' ? '50%' : avatarShape === 'rounded' ? '8px' : '2px';
     const css = `
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#f0f0f0;font-size:${fontSize||13}px;line-height:1.5}
+body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#f0f0f0;font-size:${fontSize||14}px;line-height:1.5}
 .r20-wrap{max-width:900px;margin:0 auto}
-.r20-msg{padding:4px 10px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:13px}
-.r20-desc{text-align:center;color:#444;font-style:italic;padding:6px 20px;background:#f8f8f8;border-bottom:1px solid #eee}
+.r20-msg{padding:4px 10px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:inherit}
+.r20-desc{text-align:center;color:#444;font-style:italic;font-size:inherit;padding:6px 20px;background:#f8f8f8;border-bottom:1px solid #eee}
 .r20-pill{text-align:center;padding:6px 10px;background:transparent}
-.r20-chat{display:flex;align-items:flex-start;gap:8px;padding:5px 10px;background:#fff}
+.r20-chat{display:flex;align-items:center;gap:8px;padding:4px 10px;background:#fff}
 .r20-mine{background:#dce8f5}
-.r20-avatar{width:36px;height:36px;flex-shrink:0;border-radius:3px;background:#c0c0c0;overflow:hidden}
+.r20-avatar{width:36px;height:36px;flex-shrink:0;border-radius:${avatarRadius};background:transparent;overflow:hidden}
 .r20-avatar img{width:100%;height:100%;object-fit:cover}
 .r20-body{flex:1;min-width:0}
-.r20-name{font-size:11px;font-weight:700;color:#555;margin-bottom:2px}
-.r20-mine .r20-name{color:#2a5f8f}
-.r20-text{color:#1a1a1a;word-break:break-word;font-size:13px}
-.r20-roll-wrap{display:inline-block}
+.r20-name-inline{font-size:1em;font-weight:700;color:#555;margin-right:3px}
+.r20-mine .r20-name-inline{color:#2a5f8f}
+.r20-text{color:#1a1a1a;word-break:break-word;font-size:inherit}
+.r20-roll-wrap{display:block;margin-top:2px}
 .r20-link{color:#4a90d9;text-decoration:underline;word-break:break-all}
 /* CoC 주사위 */
-.r20-roll{background:#111;border-radius:8px;overflow:hidden;min-width:180px;max-width:280px;font-size:13px}
-.r20-roll-caption{background:#000;color:#fff;text-align:center;padding:6px 12px;font-weight:600}
-.r20-roll-row{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;border-bottom:1px solid #2a2a2a;color:#ddd}
-.r20-roll-label{color:#aaa;font-size:12px}
+.r20-roll{background:#2a2a2a;border-radius:8px;overflow:hidden;min-width:180px;max-width:280px;font-size:inherit}
+.r20-roll-caption{background:#1a1a1a;color:#fff;text-align:center;padding:6px 12px;font-weight:600}
+.r20-roll-row{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;border-bottom:1px solid #3a3a3a;color:#ddd}
+.r20-roll-label{color:#aaa;font-size:0.85em}
 .r20-roll-val{color:#fff;font-weight:500}
-.r20-roll-num{background:#333;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;font-size:14px}
+.r20-roll-num{background:#333;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;font-size:1em}
 .r20-crit{background:#ffd700;color:#000}
-.r20-roll-result{text-align:center;padding:7px 12px;color:#fff;font-weight:700;font-size:13px}
-.r20-inline-roll{display:inline-block;background:#3a3a3a;color:#fff;padding:1px 7px;border-radius:4px;font-weight:700;font-size:13px;margin:0 2px}
-.r20-cont{padding-top:0!important;padding-bottom:0!important}
+.r20-roll-result{text-align:center;padding:7px 12px;color:#fff;font-weight:700;font-size:inherit}
+.r20-inline-roll{display:inline-block;background:#3a3a3a;color:#fff;padding:1px 7px;border-radius:4px;font-weight:700;font-size:inherit;margin:0 2px}
+.r20-roll-msg{align-items:flex-start!important}
+.r20-cont{padding-top:0!important;padding-bottom:0!important;align-items:center}
+.r20-cont .r20-avatar-spacer{width:36px;height:0;flex-shrink:0;visibility:hidden}
 \n${avatarCss}`.trim();
 
     const lines = [];
@@ -242,7 +259,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
       }
 
       // ── 아바타 (CSS class로 data URI 참조 — 중복 없음) ────────────
-      const avCls = 'av-' + (msg.username || '').replace(/[^a-z0-9]/gi, '_');
+      const avCls = getAvCls(msg.username || '');
       const avatarHtml = imageMap[msg.username]
         ? `<div class="r20-avatar ${avCls}"></div>`
         : `<div class="r20-avatar"></div>`;
@@ -266,23 +283,31 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
       }
 
       const isRoll = msg.msgType === 'roll' || msg.msgType === 'roll-unknown' || msg.msgType === 'inline-roll';
-      const contentHtml = isRoll
-        ? `<div class="r20-roll-wrap">${content}</div>`
-        : `<div class="r20-text">${content}</div>`;
+      const nameBlock = isFirstInGroup
+        ? `<div class="r20-name-inline">${escHtml(displayName)}</div>`
+        : '';
+      let bodyContent;
+      if (isRoll) {
+        // 주사위: 이름 위, 테이블 아래 (미리보기와 동일 구조)
+        bodyContent = `${nameBlock}<div class="r20-roll-wrap" style="display:block;margin-top:2px">${content}</div>`;
+      } else {
+        // 일반: 이름: 내용 인라인
+        const nameSpan = isFirstInGroup
+          ? `<span class="r20-name-inline">${escHtml(displayName)}: </span>`
+          : '';
+        bodyContent = `<div class="r20-text">${nameSpan}${content}</div>`;
+      }
 
       if (isFirstInGroup) {
-        lines.push(`<div class="r20-msg r20-chat${isMe ? ' r20-mine' : ''}"${rowStyle}>
+        const rollCls = isRoll ? ' r20-roll-msg' : '';
+        lines.push(`<div class="r20-msg r20-chat${rollCls}${isMe ? ' r20-mine' : ''}"${rowStyle}>
   ${avatarHtml}
-  <div class="r20-body">
-    <div class="r20-name">${escHtml(displayName)}</div>
-    ${contentHtml}
-  </div>
+  <div class="r20-body">${bodyContent}</div>
 </div>`);
       } else {
-        // 연속 메시지: 아바타 높이 0
         lines.push(`<div class="r20-msg r20-chat r20-cont${isMe ? ' r20-mine' : ''}"${rowStyle}>
-  <div style="width:36px;height:0;flex-shrink:0"></div>
-  <div class="r20-body">${contentHtml}</div>
+  <div class="r20-avatar r20-avatar-spacer"></div>
+  <div class="r20-body">${bodyContent}</div>
 </div>`);
       }
     }

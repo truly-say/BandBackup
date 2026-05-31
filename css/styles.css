@@ -913,8 +913,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
 .help-note {
   color: var(--text-3);
   font-size: 12px;
-  line-height: 1.6;
-  margin: 6px 0;
+  line-height: 1.5;
 }
 
 /* ── 프로필 선택 모드 ─────────────────────────────────────────── */
@@ -1101,9 +1100,28 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
 .chat-link:hover { opacity: 0.8; }
 .mine .bubble .chat-link { color: #93c5fd; }
 
+
+/* ── 첨부 이미지 ─────────────────────────────────── */
+.bubble-img-wrap { margin-top: 6px; display: block; }
+.bubble-img-wrap--center { text-align: center; }
+.bubble-img {
+  display: inline-block;
+  max-width: 240px;
+  max-height: 240px;
+  width: auto; height: auto;
+  border-radius: 6px;
+  object-fit: contain;
+  cursor: zoom-in;
+  vertical-align: top;
+}
+.r20-body .bubble-img, .r20-desc .bubble-img {
+  max-width: min(100%, 300px);
+  max-height: 300px;
+}
+
 /* ── Roll20 주사위 테이블 ────────────────────────────────── */
 .r20-roll {
-  background: #111;
+  background: #2a2a2a;
   border-radius: 8px;
   overflow: hidden;
   min-width: 340px;
@@ -1112,7 +1130,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   font-size: inherit;
 }
 .r20-roll-caption {
-  background: #000;
+  background: #1a1a1a;
   color: #fff;
   text-align: center;
   padding: 7px 16px;
@@ -1143,7 +1161,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   padding: 7px 16px;
   color: #fff;
   font-weight: 700;
-  font-size: 13px;
+  font-size: inherit;
 }
 
 /* Roll20 인라인 굴림 */
@@ -1154,7 +1172,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   padding: 1px 7px;
   border-radius: 4px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: inherit;
   margin: 0 2px;
 }
 
@@ -1189,13 +1207,14 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
 /* ── 공통 메시지 래퍼 ───────────────────────────────────── */
 .r20-msg {
   padding: 0 10px;
-  font-size: 13px;
+  font-size: inherit;
   line-height: 1.5;
   border-bottom: none;
 }
 
 /* ── GM 지문 (desc) ─────────────────────────────────────── */
 .r20-desc {
+  font-size: inherit;
   text-align: center;
   color: #444;
   font-style: italic;
@@ -1221,9 +1240,9 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
 /* ── 일반 발언 ──────────────────────────────────────────── */
 .r20-chat {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  padding: 4px 10px 1px;
+  padding: 4px 10px;
   background: #fff;
   cursor: pointer;
 }
@@ -1238,7 +1257,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   flex-shrink: 0;
   border-radius: 3px;
   overflow: hidden;
-  background: #b0b0b0;
+  background: transparent;
 }
 .r20-avatar img {
   width: 100%;
@@ -1246,22 +1265,27 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   object-fit: cover;
 }
 .r20-avatar-blank {
-  background: #c0c0c0;
+  background: transparent;
 }
 .r20-avatar-spacer {
   visibility: hidden;
 }
-/* 연속 메시지: 최소 간격 */
+/* roll 메시지: 아바타 좌측 상단 고정 */
+.r20-roll-msg {
+  align-items: flex-start !important;
+}
+/* 연속 메시지: padding 완전 제거 */
 .r20-chat.r20-cont {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+  align-items: center;
 }
-/* 연속 메시지 아바타 자리 — 높이를 0으로 줄여서 공백 제거 */
-.r20-cont .r20-avatar {
+/* 연속 메시지: spacer를 0x0으로 */
+.r20-cont .r20-avatar-spacer {
   width: 36px;
   height: 0;
-  overflow: hidden;
-  align-self: stretch;
+  flex-shrink: 0;
+  visibility: hidden;
 }
 
 /* ── 메시지 본문 ────────────────────────────────────────── */
@@ -1269,8 +1293,16 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   flex: 1;
   min-width: 0;
 }
+.r20-name-inline {
+  font-size: 1em;
+  font-weight: 700;
+  color: #555;
+  margin-right: 3px;
+}
+body.dark .r20-name-inline { color: #b0b8c4; }
+
 .r20-name {
-  font-size: 11px;
+  font-size: 1em;
   font-weight: 700;
   color: #555;
   margin-bottom: 2px;
@@ -1280,7 +1312,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
 .r20-text {
   color: #1a1a1a;
   word-break: break-word;
-  font-size: 13px;
+  font-size: inherit;
   line-height: 1.55;
   display: inline;
 }
@@ -1304,7 +1336,7 @@ body.dark .r20-pill      { background: transparent; }
 body.dark .r20-name      { color: #b0b8c4; font-weight: 700; }
 body.dark .r20-text      { color: #e8e8e8; }
 body.dark .r20-roll-wrap { filter: brightness(1.15) contrast(0.95); }
-body.dark .r20-avatar    { background: #4a4a4a; border: 1px solid #555; }
+body.dark .r20-avatar    { background: transparent; }
 body.dark #chat-container.platform-roll20 { background: #1a1a1a; }
 body.dark .r20-msg { border-bottom-color: rgba(255,255,255,0.06); }
 
