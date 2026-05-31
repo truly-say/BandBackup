@@ -316,6 +316,13 @@ class Roll20Parser {
           }
         }
         else if (tag === 'br') out += '<br>';
+        else if (tag === 'img') {
+          const src = child.getAttribute('src') || '';
+          // 외부 URL 이미지만 허용 (base64 제외 — 파일 크기 과대)
+          if (/^https?:\/\//.test(src)) {
+            out += `<img src="${this._esc(src)}" style="max-width:240px;max-height:240px;border-radius:4px;display:inline-block;margin-top:4px;vertical-align:top" alt="">`;
+          }
+        }
         else if (tag === 'span') {
           out += style ? `<span${styleAttr}>${this._nodeToHtml(child, preserveStyle)}</span>`
                        : this._nodeToHtml(child, preserveStyle);
@@ -331,7 +338,7 @@ class Roll20Parser {
   // ── 허용된 CSS 속성만 통과 ──────────────────────────────────
   _sanitizeStyle(style) {
     if (!style) return '';
-    const allowed = ['color','font-weight','font-style',
+    const allowed = ['color','font-size','font-weight','font-style',
                      'background','background-color','background-image',
                      'text-decoration','text-align','letter-spacing',
                      'padding','border-radius','display','border',

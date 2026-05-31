@@ -1255,6 +1255,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   width: 36px;
   height: 36px;
   flex-shrink: 0;
+  align-self: flex-start;
   border-radius: 3px;
   overflow: hidden;
   background: transparent;
@@ -1287,6 +1288,7 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   flex-shrink: 0;
   visibility: hidden;
 }
+/* 연속 메시지 body */
 
 /* ── 메시지 본문 ────────────────────────────────────────── */
 .r20-body {

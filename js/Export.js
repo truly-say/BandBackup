@@ -205,7 +205,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;b
 .r20-pill{text-align:center;padding:6px 10px;background:transparent}
 .r20-chat{display:flex;align-items:center;gap:8px;padding:4px 10px;background:#fff}
 .r20-mine{background:#dce8f5}
-.r20-avatar{width:36px;height:36px;flex-shrink:0;border-radius:${avatarRadius};background:transparent;overflow:hidden}
+.r20-avatar{width:36px;height:36px;flex-shrink:0;align-self:flex-start;border-radius:${avatarRadius};background:transparent;overflow:hidden}
 .r20-avatar img{width:100%;height:100%;object-fit:cover}
 .r20-body{flex:1;min-width:0}
 .r20-name-inline{font-size:1em;font-weight:700;color:#555;margin-right:3px}
