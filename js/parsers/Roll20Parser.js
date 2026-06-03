@@ -65,7 +65,7 @@ class Roll20Parser {
         }
         const avatar = lastAvatar;
 
-        // CoC 공격 템플릿 (기준치/굴림/판정/피해)
+        // CoC 공격 템플릿 — 단일 (coc-attack-1)
         const cocAttackTable = div.querySelector('.sheet-rolltemplate-coc-attack-1');
         if (cocAttackTable) {
           const rollHtml = this._extractCocAttackHtml(cocAttackTable);
@@ -87,7 +87,37 @@ class Roll20Parser {
           continue;
         }
 
-        // 알려진 CoC 주사위 템플릿
+        // CoC 공격 템플릿 — 보너스 (coc-attack, -1 없음)
+        const cocAttackBonusTable = div.querySelector('.sheet-rolltemplate-coc-attack:not(.sheet-rolltemplate-coc-attack-1)');
+        if (cocAttackBonusTable) {
+          const rollHtml = this._extractCocAttackBonusHtml(cocAttackBonusTable);
+          if (rollHtml) {
+            messages.push({
+              time, username: speaker || '', avatarUrl: avatar || null,
+              chatMessage: rollHtml, rawHtml: rollHtml,
+              isDesc: false, msgType: 'roll',
+            });
+          }
+          continue;
+        }
+
+        // CoC 보너스/패널티 주사위 (sheet-rolltemplate-coc, -1 없음)
+        const cocBonusTable = div.querySelector('.sheet-rolltemplate-coc:not(.sheet-rolltemplate-coc-1):not(.sheet-rolltemplate-coc-attack-1)');
+        if (cocBonusTable) {
+          const rollHtml = this._extractCocBonusHtml(cocBonusTable);
+          if (rollHtml) {
+            messages.push({
+              time, username: speaker || '', avatarUrl: avatar || null,
+              chatMessage: rollHtml, rawHtml: rollHtml,
+              isDesc: false, msgType: 'roll',
+            });
+            // 카드 정상 생성 시 extra 텍스트는 버림
+            // (HTML 파싱 오류로 td가 template div 밖에 남아 텍스트로 중복 출력되는 현상 방지)
+          }
+          continue;
+        }
+
+        // 알려진 CoC 단일 주사위 템플릿 (sheet-rolltemplate-coc-1)
         const cocTable = div.querySelector('.sheet-rolltemplate-coc-1');
         if (cocTable) {
           const rollHtml = this._extractCocRollHtml(cocTable);
@@ -194,80 +224,281 @@ class Roll20Parser {
   _extractCocAttackHtml(tbl) {
     const caption = tbl.querySelector('caption')?.textContent.trim() || '';
     const rows    = tbl.querySelectorAll('tr');
-    let base = '', rolled = '', resultText = '', resultBg = '', damage = '', isCrit = false;
+    let base = '', rolled = '', resultText = '', resultKey = '', resultBg = '#6b7280', damage = '';
 
     for (const row of rows) {
-      const label = row.querySelector('.sheet-template_label')?.getAttribute('data-i18n') || '';
-      const valEl = row.querySelector('.sheet-template_value');
+      const labelEl = row.querySelector('.sheet-template_label');
+      const label   = labelEl?.getAttribute('data-i18n') || labelEl?.textContent.trim() || '';
+      const valEl   = row.querySelector('.sheet-template_value');
       if (!valEl) continue;
-      const val = valEl.textContent.trim();
-      const bg  = valEl.getAttribute('style') || '';
 
-      if (label === 'value')  base       = val;
-      else if (label === 'rolled') rolled = val;
-      else if (label === 'result') {
+      // 기준치/굴림: inlinerollresult 여러 개면 / 로 연결
+      const inlineRolls = valEl.querySelectorAll('.inlinerollresult');
+      const val = inlineRolls.length
+        ? [...inlineRolls].map(el => el.textContent.trim()).join(' / ')
+        : valEl.textContent.trim();
+
+      if (label === 'value' || label.includes('기준치'))       base       = val;
+      else if (label === 'rolled' || label.includes('굴림'))   rolled     = val;
+      else if (label === 'result' || label.includes('판정결과')) {
         resultText = valEl.textContent.trim();
-        resultBg   = bg.match(/background:\s*([^;]+)/)?.[1]?.trim() || '';
-        isCrit     = !!valEl.querySelector('[data-i18n="extreme"], [data-i18n="critical"]');
+        const valStyle = valEl.getAttribute('style') || '';
+        const styleBg  = valStyle.match(/background(?:-color)?:\s*([^;]+)/i)?.[1]?.trim();
+        const inner    = valEl.querySelector('[data-i18n]');
+        resultKey      = inner?.getAttribute('data-i18n') || '';
+        resultBg       = styleBg ? this._normalizeCssColor(styleBg)
+                       : (this._resultColor(resultKey) || this._resultColorFromText(resultText) || '#6b7280');
       }
-      else if (label === 'dam') damage = val;
+      else if (label === 'dam' || label.includes('피해'))       damage     = val;
     }
 
     if (!rolled) return null;
 
-    const bgMap = {
-      'lime':'#22c55e','lightgreen':'#4ade80','darkgreen':'#15803d',
-      'green':'#16a34a','crimson':'#dc2626','#bebebe':'#9ca3af',
-    };
-    const finalBg = bgMap[resultBg] || resultBg || '#888';
+    const isCrit = resultKey === 'critical';
 
     return `<div class="r20-roll">
   <div class="r20-roll-caption">${this._esc(caption)}</div>
   <div class="r20-roll-row"><span class="r20-roll-label">기준치</span><span class="r20-roll-val">${this._esc(base)}</span></div>
   <div class="r20-roll-row"><span class="r20-roll-label">굴림</span><span class="r20-roll-num${isCrit ? ' r20-crit' : ''}">${this._esc(rolled)}</span></div>
-  <div class="r20-roll-result" style="background:${finalBg}">${this._esc(resultText)}</div>
+  <div class="r20-roll-result" style="background:${resultBg}">${this._esc(resultText)}</div>
   ${damage ? `<div class="r20-roll-row"><span class="r20-roll-label">피해</span><span class="r20-roll-val" style="font-weight:700;color:#fff">${this._esc(damage)}</span></div>` : ''}
 </div>`;
   }
 
-  // ── CoC 주사위 테이블 → 커스텀 HTML ──────────────────────────
+  // ── CoC 보너스 공격 주사위 (coc-attack, 다중 결과 행 + 피해) ──
+  _extractCocAttackBonusHtml(tbl) {
+    const caption  = tbl.querySelector('caption')?.textContent.trim() || '';
+    const ROW_DEFAULTS = ['#dff0d8', '#d9edf7', '#d3d3d3', '#fcf8e3', '#f2dede'];
+
+    const allLabels = [...tbl.querySelectorAll('td.sheet-template_label')];
+    const allValues = [...tbl.querySelectorAll('td.sheet-template_value')];
+    if (!allLabels.length || !allValues.length) return null;
+
+    let base = '', rolled = '', damage = '';
+    const resultRows = [];
+
+    for (let i = 0; i < allLabels.length; i++) {
+      const labelEl  = allLabels[i];
+      const valEl    = allValues[i];
+      if (!valEl) continue;
+
+      const labelKey   = labelEl.getAttribute('data-i18n') || '';
+      const labelTxt   = labelEl.textContent.trim().replace(/\u00a0/g, ' ').trim();
+      const cleanLabel = labelTxt.replace(/[\s\u00a0\u3000]/g, '');
+
+      const inlineRolls = valEl.querySelectorAll('.inlinerollresult');
+      const val = inlineRolls.length
+        ? [...inlineRolls].map(el => el.textContent.trim()).join(', ')
+        : valEl.textContent.trim();
+
+      const isBase   = labelKey === 'value'  || labelTxt.includes('기준치');
+      const isRolled = labelKey === 'rolled' || labelTxt.includes('굴림');
+      const isDamage = labelKey === 'dam'    || labelTxt.includes('피해');
+      const isResult = /^[+\-]?\d+:?$/.test(cleanLabel)
+                    || labelKey === 'result' || labelTxt.includes('판정결과');
+
+      if (isBase)        base   = val;
+      else if (isRolled) rolled = val;
+      else if (isDamage) damage = val;
+      else if (isResult) {
+        const rText = valEl.textContent.trim();
+        if (!rText) continue;
+        const rBg   = ROW_DEFAULTS[resultRows.length % ROW_DEFAULTS.length];
+        const prefix = cleanLabel.replace(/:$/, '');
+        resultRows.push({ rText, rBg, prefix });
+      }
+    }
+
+    if (!resultRows.length) return null;
+
+    const resultHtml = resultRows.map(r =>
+      `<div class="r20-roll-result r20-roll-result-multi" style="background:${r.rBg}">` +
+      `<span class="r20-roll-result-prefix" style="color:#1a1a1a;font-weight:600">${this._esc(r.prefix)}</span>` +
+      `<span style="color:#1a1a1a;font-weight:600">${this._esc(r.rText)}</span></div>`
+    ).join('');
+
+    return `<div class="r20-roll">
+  <div class="r20-roll-caption">${this._esc(caption)}</div>
+  <div class="r20-roll-row"><span class="r20-roll-label">기준치</span><span class="r20-roll-val">${this._esc(base)}</span></div>
+  <div class="r20-roll-row"><span class="r20-roll-label">굴림</span><span class="r20-roll-num">${this._esc(rolled)}</span></div>
+  ${resultHtml}
+  ${damage ? `<div class="r20-roll-row"><span class="r20-roll-label">피해</span><span class="r20-roll-val" style="font-weight:700;color:#fff">${this._esc(damage)}</span></div>` : ''}
+</div>`;
+  }
+
+  // ── CoC 보너스/패널티 주사위 전용 ────────────────────────────
+  _extractCocBonusHtml(tbl) {
+    const caption = tbl.querySelector('caption')?.textContent.trim() || '';
+    const ROW_DEFAULTS = ['#dff0d8', '#d9edf7', '#d3d3d3', '#fcf8e3', '#f2dede'];
+
+    // tr 단위 파싱 대신 label/value 셀을 tbody에서 직접 수집
+    // (불규칙한 HTML 파싱으로 td가 tr 밖으로 밀려나는 경우 대응)
+    const allLabels = [...tbl.querySelectorAll('td.sheet-template_label')];
+    const allValues = [...tbl.querySelectorAll('td.sheet-template_value')];
+
+    if (!allLabels.length || !allValues.length) return null;
+
+    let base = '', rolled = '';
+    const resultRows = [];
+
+    for (let i = 0; i < allLabels.length; i++) {
+      const labelEl  = allLabels[i];
+      const valEl    = allValues[i];
+      if (!valEl) continue;
+
+      const labelKey = labelEl.getAttribute('data-i18n') || '';
+      const labelTxt = labelEl.textContent.trim().replace(/\u00a0/g, ' ').trim();
+      const cleanLabel = labelTxt.replace(/[\s\u00a0\u3000]/g, '');
+
+      const inlineRolls = valEl.querySelectorAll('.inlinerollresult');
+      const val = inlineRolls.length
+        ? [...inlineRolls].map(el => el.textContent.trim()).join(', ')
+        : valEl.textContent.trim();
+
+      const isBase   = labelKey === 'value'  || labelTxt.includes('기준치');
+      const isRolled = labelKey === 'rolled' || labelTxt.includes('굴림');
+      const isResult = /^[+\-]?\d+:?$/.test(cleanLabel)
+                    || labelKey === 'result' || labelTxt.includes('판정결과');
+
+      if (isBase)        base   = val;
+      else if (isRolled) rolled = val;
+      else if (isResult) {
+        const rText = valEl.textContent.trim();
+        if (!rText) continue;
+
+        const rBg = ROW_DEFAULTS[resultRows.length % ROW_DEFAULTS.length];
+        const prefix = cleanLabel.replace(/:$/, '');
+        resultRows.push({ rText, rBg, prefix });
+      }
+    }
+
+    if (!resultRows.length) return null;
+
+    const resultHtml = resultRows.map(r =>
+      `<div class="r20-roll-result r20-roll-result-multi" style="background:${r.rBg}">` +
+      `<span class="r20-roll-result-prefix" style="color:#1a1a1a;font-weight:600">${this._esc(r.prefix)}</span>` +
+      `<span style="color:#1a1a1a;font-weight:600">${this._esc(r.rText)}</span></div>`
+    ).join('');
+
+    return `<div class="r20-roll">
+  <div class="r20-roll-caption">${this._esc(caption)}</div>
+  <div class="r20-roll-row"><span class="r20-roll-label">기준치</span><span class="r20-roll-val">${this._esc(base)}</span></div>
+  <div class="r20-roll-row"><span class="r20-roll-label">굴림</span><span class="r20-roll-num">${this._esc(rolled)}</span></div>
+  ${resultHtml}
+</div>`;
+  }
+
+  // ── CoC 단일 주사위 (coc-1) ──────────────────────────────────
   _extractCocRollHtml(tbl) {
     const caption = tbl.querySelector('caption')?.textContent.trim() || '';
     const rows    = tbl.querySelectorAll('tr');
-
-    let base = '', rolled = '', resultText = '', resultBg = '', isCrit = false;
+    let base = '', rolled = '', resultText = '', resultBg = '#6b7280';
 
     for (const row of rows) {
-      const label = row.querySelector('.sheet-template_label')?.textContent.trim() || '';
-      const valEl = row.querySelector('.sheet-template_value');
+      const labelEl  = row.querySelector('.sheet-template_label');
+      const labelKey = labelEl?.getAttribute('data-i18n') || '';
+      const labelTxt = labelEl?.textContent.trim() || '';
+      const valEl    = row.querySelector('.sheet-template_value');
       if (!valEl) continue;
-      const val = valEl.textContent.trim();
-      const bg  = valEl.getAttribute('style') || '';
 
-      if (label.includes('기준치'))     base       = val;
-      else if (label.includes('굴림'))  rolled     = val;
-      else if (label.includes('판정결과')) {
-        resultText = val;
-        resultBg   = bg.match(/background:\s*([^;]+)/)?.[1]?.trim() || '#888';
-        isCrit     = !!valEl.querySelector('[data-i18n="critical"], [data-i18n="extreme"]');
+      const inlineRolls = valEl.querySelectorAll('.inlinerollresult');
+      const val = inlineRolls.length
+        ? [...inlineRolls].map(el => el.textContent.trim()).join(' / ')
+        : valEl.textContent.trim();
+
+      const isBase   = labelKey === 'value'  || labelTxt.includes('기준치');
+      const isRolled = labelKey === 'rolled' || labelTxt.includes('굴림');
+      const isResult = labelKey === 'result' || labelTxt.includes('판정결과');
+
+      if (isBase)        base   = val;
+      else if (isRolled) rolled = val;
+      else if (isResult) {
+        resultText = valEl.textContent.trim();
+        const valStyle = valEl.getAttribute('style') || '';
+        const styleBg  = valStyle.match(/background(?:-color)?:\s*([^;]+)/i)?.[1]?.trim();
+        const inner    = valEl.querySelector('[data-i18n]');
+        const i18nKey  = inner?.getAttribute('data-i18n') || '';
+        resultBg = styleBg
+          ? this._normalizeCssColor(styleBg)
+          : (this._resultColor(i18nKey) || this._resultColorFromText(resultText) || '#6b7280');
       }
     }
 
     if (!rolled && !resultText) return null;
 
-    const bgMap = {
-      'lime': '#22c55e', 'lightgreen': '#4ade80',
-      'darkgreen': '#15803d', 'green': '#16a34a',
-      'crimson': '#dc2626', '#bebebe': '#9ca3af',
-    };
-    const finalBg = bgMap[resultBg] || resultBg;
-
     return `<div class="r20-roll">
   <div class="r20-roll-caption">${this._esc(caption)}</div>
   <div class="r20-roll-row"><span class="r20-roll-label">기준치</span><span class="r20-roll-val">${this._esc(base)}</span></div>
-  <div class="r20-roll-row"><span class="r20-roll-label">굴림</span><span class="r20-roll-num${isCrit ? ' r20-crit' : ''}">${this._esc(rolled)}</span></div>
-  <div class="r20-roll-result" style="background:${finalBg}">${this._esc(resultText)}</div>
+  <div class="r20-roll-row"><span class="r20-roll-label">굴림</span><span class="r20-roll-num">${this._esc(rolled)}</span></div>
+  <div class="r20-roll-result" style="background:${resultBg}">${this._esc(resultText)}</div>
 </div>`;
+  }
+
+  // 텍스트 내용으로 색상 추론 (style/data-i18n 둘 다 없을 때 폴백)
+  _resultColorFromText(text) {
+    if (!text) return null;
+    const t = text.trim();
+    if (t.includes('대성공') || t.includes('크리티컬')) return '#00ff00';
+    if (t.includes('극단적')) return '#86efac';
+    if (t.includes('어려운')) return '#4ade80';
+    if (t.includes('보통 성공') || t.includes('성공')) return '#15803d';
+    if (t.includes('대실패') || t.includes('펌블'))    return '#ff0000';
+    if (t.includes('실패'))                            return '#b91c1c';
+    return null;
+  }
+
+  // CSS 색상명 → 헥스 정규화
+  _normalizeCssColor(color) {
+    if (!color) return null;
+    const c = color.trim().toLowerCase();
+    const named = {
+      // Roll20이 실제로 사용하는 색상명
+      'darkgreen':   '#15803d', // 보통 성공
+      'green':       '#4ade80', // 어려운 성공
+      'lightgreen':  '#86efac', // 극단적 성공
+      'lime':        '#00ff00', // 대성공
+      'limegreen':   '#00ff00',
+      'yellowgreen': '#86efac',
+      // 빨강 계열
+      'crimson':     '#b91c1c', // 실패
+      'red':         '#ff0000', // 대실패
+      'darkred':     '#b91c1c',
+      'firebrick':   '#b91c1c',
+      // 회색
+      '#bebebe':     '#9ca3af',
+      'gray':        '#9ca3af',
+      'grey':        '#9ca3af',
+      'silver':      '#9ca3af',
+      'lightgray':   '#d1d5db',
+      'lightgrey':   '#d1d5db',
+      'darkgray':    '#6b7280',
+      'darkgrey':    '#6b7280',
+      // 기타
+      'orange':      '#f97316',
+      'goldenrod':   '#d97706',
+      'gold':        '#eab308',
+    };
+    return named[c] || color;
+  }
+
+  // data-i18n → 배경색 폴백
+  _resultColor(key) {
+    const map = {
+      'critical':    '#00ff00', // 대성공     — 원색 초록
+      'extreme':     '#86efac', // 극단적 성공 — 연한 연두
+      'hard':        '#4ade80', // 어려운 성공 — 진한 연두
+      'success':     '#15803d', // 보통 성공   — 다크그린
+      'fail':        '#b91c1c', // 실패        — 진한 빨강
+      'failure':     '#b91c1c', // 실패        — 진한 빨강
+      'fumble':      '#ff0000', // 대실패      — 원색 빨강
+      '대성공':      '#00ff00',
+      '극단적 성공': '#86efac',
+      '어려운 성공': '#4ade80',
+      '보통 성공':   '#15803d',
+      '실패':        '#b91c1c',
+      '대실패':      '#ff0000',
+    };
+    return map[key?.trim()] || null;
   }
 
   // ── 미지원 템플릿: 원본 테이블을 안전하게 보존 ───────────────
@@ -318,9 +549,13 @@ class Roll20Parser {
         else if (tag === 'br') out += '<br>';
         else if (tag === 'img') {
           const src = child.getAttribute('src') || '';
-          // 외부 URL 이미지만 허용 (base64 제외 — 파일 크기 과대)
-          if (/^https?:\/\//.test(src)) {
-            out += `<img src="${this._esc(src)}" style="max-width:240px;max-height:240px;border-radius:4px;display:inline-block;margin-top:4px;vertical-align:top" alt="">`;
+          if (src && !src.startsWith('data:')) {
+            // desc(preserveStyle=true)에서는 이미지 크기 제한 없음
+            // general(preserveStyle=false)에서는 240px 제한
+            const imgStyle = preserveStyle
+              ? 'max-width:100%;display:block;border-radius:4px;margin:4px 0'
+              : 'max-width:240px;max-height:240px;border-radius:4px;display:inline-block;margin-top:4px;vertical-align:top';
+            out += `<img src="${this._esc(src)}" style="${imgStyle}" alt="">`;
           }
         }
         else if (tag === 'span') {

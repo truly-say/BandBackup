@@ -234,7 +234,7 @@ txt 파일을 끌어다 놓아도 됩니다.
       </div>
       <div style="height:1px;background:var(--border);margin:16px 0"></div>
       <button class="cache-clear-btn" onclick="window._clearAllCache()"><i class="fas fa-trash-alt"></i> 모든 캐시 및 설정 초기화</button>
-      <div style="padding:16px 0 4px;font-size:11px;color:var(--text-3);text-align:center">v2.0.0 · @C2H5OH_snow</div>
+      <div style="padding:16px 0 4px;font-size:11px;color:var(--text-3);text-align:center">v2.1.0 · @C2H5OH_snow</div>
     </div>
     <div id="help-detail-view" style="display:none;flex-direction:column;height:100%">
       <button class="help-detail-back" onclick="window._showHelpList()"><i class="fas fa-arrow-left"></i> 뒤로</button>
@@ -357,6 +357,16 @@ const HELP_CONTENT = {
   update: {
     title: '업데이트 내역',
     body: `
+      <h4>v2.1.0 <span style="font-weight:400;color:var(--text-3)">(26.06.03)</span></h4>
+      <ul>
+        <li>롤20 대용량 파일 처리 성능 개선 (비동기 파싱)</li>
+        <li>롤20 미리보기 페이지네이션 (500개 단위)</li>
+        <li>롤20 주사위 판정결과 색상 정확도 개선</li>
+        <li>보너스/패널티 주사위 카드 렌더링 지원</li>
+        <li>보너스 공격 주사위 (coc-attack) 지원</li>
+        <li>플랫폼 자동감지 전환 시 로딩 무한 스핀 수정</li>
+        <li>desc 메시지 이미지 표시 수정</li>
+      </ul>
       <h4>v2.0.0 <span style="font-weight:400;color:var(--text-3)">(26.05.30)</span></h4>
       <ul>
         <li>카카오톡 / 디스코드 / 롤20 파서 추가</li>

@@ -222,12 +222,33 @@ class DataManager {
       throw new Error('채팅 형식을 인식할 수 없습니다.\n플랫폼을 직접 선택해주세요.');
     }
 
-    const messages = parser.parse(chatData);
+    // roll20은 비동기로 실행 (메인 스레드 순간 점유 방지 + 로딩 표시)
+    let messages;
+    if (parser.name === 'roll20') {
+      messages = await this._parseRoll20Async(chatData, parser);
+    } else {
+      messages = parser.parse(chatData);
+    }
+
     if (!messages.length) {
       throw new Error('파싱된 메시지가 없습니다. 내용을 확인해주세요.');
     }
 
     return { messages, platform: parser.name, platformLabel: parser.label };
+  }
+
+  // roll20 파싱: 정규식 기반 파서라 빠르지만
+  // 로딩 표시 + 브라우저 이벤트 루프 한 틱 양보용 비동기 래퍼
+  _parseRoll20Async(chatData, parser) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          resolve(parser.parse(chatData));
+        } catch (err) {
+          reject(err);
+        }
+      }, 0);
+    });
   }
 
 }

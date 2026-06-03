@@ -341,7 +341,7 @@ class ChatBackupApp {
       else this.uiManager.updateDetectBadge(null, 0);
     } finally {
       this.state.isProcessing = false;
-      if (!silent) this.uiManager.toggleLoading(false);
+      this.uiManager.toggleLoading(false); // silent 여부 관계없이 항상 끔
     }
   }
 
@@ -373,7 +373,19 @@ class ChatBackupApp {
         } catch { /* UTF-8 유지 */ }
       }
       const ta = document.getElementById('input-text');
-      if (ta) ta.value = text;
+      if (ta) {
+        // 500KB 초과 시 textarea에 직접 박지 않음 (렌더링 부하 방지)
+        const SIZE_LIMIT = 500 * 1024;
+        if (text.length > SIZE_LIMIT) {
+          const kb = Math.round(text.length / 1024);
+          ta.value = '';
+          ta.placeholder = `📄 ${file.name} (${kb}KB) — 파일이 로드됐습니다. 분석을 누르세요.`;
+          this._pendingLargeText = text;
+        } else {
+          ta.value = text;
+          this._pendingLargeText = null;
+        }
+      }
       await this.handleAnalyze(text);
     } catch (e) {
       alert('파일 읽기 실패: ' + e.message);

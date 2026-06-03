@@ -565,6 +565,62 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   padding: 20px 24px;
 }
 
+/* ── Roll20 페이지네이션 ─────────────────────── */
+.r20-page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--bg-2, #f1f5f9);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+.r20-page-btn {
+  background: var(--bg-3, #e2e8f0);
+  border: none;
+  border-radius: 6px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text, #333);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.r20-page-btn:hover:not(:disabled) { background: var(--border-strong, #cbd5e1); }
+.r20-page-btn:disabled { opacity: 0.35; cursor: default; }
+.r20-page-btn.active {
+  background: var(--accent, #3b82f6);
+  color: #fff;
+}
+.r20-page-arrow { min-width: 32px; }
+.r20-page-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 32px;
+  color: var(--text-2, #888);
+  font-size: 13px;
+}
+.r20-page-info {
+  font-size: 12px;
+  color: var(--text-2, #666);
+  margin-left: 4px;
+}
+body.dark .r20-page-nav  { background: #1e1e1e; border-color: #383838; }
+body.dark .r20-page-btn  { background: #2a2a2a; color: #ddd; }
+body.dark .r20-page-btn.active { background: #3b82f6; color: #fff; }
+body.dark .r20-page-info { color: #aaa; }
+
 #chat-container::-webkit-scrollbar { width: 4px; }
 #chat-container::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
@@ -1163,6 +1219,29 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   font-weight: 700;
   font-size: inherit;
 }
+/* 회색 배경(실패)은 어두운 글자 */
+.r20-roll-result[style*="#9ca3af"] {
+  color: #1a1a1a;
+}
+
+/* 보너스/패널티 주사위 — 여러 결과 행 */
+.r20-roll-result-multi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 16px;
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: inherit;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.r20-roll-result-multi:last-child { border-bottom: none; }
+.r20-roll-result-prefix {
+  font-size: 0.85em;
+  opacity: 0.75;
+  min-width: 2.5em;
+  flex-shrink: 0;
+}
 
 /* Roll20 인라인 굴림 */
 .r20-inline-roll {
@@ -1224,6 +1303,21 @@ body.dark .app-logo-mark { filter: invert(1) brightness(1.1); }
   line-height: 1.6;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+}
+.r20-desc img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 4px auto;
+  border-radius: 4px;
+  font-style: normal; /* italic 상속 차단 */
+}
+.r20-desc a img {
+  display: block;
+}
+.r20-desc a {
+  display: inline-block;
+  max-width: 100%;
 }
 .r20-desc:hover { background: #f2f2f2; }
 

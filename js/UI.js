@@ -86,6 +86,8 @@ class UIManager {
 
     const { messages } = this.app.state;
     if (!messages?.length) {
+      // 가상 스크롤 정리
+      this._destroyVirtualScroll();
       container.innerHTML = `<div class="empty-state">
         <div class="empty-state-icon"><i class="fas fa-comment-slash"></i></div>
         <div class="empty-state-text">채팅을 붙여넣고 분석하세요</div>
@@ -96,7 +98,6 @@ class UIManager {
 
     const hidden = this.app.state.hiddenUsers || new Set();
     const visibleMessages = messages.filter(m => !hidden.has(m.username));
-    const frags = [];
 
     // 플랫폼별 컨테이너 클래스 (avatarShape 클래스 보존)
     const platform = this.app.state.detectedPlatform || '';
@@ -106,64 +107,173 @@ class UIManager {
       avatarShapeCls,
     ].filter(Boolean).join(' ');
 
-    // Roll20 전용 렌더러
+    // Roll20: 페이지네이션 렌더러
     if (platform === 'roll20') {
-      const msgIndexMap = new Map();
-      messages.forEach((m, idx) => msgIndexMap.set(m, idx));
-
-      for (let i = 0; i < visibleMessages.length; i++) {
-        const msg = visibleMessages[i];
-        const origIndex = msgIndexMap.get(msg) ?? i;
-        const isMe = this.app.state.selectedUsers.has(msg.username);
-        const displayName = this.app.state.displayNames[msg.username] || msg.username;
-        const profileUrl = this.app.state.userProfileImages[msg.username] || null;
-
-        // 연속 메시지 판단: desc/pill은 그룹 끊음, 같은 화자면 isFirst=false
-        const prev = visibleMessages[i - 1];
-        const isFirstInGroup = !prev
-          || prev.username !== msg.username
-          || prev.isDesc || msg.isDesc
-          || (prev.rawHtml && prev.rawHtml.includes('linear-gradient'))
-          || (msg.rawHtml && msg.rawHtml.includes('linear-gradient'))
-          || prev.msgType === 'roll' || msg.msgType === 'roll';
-
-        frags.push(this._renderMessageR20(msg, origIndex, isMe, displayName, profileUrl, isFirstInGroup));
-      }
-      container.innerHTML = frags.join('');
-      container.style.fontSize = (this.app.state.fontSize || 14) + 'px';
-      this.updateMsgCount(visibleMessages.length);
+      this._renderMessagesR20Paged(container, messages, visibleMessages);
       return;
     }
 
-    // 일반 렌더러
+    // 일반 렌더러 (밴드/카카오/디스코드) — 청크 처리로 메인 스레드 블로킹 방지
+    this._destroyVirtualScroll();
+
+    const CHUNK = 300; // 한 번에 렌더링할 메시지 수
     const groups = this._groupMessages(visibleMessages);
 
+    // 모든 렌더링 항목을 미리 평탄화
+    const items = [];
     for (const group of groups) {
       const { username } = group;
       const isMe = this.app.state.selectedUsers.has(username);
       const displayName = this.app.state.displayNames[username] || username;
       const profileUrl = this.app.state.userProfileImages[username] || null;
       const bubbleColor = this.app.state.userBubbleColors?.[username] || null;
-
       for (let i = 0; i < group.messages.length; i++) {
-        const { index, message } = group.messages[i];
-        const isFirst = i === 0;
-        const isLast = i === group.messages.length - 1;
-
-        frags.push(this._renderMessage(
-          message, index, isMe, displayName, profileUrl, bubbleColor,
-          isFirst, isLast
-        ));
+        items.push({ group, i, isMe, displayName, profileUrl, bubbleColor });
       }
     }
 
-    container.innerHTML = frags.join('');
-    container.style.fontSize = (this.app.state.fontSize || 14) + 'px';
-    this.updateMsgCount(visibleMessages.length);
+    if (items.length <= CHUNK) {
+      // 소량이면 즉시 렌더링
+      const frags = items.map(({ group, i, isMe, displayName, profileUrl, bubbleColor }) => {
+        const { index, message } = group.messages[i];
+        return this._renderMessage(message, index, isMe, displayName, profileUrl, bubbleColor, i === 0, i === group.messages.length - 1);
+      });
+      container.innerHTML = frags.join('');
+      container.style.fontSize = (this.app.state.fontSize || 14) + 'px';
+      this.updateMsgCount(visibleMessages.length);
+    } else {
+      // 대량이면 청크 단위로 append
+      container.innerHTML = '';
+      container.style.fontSize = (this.app.state.fontSize || 14) + 'px';
+      this.updateMsgCount(visibleMessages.length);
+
+      const renderChunk = (start) => {
+        // 렌더링 도중 플랫폼이 바뀌었으면 중단
+        if (this.app.state.detectedPlatform === 'roll20') return;
+
+        const end = Math.min(start + CHUNK, items.length);
+        const frag = document.createDocumentFragment();
+        const tmp = document.createElement('div');
+
+        const html = items.slice(start, end).map(({ group, i, isMe, displayName, profileUrl, bubbleColor }) => {
+          const { index, message } = group.messages[i];
+          return this._renderMessage(message, index, isMe, displayName, profileUrl, bubbleColor, i === 0, i === group.messages.length - 1);
+        }).join('');
+
+        tmp.innerHTML = html;
+        while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+        container.appendChild(frag);
+
+        if (end < items.length) {
+          requestAnimationFrame(() => renderChunk(end));
+        }
+      };
+
+      renderChunk(0);
+    }
   }
 
+  // ── Roll20 가상 스크롤 ──────────────────────────────────────────
 
-  // ── Roll20 전용 렌더러 ────────────────────────────────────────
+  _renderMessagesR20Paged(container, messages, visibleMessages) {
+    const PAGE_SIZE = 500;
+    const totalPages = Math.max(1, Math.ceil(visibleMessages.length / PAGE_SIZE));
+
+    if (this._r20Page === undefined || this._r20TotalPages !== totalPages) {
+      this._r20Page = 0;
+    }
+    this._r20TotalPages = totalPages;
+
+    const page  = this._r20Page;
+    const start = page * PAGE_SIZE;
+    const end   = Math.min(start + PAGE_SIZE, visibleMessages.length);
+    const pageItems = visibleMessages.slice(start, end);
+
+    const msgIndexMap = new Map();
+    messages.forEach((m, idx) => msgIndexMap.set(m, idx));
+
+    const frags = [];
+    for (let i = 0; i < pageItems.length; i++) {
+      const msg = pageItems[i];
+      const origIndex = msgIndexMap.get(msg) ?? (start + i);
+      const isMe = this.app.state.selectedUsers.has(msg.username);
+      const displayName = this.app.state.displayNames[msg.username] || msg.username;
+      const profileUrl  = this.app.state.userProfileImages[msg.username] || null;
+
+      const prev = pageItems[i - 1];
+      const isFirstInGroup = !prev
+        || prev.username !== msg.username
+        || prev.isDesc || msg.isDesc
+        || (prev.rawHtml && prev.rawHtml.includes('linear-gradient'))
+        || (msg.rawHtml  && msg.rawHtml.includes('linear-gradient'))
+        || prev.msgType === 'roll' || msg.msgType === 'roll';
+
+      frags.push(this._renderMessageR20(msg, origIndex, isMe, displayName, profileUrl, isFirstInGroup));
+    }
+
+    const navHtml = totalPages > 1 ? this._buildPageNav(page, totalPages, start, end) : '';
+
+    container.innerHTML = navHtml + frags.join('');
+    container.style.fontSize = (this.app.state.fontSize || 14) + 'px';
+    container.style.padding  = '';
+    container.style.overflow = '';
+    this.updateMsgCount(visibleMessages.length);
+
+    if (totalPages > 1) {
+      container.querySelectorAll('[data-page]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = parseInt(btn.dataset.page);
+          if (!isNaN(p) && p !== page) {
+            this._r20Page = p;
+            this._renderMessagesR20Paged(container, messages, visibleMessages);
+            container.scrollTop = 0;
+          }
+        });
+      });
+    }
+  }
+
+  _buildPageNav(page, totalPages, start, end) {
+    // 표시할 페이지 번호 목록 계산 (최대 7개 + ... 생략)
+    const pages = [];
+    const WING = 2; // 현재 페이지 좌우로 보여줄 수
+
+    const addPage = (p) => { if (!pages.includes(p) && p >= 0 && p < totalPages) pages.push(p); };
+
+    addPage(0);                                      // 첫 페이지
+    for (let i = page - WING; i <= page + WING; i++) addPage(i); // 현재 주변
+    addPage(totalPages - 1);                         // 마지막 페이지
+    pages.sort((a, b) => a - b);
+
+    // 버튼 HTML 생성 (빈 공간에 ... 삽입)
+    let btns = '';
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0 && pages[i] - pages[i - 1] > 1) {
+        btns += `<span class="r20-page-ellipsis">…</span>`;
+      }
+      const p = pages[i];
+      btns += `<button class="r20-page-btn r20-page-num${p === page ? ' active' : ''}" data-page="${p}">${p + 1}</button>`;
+    }
+
+    return `
+      <div class="r20-page-nav" id="r20-page-nav">
+        <button class="r20-page-btn r20-page-arrow" data-page="${page - 1}" ${page === 0 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        ${btns}
+        <button class="r20-page-btn r20-page-arrow" data-page="${page + 1}" ${page >= totalPages - 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <span class="r20-page-info">${start + 1}–${end}번째</span>
+      </div>`;
+  }
+
+  _destroyVirtualScroll() {
+    this._r20Page = undefined;
+    this._r20TotalPages = undefined;
+  }
+
+  // ── Roll20 전용 렌더러   // ── Roll20 전용 렌더러 ────────────────────────────────────────
   _renderMessageR20(msg, index, isMe, displayName, profileUrl, isFirstInGroup = true) {
     const i = index;
 
