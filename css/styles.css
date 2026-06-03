@@ -1307,13 +1307,13 @@ body.dark .r20-page-info { color: #aaa; }
 .r20-desc img {
   max-width: 100%;
   height: auto;
-  display: block;
-  margin: 4px auto;
+  display: inline-block;
+  margin: 4px 0;
   border-radius: 4px;
-  font-style: normal; /* italic 상속 차단 */
+  font-style: normal;
 }
 .r20-desc a img {
-  display: block;
+  display: inline-block;
 }
 .r20-desc a {
   display: inline-block;
