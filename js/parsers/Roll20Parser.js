@@ -553,7 +553,7 @@ class Roll20Parser {
             // desc(preserveStyle=true)에서는 이미지 크기 제한 없음
             // general(preserveStyle=false)에서는 240px 제한
             const imgStyle = preserveStyle
-              ? 'max-width:100%;display:block;border-radius:4px;margin:4px 0'
+              ? 'max-width:100%;display:inline-block;border-radius:4px;margin:4px 0'
               : 'max-width:240px;max-height:240px;border-radius:4px;display:inline-block;margin-top:4px;vertical-align:top';
             out += `<img src="${this._esc(src)}" style="${imgStyle}" alt="">`;
           }
